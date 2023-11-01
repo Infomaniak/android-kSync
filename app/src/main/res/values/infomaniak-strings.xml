@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="infomaniak_account_authority" translatable="false">com.infomaniak.sync.accounts</string>
+
     <string name="infomaniak_login_initialization">Initialization …</string>
     <string name="infomaniak_login_retrieving_account_information">Retrieving account information…</string>
     <string name="infomaniak_login_generating_an_application_password">Generating an application password…</string>
