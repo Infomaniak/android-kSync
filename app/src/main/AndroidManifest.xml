@@ -306,7 +306,7 @@
         <!-- Provider to share kSync accounts -->
         <provider
             android:name="com.infomaniak.sync.provider.InfomaniakAccountProvider"
-            android:authorities="@string/account_authority"
+            android:authorities="@string/infomaniak_account_authority"
             android:exported="true"
             tools:ignore="ExportedContentProvider" />
 
