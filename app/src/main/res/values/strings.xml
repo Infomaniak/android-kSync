@@ -1,9 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools">
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
     <string name="app_name">kSync</string>
     <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
 
+    <string name="account_authority" translatable="false">com.infomaniak.sync.accounts</string>
     <string name="account_invalid">Account does not exist (anymore)</string>
     <string name="account_type" translatable="false">infomaniak.com.sync</string>
     <string name="account_type_address_book" translatable="false">com.infomaniak.sync.address_book</string>
