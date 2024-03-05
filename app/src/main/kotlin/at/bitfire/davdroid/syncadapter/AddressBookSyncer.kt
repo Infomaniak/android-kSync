@@ -12,10 +12,10 @@ import android.content.SyncResult
 import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import androidx.core.content.ContextCompat
-import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
@@ -30,7 +30,10 @@ import java.util.logging.Level
 /**
  * Sync logic for address books
  */
-class AddressBookSyncer(context: Context): Syncer(context) {
+class AddressBookSyncer(
+    context: Context,
+    private val expedited: Boolean
+) : Syncer(context) {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -53,7 +56,7 @@ class AddressBookSyncer(context: Context): Syncer(context) {
             if (updateLocalAddressBooks(account, syncResult))
                 for (addressBookAccount in LocalAddressBook.findAll(context, null, account).map { it.account }) {
                     Logger.log.log(Level.INFO, "Running sync for address book", addressBookAccount)
-                    SyncWorker.enqueue(context, addressBookAccount, ContactsContract.AUTHORITY)
+                    SyncWorker.enqueue(context, addressBookAccount, ContactsContract.AUTHORITY, expedited = expedited)
                 }
         } catch (e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync address books", e)

@@ -11,12 +11,16 @@ import android.content.ContentValues
 import android.provider.CalendarContract
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.ical4android.*
+import at.bitfire.ical4android.AndroidCalendar
+import at.bitfire.ical4android.AndroidEvent
+import at.bitfire.ical4android.AndroidEventFactory
+import at.bitfire.ical4android.BatchOperation
+import at.bitfire.ical4android.Event
+import at.bitfire.ical4android.ICalendar
+import at.bitfire.ical4android.Ical4Android
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
 import net.fortuna.ical4j.model.property.ProdId
-import org.apache.commons.lang3.StringUtils
-import java.util.*
-
+import java.util.UUID
 class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     companion object {
@@ -45,6 +49,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
                 null,null
             )
         }
+
 
         /**
          * Finds the amount of direct instances this event has (without exceptions); used by [numInstances]
@@ -160,8 +165,6 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
 
     override fun populateEvent(row: ContentValues, groupScheduled: Boolean) {
         val event = requireNotNull(event)
-
-        event.uid = row.getAsString(Events.UID_2445)
         event.sequence = row.getAsInteger(COLUMN_SEQUENCE)
 
         val isOrganizer = row.getAsInteger(Events.IS_ORGANIZER)
@@ -176,8 +179,7 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         val buildException = recurrence != null
         val eventToBuild = recurrence ?: event
 
-        builder .withValue(Events.UID_2445, event.uid)
-                .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
+        builder .withValue(COLUMN_SEQUENCE, eventToBuild.sequence)
                 .withValue(Events.DIRTY, 0)
                 .withValue(Events.DELETED, 0)
                 .withValue(COLUMN_FLAGS, flags)
@@ -200,15 +202,8 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
      * @return file name to use at upload
      */
     override fun prepareForUpload(): String {
-        // fetch UID_2445 from calendar provider
-        var dbUid: String? = null
-        calendar.provider.query(eventSyncURI(), arrayOf(Events.UID_2445), null, null, null)?.use { cursor ->
-            if (cursor.moveToNext())
-                dbUid = StringUtils.trimToNull(cursor.getString(0))
-        }
-
         // make sure that UID is set
-        val uid: String = dbUid ?: {
+        val uid: String = event!!.uid ?: run {
             // generate new UID
             val newUid = UUID.randomUUID().toString()
 
@@ -217,11 +212,11 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
             values.put(Events.UID_2445, newUid)
             calendar.provider.update(eventSyncURI(), values, null, null)
 
-            // Update this event
+            // update this event
             event?.uid = newUid
 
             newUid
-        }()
+        }
 
         val uidIsGoodFilename = uid.all { char ->
             // see RFC 2396 2.2
@@ -261,6 +256,10 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
         this.flags = flags
     }
 
+    override fun resetDeleted() {
+        val values = ContentValues(1).apply { put(Events.DELETED, 0) }
+        calendar.provider.update(eventSyncURI(), values, null, null)
+    }
 
     object Factory: AndroidEventFactory<LocalEvent> {
         override fun fromProvider(calendar: AndroidCalendar<*>, values: ContentValues) =
@@ -268,3 +267,4 @@ class LocalEvent: AndroidEvent, LocalResource<Event> {
     }
 
 }
+

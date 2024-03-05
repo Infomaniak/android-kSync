@@ -30,6 +30,15 @@ import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.property.*
+import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
+import at.bitfire.dav4jvm.property.webdav.DisplayName
+import at.bitfire.dav4jvm.property.webdav.GetContentLength
+import at.bitfire.dav4jvm.property.webdav.GetContentType
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.GetLastModified
+import at.bitfire.dav4jvm.property.webdav.QuotaAvailableBytes
+import at.bitfire.dav4jvm.property.webdav.QuotaUsedBytes
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.WebDavDocument
@@ -38,11 +47,20 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
-import at.bitfire.davdroid.webdav.cache.HeadResponseCache
+import at.bitfire.davdroid.webdav.cache.HeadResponseCacheBuilder
+import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withTimeout
 import okhttp3.CookieJar
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -52,7 +70,6 @@ import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 import java.util.concurrent.*
 import java.util.logging.Level
-import kotlin.math.min
 
 /**
  * Provides functionality on WebDav documents.
@@ -81,15 +98,15 @@ class DavDocumentsProvider: DocumentsProvider() {
         )
 
         const val MAX_NAME_ATTEMPTS = 5
-        const val THUMBNAIL_TIMEOUT = 15L
+        const val THUMBNAIL_TIMEOUT_MS = 15000L
 
         fun notifyMountsChanged(context: Context) {
             context.contentResolver.notifyChange(buildRootsUri(context.getString(R.string.webdav_authority)), null)
         }
     }
 
-    val ourContext by lazy { context!! }        // requireContext() requires API level 30
-    val authority by lazy { ourContext.getString(R.string.webdav_authority) }
+    private val ourContext by lazy { context!! }        // requireContext() requires API level 30
+    private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
 
     private val db by lazy { EntryPointAccessors.fromApplication(ourContext, DavDocumentsProviderEntryPoint::class.java).appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
@@ -97,15 +114,12 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     private val credentialsStore by lazy { CredentialsStore(ourContext) }
     private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    private val headResponseCache by lazy { HeadResponseCache() }
-    private val thumbnailCache by lazy { ThumbnailCache(ourContext) }
+    private val headResponseCache by lazy { HeadResponseCacheBuilder.getInstance() }
+    private val thumbnailCache by lazy { ThumbnailCache.getInstance(ourContext) }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
     private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }
 
-    private val executor by lazy {
-        ThreadPoolExecutor(1, min(Runtime.getRuntime().availableProcessors(), 4), 30, TimeUnit.SECONDS, BlockingLifoQueue())
-    }
     /** List of currently active [queryChildDocuments] runners.
      *
      *  Key: document ID (directory) for which children are listed.
@@ -116,10 +130,6 @@ class DavDocumentsProvider: DocumentsProvider() {
     private val actor by lazy { DavDocumentsActor(ourContext, db, cookieStore, credentialsStore, authority) }
 
     override fun onCreate() = true
-
-    override fun shutdown() {
-        executor.shutdown()
-    }
 
 
     /*** query ***/
@@ -221,10 +231,10 @@ class DavDocumentsProvider: DocumentsProvider() {
 
         // Dispatch worker querying for the children and keep track of it
         val running = runningQueryChildren.getOrPut(parentId) {
-            executor.submit {
+            CoroutineScope(Dispatchers.IO).launch {
                 actor.queryChildren(parent)
                 // Once the query is done, set query as finished (not running)
-                runningQueryChildren.put(parentId, false)
+                runningQueryChildren[parentId] = false
                 // .. and notify - effectively calling this method again
                 ourContext.contentResolver.notifyChange(notificationUri, null)
             }
@@ -461,14 +471,20 @@ class DavDocumentsProvider: DocumentsProvider() {
             else -> throw UnsupportedOperationException("Mode $mode not supported by WebDAV")
         }
 
-        val fileInfo = headResponseCache.get(doc) {
-            val deferredFileInfo = executor.submit(HeadInfoDownloader(client, url))
-            signal?.setOnCancelListener {
-                deferredFileInfo.cancel(true)
+        val fileInfo = headResponseCache.getOrPutIfNotNull(doc.cacheKey()) {
+            val response = CoroutineScope(Dispatchers.IO).async {
+                runInterruptible {
+                    HeadResponse.fromUrl(client, url)
+                }
             }
-            deferredFileInfo.get()
+            signal?.setOnCancelListener {
+                response.cancel("Cancelled by signal")
+            }
+            runBlocking {
+                response.await()
+            }
         }
-        Logger.log.info("Received file info: $fileInfo")
+        Logger.log.fine("Received file info: $fileInfo")
 
         // RandomAccessCallback.Wrapper / StreamingFileDescriptor are responsible for closing httpClient
         return if (
@@ -476,11 +492,13 @@ class DavDocumentsProvider: DocumentsProvider() {
             readAccess &&                       // WebDAV doesn't support random write access natively
             fileInfo.size != null &&            // file descriptor must return a useful value on getFileSize()
             (fileInfo.eTag != null || fileInfo.lastModified != null) &&     // we need a method to determine whether the document has changed during access
-            fileInfo.supportsPartial != false   // WebDAV server must support random access
+            fileInfo.supportsPartial == true    // WebDAV server must support random access
         ) {
+            Logger.log.fine("Creating RandomAccessCallback for $url")
             val accessor = RandomAccessCallback.Wrapper(ourContext, client, url, doc.mimeType, fileInfo, signal)
             storageManager.openProxyFileDescriptor(modeFlags, accessor, accessor.workerHandler)
         } else {
+            Logger.log.fine("Creating StreamingFileDescriptor for $url")
             val fd = StreamingFileDescriptor(ourContext, client, url, doc.mimeType, signal) { transferred ->
                 // called when transfer is finished
 
@@ -516,45 +534,51 @@ class DavDocumentsProvider: DocumentsProvider() {
         }
 
         val doc = documentDao.get(documentId.toLong()) ?: throw FileNotFoundException()
-        val thumbFile = thumbnailCache.get(doc, sizeHint) {
+
+        val docCacheKey = doc.cacheKey()
+        if (docCacheKey == null) {
+            Logger.log.warning("openDocumentThumbnail won't generate thumbnails when document state (ETag/Last-Modified) is unknown")
+            return null
+        }
+
+        val thumbFile = thumbnailCache.get(docCacheKey, sizeHint) {
             // create thumbnail
-            val result = executor.submit(Callable<ByteArray> {
-                actor.httpClient(doc.mountId).use { client ->
-                    val url = doc.toHttpUrl(db)
-                    val dav = DavResource(client.okHttpClient, url)
-                    var result: ByteArray? = null
-                    dav.get("image/*", null) { response ->
-                        response.body?.byteStream()?.use { data ->
-                            BitmapFactory.decodeStream(data)?.let { bitmap ->
-                                val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
-                                val baos = ByteArrayOutputStream()
-                                thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
-                                result = baos.toByteArray()
+            val job = CoroutineScope(Dispatchers.IO).async {
+                withTimeout(THUMBNAIL_TIMEOUT_MS) {
+                    actor.httpClient(doc.mountId).use { client ->
+                        val url = doc.toHttpUrl(db)
+                        val dav = DavResource(client.okHttpClient, url)
+                        var result: ByteArray? = null
+                        runInterruptible {
+                            dav.get("image/*", null) { response ->
+                                response.body?.byteStream()?.use { data ->
+                                    BitmapFactory.decodeStream(data)?.let { bitmap ->
+                                        val thumb = ThumbnailUtils.extractThumbnail(bitmap, sizeHint.x, sizeHint.y)
+                                        val baos = ByteArrayOutputStream()
+                                        thumb.compress(Bitmap.CompressFormat.JPEG, 95, baos)
+                                        result = baos.toByteArray()
+                                    }
+                                }
                             }
                         }
+                        result
                     }
-                    result
                 }
-            })
+            }
 
             signal.setOnCancelListener {
                 Logger.log.fine("Cancelling thumbnail for ${doc.name}")
-                result.cancel(true)
+                job.cancel("Cancelled by signal")
             }
 
-            val finalResult =
-                try {
-                    result.get(THUMBNAIL_TIMEOUT, TimeUnit.SECONDS)
-                } catch (e: TimeoutException) {
-                    Logger.log.warning("Couldn't generate thumbnail in time, cancelling")
-                    result.cancel(true)
-                    null
-                } catch (e: Exception) {
-                    Logger.log.log(Level.WARNING, "Couldn't generate thumbnail", e)
-                    null
+            try {
+                runBlocking {
+                    job.await()
                 }
-
-            finalResult
+            } catch (e: Exception) {
+                Logger.log.log(Level.WARNING, "Couldn't generate thumbnail", e)
+                null
+            }
         }
 
         if (thumbFile != null)

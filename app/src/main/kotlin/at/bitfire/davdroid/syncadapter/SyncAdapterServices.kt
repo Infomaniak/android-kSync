@@ -6,7 +6,12 @@ package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
 import android.app.Service
-import android.content.*
+import android.content.AbstractThreadedSyncAdapter
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SyncResult
 import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.work.WorkInfo
@@ -14,7 +19,11 @@ import androidx.work.WorkManager
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import java.util.logging.Level
 
 abstract class SyncAdapterService: Service() {
@@ -70,7 +79,7 @@ abstract class SyncAdapterService: Service() {
             }
 
             Logger.log.fine("Sync framework now starting SyncWorker")
-            val workerName = SyncWorker.enqueue(context, account, authority, upload = upload)
+            val workerName = SyncWorker.enqueue(context, account, authority, expedited = true, upload = upload)
 
             // Block the onPerformSync method to simulate an ongoing sync
             Logger.log.fine("Blocking sync framework until SyncWorker finishes")

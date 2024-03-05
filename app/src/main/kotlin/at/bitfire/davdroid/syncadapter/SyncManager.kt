@@ -16,19 +16,38 @@ import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import at.bitfire.dav4jvm.*
-import at.bitfire.dav4jvm.exception.*
-import at.bitfire.dav4jvm.property.GetCTag
-import at.bitfire.dav4jvm.property.GetETag
-import at.bitfire.dav4jvm.property.ScheduleTag
-import at.bitfire.dav4jvm.property.SyncToken
-import at.bitfire.davdroid.*
+import at.bitfire.dav4jvm.DavCollection
+import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.Error
+import at.bitfire.dav4jvm.MultiResponseCallback
+import at.bitfire.dav4jvm.Response
+import at.bitfire.dav4jvm.exception.ConflictException
+import at.bitfire.dav4jvm.exception.DavException
+import at.bitfire.dav4jvm.exception.ForbiddenException
+import at.bitfire.dav4jvm.exception.GoneException
+import at.bitfire.dav4jvm.exception.HttpException
+import at.bitfire.dav4jvm.exception.NotFoundException
+import at.bitfire.dav4jvm.exception.PreconditionFailedException
+import at.bitfire.dav4jvm.exception.ServiceUnavailableException
+import at.bitfire.dav4jvm.exception.UnauthorizedException
+import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.ScheduleTag
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.SyncToken
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.InvalidAccountException
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.db.SyncStats
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
-import at.bitfire.davdroid.resource.*
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalCollection
+import at.bitfire.davdroid.resource.LocalContact
+import at.bitfire.davdroid.resource.LocalEvent
+import at.bitfire.davdroid.resource.LocalResource
+import at.bitfire.davdroid.resource.LocalTask
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
@@ -43,7 +62,9 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import okhttp3.HttpUrl
 import okhttp3.RequestBody
 import org.apache.commons.io.FileUtils
@@ -51,14 +72,11 @@ import org.apache.commons.lang3.exception.ContextedException
 import org.dmfs.tasks.contract.TaskContract
 import java.io.IOException
 import java.io.InterruptedIOException
-import java.lang.ref.WeakReference
 import java.net.HttpURLConnection
 import java.security.cert.CertificateException
 import java.time.Instant
-import java.util.*
+import java.util.LinkedList
 import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.ThreadPoolExecutor
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.logging.Level
 import javax.net.ssl.SSLHandshakeException
@@ -121,27 +139,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             }
         }
 
-        var _workDispatcher: WeakReference<CoroutineDispatcher>? = null
-        /**
-         * We use our own dispatcher to
-         *
-         *   - make sure that all threads have [Thread.getContextClassLoader] set, which is required for dav4jvm and ical4j (because they rely on [ServiceLoader]),
-         *   - control the global number of sync worker threads.
-         *
-         * Threads created by a service automatically have a contextClassLoader.
-         */
-        fun getWorkDispatcher(): CoroutineDispatcher {
-            val cached = _workDispatcher?.get()
-            if (cached != null)
-                return cached
-
-            val newDispatcher = ThreadPoolExecutor(
-                0, Integer.min(Runtime.getRuntime().availableProcessors(), 4),
-                10, TimeUnit.SECONDS, LinkedBlockingQueue()
-            ).asCoroutineDispatcher()
-            return newDispatcher
-        }
-
     }
 
     init {
@@ -161,8 +158,6 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
     protected lateinit var davCollection: RemoteType
 
     protected var hasCollectionSync = false
-
-    val workDispatcher = getWorkDispatcher()
 
 
     fun performSync() {
@@ -190,7 +185,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
             var remoteSyncState = queryCapabilities()
 
             Logger.log.info("Processing local deletes/updates")
-            val modificationsPresent = processLocallyDeleted() || uploadDirty()
+            val modificationsPresent = processLocallyDeleted() or uploadDirty()     // bitwise OR guarantees that both expressions are evaluated
 
             if (extras.contains(Syncer.SYNC_EXTRAS_FULL_RESYNC)) {
                 Logger.log.info("Forcing re-synchronization of all entries")
@@ -389,7 +384,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
         var numUploaded = 0
 
         // upload dirty resources (parallelized)
-        runBlocking(workDispatcher) {
+        runBlocking {
             for (local in localCollection.findDirty())
                 launch {
                     localExceptionContext(local) {
@@ -578,14 +573,14 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                 }
             }
 
-            withContext(workDispatcher) {    // structured concurrency: blocks until all inner coroutines are finished
+            coroutineScope {    // structured concurrency: blocks until all inner coroutines are finished
                 listRemote { response, relation ->
                     // ignore non-members
                     if (relation != Response.HrefRelation.MEMBER)
                         return@listRemote
 
                     // ignore collections
-                    if (response[at.bitfire.dav4jvm.property.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.ResourceType.COLLECTION) == true)
+                    if (response[at.bitfire.dav4jvm.property.webdav.ResourceType::class.java]?.types?.contains(at.bitfire.dav4jvm.property.webdav.ResourceType.COLLECTION) == true)
                         return@listRemote
 
                     val name = response.hrefName()
@@ -602,7 +597,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                                 } else {
                                     val localETag = local.eTag
                                     val remoteETag = response[GetETag::class.java]?.eTag
-                                            ?: throw DavException("Server didn't provide ETag")
+                                        ?: throw DavException("Server didn't provide ETag")
                                     if (localETag == remoteETag) {
                                         Logger.log.info("$name has not been changed on server (ETag still $remoteETag)")
                                         nSkipped.incrementAndGet()

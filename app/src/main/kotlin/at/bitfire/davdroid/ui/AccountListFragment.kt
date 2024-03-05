@@ -45,6 +45,7 @@ import at.bitfire.davdroid.databinding.AccountListItemBinding
 import at.bitfire.davdroid.syncadapter.SyncUtils.syncAuthorities
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.account.AppWarningsModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,6 +58,7 @@ class AccountListFragment: Fragment() {
     private var _binding: AccountListBinding? = null
     private val binding get() = _binding!!
     val model by viewModels<Model>()
+    private val warnings by viewModels<AppWarningsModel>()
 
     private var syncStatusSnackbar: Snackbar? = null
 
@@ -72,7 +74,7 @@ class AccountListFragment: Fragment() {
             startActivity(Intent(requireActivity(), PermissionsActivity::class.java))
         }
 
-        model.globalSyncDisabled.observe(viewLifecycleOwner) { syncDisabled ->
+        warnings.globalSyncDisabled.observe(viewLifecycleOwner) { syncDisabled ->
             if (syncDisabled) {
                 val snackbar = Snackbar
                     .make(view, R.string.accounts_global_sync_disabled, Snackbar.LENGTH_INDEFINITE)
@@ -89,7 +91,7 @@ class AccountListFragment: Fragment() {
             }
         }
 
-        model.networkAvailable.observe(viewLifecycleOwner) { networkAvailable ->
+        warnings.networkAvailable.observe(viewLifecycleOwner) { networkAvailable ->
             binding.noNetworkInfo.visibility = if (networkAvailable) View.GONE else View.VISIBLE
         }
         binding.manageConnections.setOnClickListener {
@@ -98,7 +100,7 @@ class AccountListFragment: Fragment() {
                 startActivity(intent)
         }
 
-        model.storageLow.observe(viewLifecycleOwner) { storageLow ->
+        warnings.storageLow.observe(viewLifecycleOwner) { storageLow ->
             binding.lowStorageInfo.visibility = if (storageLow) View.VISIBLE else View.GONE
         }
         binding.manageStorage.setOnClickListener {
@@ -107,7 +109,7 @@ class AccountListFragment: Fragment() {
                 startActivity(intent)
         }
 
-        model.dataSaverOn.observe(viewLifecycleOwner) { datasaverOn ->
+        warnings.dataSaverEnabled.observe(viewLifecycleOwner) { datasaverOn ->
             binding.datasaverOnInfo.visibility = if (datasaverOn) View.VISIBLE else View.GONE
         }
         binding.manageDatasaver.setOnClickListener {
@@ -228,19 +230,12 @@ class AccountListFragment: Fragment() {
     @HiltViewModel
     class Model @Inject constructor(
         application: Application,
-        private val warnings: AppWarningsManager
     ): AndroidViewModel(application), OnAccountsUpdateListener {
 
         data class AccountInfo(
             val account: Account,
             val status: SyncStatus
         )
-
-        // Warnings
-        val globalSyncDisabled = warnings.globalSyncDisabled
-        val dataSaverOn = warnings.dataSaverEnabled
-        val networkAvailable = warnings.networkAvailable
-        val storageLow = warnings.storageLow
 
         // Accounts
         private val accountsUpdated = MutableLiveData<Boolean>()
@@ -291,7 +286,6 @@ class AccountListFragment: Fragment() {
 
         override fun onCleared() {
             accountManager.removeOnAccountsUpdatedListener(this)
-            warnings.close()
         }
 
     }

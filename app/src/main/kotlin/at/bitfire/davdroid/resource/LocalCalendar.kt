@@ -12,16 +12,16 @@ import android.net.Uri
 import android.provider.CalendarContract.Calendars
 import android.provider.CalendarContract.Events
 import at.bitfire.davdroid.Constants
-import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidCalendarFactory
 import at.bitfire.ical4android.BatchOperation
 import at.bitfire.ical4android.util.DateUtils
 import at.bitfire.ical4android.util.MiscUtils.asSyncAdapter
-import java.util.*
+import java.util.LinkedList
 import java.util.logging.Level
 
 class LocalCalendar private constructor(
@@ -91,6 +91,10 @@ class LocalCalendar private constructor(
     override val title: String
         get() = displayName ?: id.toString()
 
+    private var accessLevel: Int = Calendars.CAL_ACCESS_OWNER   // assume full access if not specified
+    override val readOnly
+        get() = accessLevel <= Calendars.CAL_ACCESS_READ
+
     override var lastSyncState: SyncState?
         get() = provider.query(calendarSyncURI(), arrayOf(COLUMN_SYNC_STATE), null, null, null)?.use { cursor ->
                     if (cursor.moveToNext())
@@ -104,6 +108,11 @@ class LocalCalendar private constructor(
             provider.update(calendarSyncURI(), values, null, null)
         }
 
+
+    override fun populate(info: ContentValues) {
+        super.populate(info)
+        accessLevel = info.getAsInteger(Calendars.CALENDAR_ACCESS_LEVEL) ?: Calendars.CAL_ACCESS_OWNER
+    }
 
     fun update(info: Collection, updateColor: Boolean) =
             update(valuesFromCollectionInfo(info, updateColor))

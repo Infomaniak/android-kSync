@@ -8,20 +8,19 @@ import android.accounts.Account
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.map
+import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.WorkerParameters
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.MultiResponseCallback
@@ -30,22 +29,22 @@ import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.UrlUtils
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.dav4jvm.exception.UnauthorizedException
-import at.bitfire.dav4jvm.property.AddressbookDescription
-import at.bitfire.dav4jvm.property.AddressbookHomeSet
-import at.bitfire.dav4jvm.property.CalendarColor
-import at.bitfire.dav4jvm.property.CalendarDescription
-import at.bitfire.dav4jvm.property.CalendarHomeSet
-import at.bitfire.dav4jvm.property.CalendarProxyReadFor
-import at.bitfire.dav4jvm.property.CalendarProxyWriteFor
-import at.bitfire.dav4jvm.property.CurrentUserPrivilegeSet
-import at.bitfire.dav4jvm.property.DisplayName
-import at.bitfire.dav4jvm.property.GroupMembership
-import at.bitfire.dav4jvm.property.HrefListProperty
-import at.bitfire.dav4jvm.property.Owner
-import at.bitfire.dav4jvm.property.ResourceType
-import at.bitfire.dav4jvm.property.Source
-import at.bitfire.dav4jvm.property.SupportedAddressData
-import at.bitfire.dav4jvm.property.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.caldav.CalendarColor
+import at.bitfire.dav4jvm.property.caldav.CalendarDescription
+import at.bitfire.dav4jvm.property.caldav.CalendarHomeSet
+import at.bitfire.dav4jvm.property.caldav.CalendarProxyReadFor
+import at.bitfire.dav4jvm.property.caldav.CalendarProxyWriteFor
+import at.bitfire.dav4jvm.property.caldav.Source
+import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
+import at.bitfire.dav4jvm.property.carddav.AddressbookHomeSet
+import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
+import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
+import at.bitfire.dav4jvm.property.webdav.DisplayName
+import at.bitfire.dav4jvm.property.webdav.GroupMembership
+import at.bitfire.dav4jvm.property.webdav.HrefListProperty
+import at.bitfire.dav4jvm.property.webdav.Owner
+import at.bitfire.dav4jvm.property.webdav.ResourceType
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
@@ -64,9 +63,9 @@ import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.SettingsActivity
 import at.bitfire.davdroid.util.DavUtils.parent
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.runInterruptible
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import java.util.logging.Level
@@ -85,6 +84,10 @@ import kotlin.collections.*
  *  - adds resources if new ones are detected
  *  - removes resources if not found 40x (delete locally)
  *
+ * Expedited: yes (always initiated by user)
+ *
+ * Long-running: no
+ *
  * @throws IllegalArgumentException when there's no service with the given service ID
  */
 @HiltWorker
@@ -93,12 +96,12 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     var db: AppDatabase,
     var settings: SettingsManager
-): Worker(appContext, workerParams) {
+): CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
         const val ARG_SERVICE_ID = "serviceId"
-        const val REFRESH_COLLECTIONS_WORKER_TAG = "refreshCollectionsWorker"
+        const val WORKER_TAG = "refreshCollectionsWorker"
 
         // Collection properties to ask for in a propfind request to the Cal- or CardDAV server
         val DAV_COLLECTION_PROPERTIES = arrayOf(
@@ -122,35 +125,39 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          *
          * @param serviceId     what service (CalDAV/CardDAV) the worker is running for
          */
-        fun workerName(serviceId: Long): String = "$REFRESH_COLLECTIONS_WORKER_TAG-$serviceId"
+        fun workerName(serviceId: Long): String = "$WORKER_TAG-$serviceId"
 
         /**
          * Requests immediate refresh of a given service. If not running already. this will enqueue
          * a [RefreshCollectionsWorker].
          *
          * @param serviceId     serviceId which is to be refreshed
-         * @return workerName   name of the worker started
+         * @return Pair with
+         *
+         * 1. worker name,
+         * 2. operation of [WorkManager.enqueueUniqueWork] (can be used to wait for completion)
          *
          * @throws IllegalArgumentException when there's no service with this ID
          */
-        fun refreshCollections(context: Context, serviceId: Long): String {
-            if (serviceId == -1L)
-                throw IllegalArgumentException("Service with ID \"$serviceId\" does not exist")
-
+        fun enqueue(context: Context, serviceId: Long): Pair<String, Operation> {
+            val name = workerName(serviceId)
             val arguments = Data.Builder()
                 .putLong(ARG_SERVICE_ID, serviceId)
                 .build()
             val workRequest = OneTimeWorkRequestBuilder<RefreshCollectionsWorker>()
+                .addTag(name)
                 .setInputData(arguments)
                 .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .build()
 
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                workerName(serviceId),
-                ExistingWorkPolicy.KEEP,    // if refresh is already running, just continue that one
-                workRequest
+            return Pair(
+                name,
+                WorkManager.getInstance(context).enqueueUniqueWork(
+                    name,
+                    ExistingWorkPolicy.KEEP,    // if refresh is already running, just continue that one
+                    workRequest
+                )
             )
-            return workerName(serviceId)
         }
 
         /**
@@ -160,7 +167,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
          * @param workState     state of worker to match
          * @return boolean      true if worker with matching state was found
          */
-        fun isWorkerInState(context: Context, workerName: String, workState: WorkInfo.State) =
+        fun exists(context: Context, workerName: String, workState: WorkInfo.State = WorkInfo.State.RUNNING) =
             WorkManager.getInstance(context).getWorkInfosForUniqueWorkLiveData(workerName).map {
                 workInfoList -> workInfoList.any { workInfo -> workInfo.state == workState }
             }
@@ -171,10 +178,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
     val service = db.serviceDao().get(serviceId) ?: throw IllegalArgumentException("Service #$serviceId not found")
     val account = Account(service.accountName, applicationContext.getString(R.string.account_type))
 
-    /** thread which runs the actual refresh code (can be interrupted to stop refreshing) */
-    var refreshThread: Thread? = null
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result {
         try {
             Logger.log.info("Refreshing ${service.type} collections of service #$service")
 
@@ -183,28 +187,29 @@ class RefreshCollectionsWorker @AssistedInject constructor(
                 .cancel(serviceId.toString(), NotificationUtils.NOTIFY_REFRESH_COLLECTIONS)
 
             // create authenticating OkHttpClient (credentials taken from account settings)
-            refreshThread = Thread.currentThread()
-            HttpClient.Builder(applicationContext, AccountSettings(applicationContext, account))
-                .setForeground(true)
-                .build().use { client ->
-                    val httpClient = client.okHttpClient
-                    val refresher = Refresher(db, service, settings, httpClient)
+            runInterruptible {
+                HttpClient.Builder(applicationContext, AccountSettings(applicationContext, account))
+                    .setForeground(true)
+                    .build().use { client ->
+                        val httpClient = client.okHttpClient
+                        val refresher = Refresher(db, service, settings, httpClient)
 
-                    // refresh home set list (from principal url)
-                    service.principal?.let { principalUrl ->
-                        Logger.log.fine("Querying principal $principalUrl for home sets")
-                        refresher.discoverHomesets(principalUrl)
+                        // refresh home set list (from principal url)
+                        service.principal?.let { principalUrl ->
+                            Logger.log.fine("Querying principal $principalUrl for home sets")
+                            refresher.discoverHomesets(principalUrl)
+                        }
+
+                        // refresh home sets and their member collections
+                        refresher.refreshHomesetsAndTheirCollections()
+
+                        // also refresh collections without a home set
+                        refresher.refreshHomelessCollections()
+
+                        // Lastly, refresh the principals (collection owners)
+                        refresher.refreshPrincipals()
                     }
-
-                    // refresh home sets and their member collections
-                    refresher.refreshHomesetsAndTheirCollections()
-
-                    // also refresh collections without a home set
-                    refresher.refreshHomelessCollections()
-
-                    // Lastly, refresh the principals (collection owners)
-                    refresher.refreshPrincipals()
-                }
+            }
 
         } catch(e: InvalidAccountException) {
             Logger.log.log(Level.SEVERE, "Invalid account", e)
@@ -233,30 +238,25 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             return Result.failure()
         }
 
-
-
         // Success
         return Result.success()
     }
 
-    override fun onStopped() {
-        Logger.log.info("Stopping refresh (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"})")
-        refreshThread?.interrupt()
+    /**
+     * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
+     */
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
+            .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .build()
+        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
-
-    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> =
-        CallbackToFutureAdapter.getFuture { completer ->
-            val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
-                .setSmallIcon(R.drawable.ic_foreground_notify)
-                .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
-                .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
-                .setStyle(NotificationCompat.BigTextStyle())
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-            completer.set(ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification))
-        }
 
     private fun notifyRefreshError(contentText: String, contentIntent: Intent) {
         val notify = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_GENERAL)

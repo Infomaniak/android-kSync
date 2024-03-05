@@ -13,10 +13,12 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import at.bitfire.davdroid.util.DavUtils.MEDIA_TYPE_OCTET_STREAM
+import at.bitfire.davdroid.webdav.DocumentState
 import okhttp3.HttpUrl
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.FileNotFoundException
+import java.time.Instant
 
 @Entity(
     tableName = "webdav_document",
@@ -57,6 +59,12 @@ data class WebDavDocument(
     var quotaUsed: Long? = null
 
 ) {
+
+    fun cacheKey(): CacheKey? {
+        if (eTag != null || lastModified != null)
+            return CacheKey(id, DocumentState(eTag, lastModified?.let { ts -> Instant.ofEpochMilli(ts) }))
+        return null
+    }
 
     @SuppressLint("InlinedApi")
     fun toBundle(parent: WebDavDocument?): Bundle {
@@ -115,5 +123,14 @@ data class WebDavDocument(
             builder.addPathSegment(segment)
         return builder.build()
     }
+
+
+    /**
+     * Represents a WebDAV document in a given state (with a given ETag/Last-Modified).
+     */
+    data class CacheKey(
+        val docId: Long,
+        val documentState: DocumentState
+    )
 
 }

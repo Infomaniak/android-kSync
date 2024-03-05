@@ -11,21 +11,28 @@ import at.bitfire.dav4jvm.DavCalendar
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.property.caldav.CalendarData
+import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.caldav.MaxResourceSize
+import at.bitfire.dav4jvm.property.caldav.ScheduleTag
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalCalendar
 import at.bitfire.davdroid.resource.LocalEvent
 import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.Event
 import at.bitfire.ical4android.InvalidCalendarException
 import at.bitfire.ical4android.util.DateUtils
 import net.fortuna.ical4j.model.Component
 import net.fortuna.ical4j.model.component.VAlarm
+import net.fortuna.ical4j.model.property.Action
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.RequestBody
@@ -35,9 +42,7 @@ import java.io.ByteArrayOutputStream
 import java.io.Reader
 import java.io.StringReader
 import java.time.Duration
-import java.time.Instant
 import java.time.ZonedDateTime
-import java.util.*
 import java.util.logging.Level
 
 /**
@@ -68,29 +73,74 @@ class CalendarSyncManager(
     }
 
     override fun queryCapabilities(): SyncState? =
-            remoteExceptionContext {
-                var syncState: SyncState? = null
-                it.propfind(0, MaxICalendarSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
-                    if (relation == Response.HrefRelation.SELF) {
-                        response[MaxICalendarSize::class.java]?.maxSize?.let { maxSize ->
-                            Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
-                        }
-
-                        response[SupportedReportSet::class.java]?.let { supported ->
-                            hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
-                        }
-                        syncState = syncState(response)
+        remoteExceptionContext {
+            var syncState: SyncState? = null
+            it.propfind(0, MaxResourceSize.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+                if (relation == Response.HrefRelation.SELF) {
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
+                        Logger.log.info("Calendar accepts events up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                     }
-                }
 
-                Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
-                syncState
+                    response[SupportedReportSet::class.java]?.let { supported ->
+                        hasCollectionSync = supported.reports.contains(SupportedReportSet.SYNC_COLLECTION)
+                    }
+                    syncState = syncState(response)
+                }
             }
 
-    override fun syncAlgorithm() = if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
-                SyncAlgorithm.PROPFIND_REPORT
-            else
-                SyncAlgorithm.COLLECTION_SYNC
+            Logger.log.info("Calendar supports Collection Sync: $hasCollectionSync")
+            syncState
+        }
+
+    override fun syncAlgorithm() =
+        if (accountSettings.getTimeRangePastDays() != null || !hasCollectionSync)
+            SyncAlgorithm.PROPFIND_REPORT
+        else
+            SyncAlgorithm.COLLECTION_SYNC
+
+    override fun processLocallyDeleted(): Boolean {
+        if (localCollection.readOnly) {
+            var modified = false
+            for (event in localCollection.findDeleted()) {
+                Logger.log.warning("Restoring locally deleted event (read-only calendar!)")
+                localExceptionContext(event) { it.resetDeleted() }
+                modified = true
+            }
+
+            // This is unfortunately ugly: When an event has been inserted to a read-only calendar
+            // it's not enough to force synchronization (by returning true),
+            // but we also need to make sure all events are downloaded again.
+            if (modified)
+                localCollection.lastSyncState = null
+
+            return modified
+        }
+        // mirror deletions to remote collection (DELETE)
+        return super.processLocallyDeleted()
+    }
+
+    override fun uploadDirty(): Boolean {
+        var modified = false
+        if (localCollection.readOnly) {
+            for (event in localCollection.findDirty()) {
+                Logger.log.warning("Resetting locally modified event to ETag=null (read-only calendar!)")
+                localExceptionContext(event) { it.clearDirty(null, null) }
+                modified = true
+            }
+
+            // This is unfortunately ugly: When an event has been inserted to a read-only calendar
+            // it's not enough to force synchronization (by returning true),
+            // but we also need to make sure all events are downloaded again.
+            if (modified)
+                localCollection.lastSyncState = null
+        }
+
+        // generate UID/file name for newly created events
+        val superModified = super.uploadDirty()
+
+        // return true when any operation returned true
+        return modified or superModified
+    }
 
     override fun generateUpload(resource: LocalEvent): RequestBody = localExceptionContext(resource) {
         val event = requireNotNull(resource.event)
@@ -138,8 +188,7 @@ class CalendarSyncManager(
         }
     }
 
-    override fun postProcess() {
-    }
+    override fun postProcess() {}
 
 
     // helpers
@@ -160,7 +209,11 @@ class CalendarSyncManager(
             // set default reminder for non-full-day events, if requested
             val defaultAlarmMinBefore = accountSettings.getDefaultAlarm()
             if (defaultAlarmMinBefore != null && DateUtils.isDateTime(event.dtStart) && event.alarms.isEmpty()) {
-                val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong()))
+                val alarm = VAlarm(Duration.ofMinutes(-defaultAlarmMinBefore.toLong())).apply {
+                    // Sets METHOD_ALERT instead of METHOD_DEFAULT in the calendar provider.
+                    // Needed for calendars to actually show a notification.
+                    properties += Action.DISPLAY
+                }
                 Logger.log.log(Level.FINE, "${event.uid}: Adding default alarm", alarm)
                 event.alarms += alarm
             }
@@ -186,6 +239,6 @@ class CalendarSyncManager(
     }
 
     override fun notifyInvalidResourceTitle(): String =
-            context.getString(R.string.sync_invalid_event)
+        context.getString(R.string.sync_invalid_event)
 
 }

@@ -7,8 +7,8 @@ import android.content.UriMatcher
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
-import at.bitfire.davdroid.R
 import at.bitfire.davdroid.webdav.CredentialsStore
+import at.bitfire.davdroid.R
 
 class InfomaniakAccountProvider : ContentProvider() {
 

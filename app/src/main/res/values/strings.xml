@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
-    <string name="app_name">kSync</string>
+    <string name="app_name" translatable="false">kSync</string>
     <string name="homepage_url" translatable="false">https://www.davx5.com/</string>
 
     <string name="account_invalid">Account does not exist (anymore)</string>
@@ -15,8 +15,10 @@
     <string name="field_required">This field is required</string>
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
+    <string name="navigate_up">Navigate up</string>
+    <string name="no_internet_sync_scheduled">No Internet, scheduling sync</string>
     <string name="share">Share</string>
-    <string name="no_internet_sync_scheduled">No internet, scheduling sync</string>
+    <string name="sync_started">Synchronization started</string>
 
     <string name="database_destructive_migration_title">Database corrupted</string>
     <string name="database_destructive_migration_text">All accounts have been removed locally.</string>
@@ -143,10 +145,12 @@
     <string name="account_list_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
     <string name="account_list_no_internet">No validated Internet connectivity. Synchronization may not run.</string>
     <string name="account_list_manage_connections">Manage connections</string>
-    <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
-    <string name="account_list_manage_storage">Manage storage</string>
     <string name="account_list_datasaver_enabled">Data saver enabled. Background synchronization is restricted.</string>
     <string name="account_list_manage_datasaver">Manage data saver</string>
+    <string name="account_list_battery_saver_enabled">Battery saver enabled. Synchronization may be restricted.</string>
+    <string name="account_list_manage_battery_saver">Manage battery saver</string>
+    <string name="account_list_low_storage">Storage space low. Android will not sync local changes immediately, but during the next regular sync.</string>
+    <string name="account_list_manage_storage">Manage storage</string>
     <string name="account_list_empty">Welcome to kSync!\n\nYou can add a CalDAV/CardDAV account now.</string>
     <string name="accounts_global_sync_disabled">System-wide automatic synchronization is disabled</string>
     <string name="accounts_global_sync_enable">Enable</string>
@@ -156,11 +160,7 @@
     <string name="refresh_collections_worker_refresh_failed">Service detection failed</string>
     <string name="refresh_collections_worker_refresh_couldnt_refresh">Couldn\'t refresh collection list</string>
 
-    <!-- Battery Optimization -->
-    <string name="battery_optimization_notify_title">Can not run in foreground</string>
-    <string name="battery_optimization_notify_text">Battery optimization whitelisting required</string>
-
-    <!-- ForegroundService -->
+    <!-- Foreground service used by WorkManager on Android <12 -->
     <string name="foreground_service_notify_title">Running in foreground</string>
     <string name="foreground_service_notify_text">On some devices, this is necessary for automatic synchronization.</string>
 
@@ -175,8 +175,6 @@
     <string name="app_settings_battery_optimization">Battery optimization</string>
     <string name="app_settings_battery_optimization_whitelisted">App is whitelisted (recommended)</string>
     <string name="app_settings_battery_optimization_not_whitelisted">App is not whitelisted (not recommended)</string>
-    <string name="app_settings_foreground_service">Keep in foreground</string>
-    <string name="app_settings_foreground_service_details">May help if your device prevents automatic synchronization</string>
     <string name="app_settings_connection">Connection</string>
     <string name="app_settings_proxy">Proxy type</string>
     <string-array name="app_settings_proxy_types">
@@ -241,7 +239,8 @@
     <string name="account_synchronize_now">Synchronize now</string>
     <string name="account_settings">Account settings</string>
     <string name="account_rename">Rename account</string>
-    <string name="account_rename_new_name">Unsaved local data may be dismissed. Re-synchronization is required after renaming. New account name:</string>
+    <string name="account_rename_new_name_description">Unsaved local data may be dismissed. Re-synchronization is required after renaming.</string>
+    <string name="account_rename_new_name">New account name</string>
     <string name="account_rename_rename">Rename</string>
     <string name="account_rename_exists_already">Account name already taken</string>
     <string name="account_rename_couldnt_rename">Couldn\'t rename account</string>
@@ -267,6 +266,8 @@
     <string name="login_email_address">Email address</string>
     <string name="login_email_address_error">Valid email address required</string>
     <string name="login_password">Password</string>
+    <string name="login_password_hide">Hide password</string>
+    <string name="login_password_show">Show password</string>
     <string name="login_password_required">Password required</string>
     <string name="login_type_url">Login with URL and user name</string>
     <string name="login_url_must_be_http_or_https">URL must begin with http(s)://</string>
@@ -423,6 +424,7 @@
     <string name="create_collection_display_name">Title</string>
     <string name="create_collection_display_name_required">Title is required</string>
     <string name="create_collection_description">Description</string>
+    <string name="create_collection_description_optional">Description (optional)</string>
     <string name="create_collection_optional">optional</string>
     <string name="create_collection_home_set">Storage location</string>
     <string name="create_collection_home_set_required">Storage location is required</string>
@@ -482,6 +484,7 @@
     <string name="webdav_add_mount_display_name">Display name</string>
     <string name="webdav_add_mount_url">WebDAV URL</string>
     <string name="webdav_add_mount_url_invalid">Invalid URL</string>
+    <string name="webdav_add_mount_authentication">Authentication (optional)</string>
     <string name="webdav_add_mount_username">User name</string>
     <string name="webdav_add_mount_password">Password</string>
     <string name="webdav_add_mount_add">Add mount</string>

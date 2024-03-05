@@ -17,6 +17,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.Worker
 import androidx.work.WorkerParameters
+import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import dagger.assisted.Assisted
@@ -32,6 +33,10 @@ import java.util.concurrent.TimeUnit
  * The different periodic sync workers each carry a unique work name composed of the account and
  * authority which they are responsible for. For each account there will be multiple dedicated periodic
  * sync workers for each authority. See [PeriodicSyncWorker.workerName] for more information.
+ *
+ * Deferrable: yes (PeriodicWorkRequest)
+ *
+ * Long-running: no
  */
 @HiltWorker
 class PeriodicSyncWorker @AssistedInject constructor(
@@ -113,7 +118,13 @@ class PeriodicSyncWorker @AssistedInject constructor(
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
         Logger.log.info("Running periodic sync worker: account=$account, authority=$authority")
 
-        val accountSettings = AccountSettings(applicationContext, account)
+        val accountSettings = try {
+            AccountSettings(applicationContext, account)
+        } catch (e: InvalidAccountException) {
+            Logger.log.warning("Account $account doesn't exist anymore, cancelling periodic sync")
+            disable(applicationContext, account, authority)
+            return Result.failure()
+        }
         if (!SyncWorker.wifiConditionsMet(applicationContext, accountSettings)) {
             Logger.log.info("Sync conditions not met. Won't run sync.")
             return Result.failure()
@@ -121,7 +132,7 @@ class PeriodicSyncWorker @AssistedInject constructor(
 
         // Just request immediate sync
         Logger.log.info("Requesting immediate sync")
-        SyncWorker.enqueue(applicationContext, account, authority)
+        SyncWorker.enqueue(applicationContext, account, authority, expedited = false)
         return Result.success()
     }
 }

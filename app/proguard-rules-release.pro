@@ -2,6 +2,7 @@
 # R8 usage for DAVx⁵:
 #    shrinking        yes (only in release builds)
 #    optimization     yes (on by R8 defaults)
+#      full-mode      no (see gradle.properties)
 #    obfuscation      no (open-source)
 
 -dontobfuscate
@@ -20,6 +21,9 @@
 
 # DAVx⁵ + libs
 -keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
+
+# AGP 8.2 and 8.3 seem to remove this class, but ezvcard.io uses it. See https://github.com/bitfireAT/davx5/issues/499
+-keep class javax.xml.namespace.QName { *; }
 
 -keep class com.infomaniak.** { *; }       # all Infomaniak code is required
 

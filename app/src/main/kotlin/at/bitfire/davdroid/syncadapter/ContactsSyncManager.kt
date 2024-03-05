@@ -14,17 +14,29 @@ import at.bitfire.dav4jvm.DavAddressBook
 import at.bitfire.dav4jvm.MultiResponseCallback
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.DavException
-import at.bitfire.dav4jvm.property.*
-import at.bitfire.davdroid.util.DavUtils
-import at.bitfire.davdroid.util.DavUtils.sameTypeAs
-import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.dav4jvm.property.caldav.GetCTag
+import at.bitfire.dav4jvm.property.carddav.AddressData
+import at.bitfire.dav4jvm.property.carddav.MaxResourceSize
+import at.bitfire.dav4jvm.property.carddav.SupportedAddressData
+import at.bitfire.dav4jvm.property.webdav.GetContentType
+import at.bitfire.dav4jvm.property.webdav.GetETag
+import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.dav4jvm.property.webdav.SupportedReportSet
+import at.bitfire.dav4jvm.property.webdav.SyncToken
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.*
+import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.resource.LocalAddress
+import at.bitfire.davdroid.resource.LocalAddressBook
+import at.bitfire.davdroid.resource.LocalContact
+import at.bitfire.davdroid.resource.LocalGroup
+import at.bitfire.davdroid.resource.LocalResource
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.syncadapter.groups.CategoriesStrategy
 import at.bitfire.davdroid.syncadapter.groups.VCard4Strategy
+import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.DavUtils.sameTypeAs
 import at.bitfire.vcard4android.Contact
 import at.bitfire.vcard4android.GroupMethod
 import ezvcard.VCardVersion
@@ -93,8 +105,6 @@ class ContactsSyncManager(
         infix fun <T> Set<T>.disjunct(other: Set<T>) = (this - other) union (other - this)
     }
 
-    private val readOnly = localAddressBook.readOnly
-
     private var hasVCard4 = false
     private var hasJCard = false
     private val groupStrategy = when (accountSettings.getGroupMethod()) {
@@ -131,9 +141,9 @@ class ContactsSyncManager(
     override fun queryCapabilities(): SyncState? {
         return remoteExceptionContext {
             var syncState: SyncState? = null
-            it.propfind(0, MaxVCardSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
+            it.propfind(0, MaxResourceSize.NAME, SupportedAddressData.NAME, SupportedReportSet.NAME, GetCTag.NAME, SyncToken.NAME) { response, relation ->
                 if (relation == Response.HrefRelation.SELF) {
-                    response[MaxVCardSize::class.java]?.maxSize?.let { maxSize ->
+                    response[MaxResourceSize::class.java]?.maxSize?.let { maxSize ->
                         Logger.log.info("Address book accepts vCards up to ${FileUtils.byteCountToDisplaySize(maxSize)}")
                     }
 
@@ -165,7 +175,7 @@ class ContactsSyncManager(
             SyncAlgorithm.PROPFIND_REPORT
 
     override fun processLocallyDeleted() =
-            if (readOnly) {
+            if (localCollection.readOnly) {
                 var modified = false
                 for (group in localCollection.findDeletedGroups()) {
                     Logger.log.warning("Restoring locally deleted group (read-only address book!)")
@@ -193,7 +203,7 @@ class ContactsSyncManager(
     override fun uploadDirty(): Boolean {
         var modified = false
 
-        if (readOnly) {
+        if (localCollection.readOnly) {
             for (group in localCollection.findDirtyGroups()) {
                 Logger.log.warning("Resetting locally modified group to ETag=null (read-only address book!)")
                 localExceptionContext(group) { it.clearDirty(null, null) }

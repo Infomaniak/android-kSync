@@ -32,7 +32,7 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
         const val HOMEPAGE_PRIVACY = "privacy"
 
         fun getLauncherBitmap(context: Context) =
-                AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap()
+            AppCompatResources.getDrawable(context, R.mipmap.ic_launcher)?.toBitmap()
 
         /**
          * Gets the DAVx5 Web site URL that should be used to open in the user's browser.
@@ -73,32 +73,29 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
         Logger.initialize(this)
 
         if (BuildConfig.DEBUG)
-            // debug builds
+        // debug builds
             StrictMode.setVmPolicy(StrictMode.VmPolicy.Builder()
-                    .detectActivityLeaks()
-                    .detectFileUriExposure()
-                    .detectLeakedClosableObjects()
-                    .detectLeakedRegistrationObjects()
-                    .detectLeakedSqlLiteObjects()
-                    .penaltyLog()
-                    .build())
+                .detectActivityLeaks()
+                .detectFileUriExposure()
+                .detectLeakedClosableObjects()
+                .detectLeakedRegistrationObjects()
+                .detectLeakedSqlLiteObjects()
+                .penaltyLog()
+                .build())
         else // if (BuildConfig.FLAVOR == FLAVOR_STANDARD)
-            // handle uncaught exceptions in non-debug standard flavor
+        // handle uncaught exceptions in non-debug standard flavor
             Thread.setDefaultUncaughtExceptionHandler(this)
 
         NotificationUtils.createChannels(this)
 
         // set light/dark mode
         UiUtils.setTheme(this)   // when this is called in the asynchronous thread below, it recreates
-                                 // some current activity and causes an IllegalStateException in rare cases
+        // some current activity and causes an IllegalStateException in rare cases
 
         // don't block UI for some background checks
         thread {
             // watch for account changes/deletions
             accountsUpdatedListener.listen()
-
-            // foreground service (possible workaround for devices which prevent DAVx5 from being started)
-            ForegroundService.startIfActive(this)
 
             // watch storage because low storage means synchronization is stopped
             storageLowReceiver.listen()

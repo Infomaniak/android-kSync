@@ -99,8 +99,8 @@ class LoginActivity: AppCompatActivity() {
 
             if (fragment != null) {
                 supportFragmentManager.beginTransaction()
-                    .replace(android.R.id.content, fragment)
-                    .commit()
+                        .replace(android.R.id.content, fragment)
+                        .commit()
             } else
                 Logger.log.severe("Couldn't create LoginFragment")
         }

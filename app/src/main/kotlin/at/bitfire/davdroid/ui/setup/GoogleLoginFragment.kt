@@ -10,20 +10,20 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -36,20 +36,23 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.net.toUri
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -63,6 +66,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.ui.UiUtils
+import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -217,6 +221,7 @@ class GoogleLoginFragment(private val defaultEmail: String? = null): Fragment() 
 }
 
 
+@OptIn(ExperimentalTextApi::class)
 @Composable
 fun GoogleLogin(
     defaultEmail: String?,
@@ -255,23 +260,29 @@ fun GoogleLogin(
 
             val email = rememberSaveable { mutableStateOf(defaultEmail ?: "") }
             val userClientId = rememberSaveable { mutableStateOf("") }
-
+            var emailError: String? by rememberSaveable { mutableStateOf(null) }
             fun login() {
-                // append @gmail.com, if necessary
-                val loginEmail = email.value.let {
-                    if (it.contains('@'))
-                        it
-                    else
-                        it + "@gmail.com"
+                val userEmail: String? = StringUtils.trimToNull(email.value.trim())
+                val clientId: String? = StringUtils.trimToNull(userClientId.value.trim())
+                if (userEmail.isNullOrBlank()) {
+                    emailError = context.getString(R.string.login_email_address_error)
+                    return
                 }
 
-                val clientId = StringUtils.trimToNull(userClientId.value.trim())
+                // append @gmail.com, if necessary
+                val loginEmail =
+                    if (userEmail.contains('@'))
+                        userEmail
+                    else
+                        "$userEmail@gmail.com"
+
                 onLogin(loginEmail, clientId)
             }
             OutlinedTextField(
                 email.value,
                 singleLine = true,
-                onValueChange = { email.value = it },
+                onValueChange = { emailError = null; email.value = it },
+                isError = emailError != null,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Email,
                     imeAction = ImeAction.Go
@@ -279,7 +290,7 @@ fun GoogleLogin(
                 keyboardActions = KeyboardActions(
                     onGo = { login() }
                 ),
-                label = { Text(stringResource(R.string.login_google_account)) },
+                label = { Text(emailError ?: stringResource(R.string.login_google_account)) },
                 placeholder = { Text("example@gmail.com") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -326,33 +337,44 @@ fun GoogleLogin(
                 )
             }
 
-            AndroidView({ context ->
-                TextView(context, null, 0, com.google.accompanist.themeadapter.material.R.style.TextAppearance_MaterialComponents_Body2).apply {
-                    text = HtmlCompat.fromHtml(context.getString(R.string.login_google_client_privacy_policy,
-                        context.getString(R.string.app_name),
-                        App.homepageUrl(context, App.HOMEPAGE_PRIVACY)
-                    ), 0)
-                    movementMethod = LinkMovementMethod.getInstance()
-                }
-            }, modifier = Modifier.padding(top = 12.dp))
+            Spacer(Modifier.padding(8.dp))
 
-            AndroidView({ context ->
-                TextView(context, null, 0, com.google.accompanist.themeadapter.material.R.style.TextAppearance_MaterialComponents_Body2).apply {
-                    text = HtmlCompat.fromHtml(context.getString(R.string.login_google_client_limited_use,
-                        context.getString(R.string.app_name),
-                        GoogleLoginFragment.GOOGLE_POLICY_URL
-                    ), 0)
-                    movementMethod = LinkMovementMethod.getInstance()
+            val privacyPolicyNote = HtmlCompat.fromHtml(
+                stringResource(R.string.login_google_client_privacy_policy, context.getString(R.string.app_name), App.homepageUrl(context, App.HOMEPAGE_PRIVACY)), 0).toAnnotatedString()
+            ClickableText(
+                privacyPolicyNote,
+                style = MaterialTheme.typography.body2,
+                onClick = { position ->
+                    privacyPolicyNote.getUrlAnnotations(position, position).firstOrNull()?.let {
+                        UiUtils.launchUri(context, it.item.url.toUri())
+                    }
                 }
-            }, modifier = Modifier.padding(top = 12.dp))
+            )
+
+            val limitedUseNote = HtmlCompat.fromHtml(
+                stringResource(R.string.login_google_client_limited_use, context.getString(R.string.app_name), GoogleLoginFragment.GOOGLE_POLICY_URL), 0).toAnnotatedString()
+            ClickableText(
+                limitedUseNote,
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.padding(top = 12.dp),
+                onClick = { position ->
+                    limitedUseNote.getUrlAnnotations(position, position).firstOrNull()?.let {
+                        UiUtils.launchUri(context, it.item.url.toUri())
+                    }
+                }
+            )
         }
     }
 }
 
 @Composable
-@Preview(
-    showBackground = true
-)
-fun PreviewGoogleLogin() {
-    GoogleLogin(null) { _, _ -> }
+@Preview(showBackground = true)
+fun PreviewGoogleLogin_withDefaultEmail() {
+    GoogleLogin("example@example.example") { _, _ -> }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun PreviewGoogleLogin_empty() {
+    GoogleLogin("") { _, _ -> }
 }

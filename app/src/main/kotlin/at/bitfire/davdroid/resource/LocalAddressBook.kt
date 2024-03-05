@@ -110,7 +110,7 @@ open class LocalAddressBook(
                 if (it.isNullOrEmpty())
                     DavUtils.lastSegmentOfUrl(info.url)
                 else
-                    it.replace("'","’")
+                    it.replace("'","’") // kSync
             })
             sb.append(" (${mainAccount.name} $hash)")
             return sb.toString()

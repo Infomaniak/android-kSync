@@ -5,7 +5,6 @@
 package at.bitfire.davdroid.ui
 
 import android.accounts.AccountManager
-import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.content.pm.ShortcutManager
@@ -13,8 +12,8 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +25,7 @@ import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.ActivityAccountsBinding
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.ui.account.AppWarningsModel
 import at.bitfire.davdroid.ui.intro.IntroActivity
 import at.bitfire.davdroid.ui.setup.LoginActivity
 import com.google.android.material.navigation.NavigationView
@@ -45,7 +45,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     @Inject lateinit var accountsDrawerHandler: AccountsDrawerHandler
 
     private lateinit var binding: ActivityAccountsBinding
-    val model by viewModels<Model>()
+    private val warnings by viewModels<AppWarningsModel>()
 
     private val infomaniakLogin: InfomaniakLogin by lazy { getInfomaniakLogin() }
 
@@ -90,7 +90,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
 
         TooltipCompat.setTooltipText(binding.content.fab, binding.content.fab.contentDescription)
         binding.content.fab.setOnClickListener {
-//            startActivity(Intent(this, LoginActivity::class.java))
             infomaniakLogin.startWebViewLogin(webViewLoginResultLauncher)
         }
         binding.content.fab.show()
@@ -138,7 +137,7 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             getSystemService<ShortcutManager>()?.reportShortcutUsed(UiUtils.SHORTCUT_SYNC_ALL)
 
         // Notify user that sync will get enqueued if we're not connected to the internet
-        model.networkAvailable.value?.let { networkAvailable ->
+        warnings.networkAvailable.value?.let { networkAvailable ->
             if (!networkAvailable)
                 Snackbar.make(binding.drawerLayout, R.string.no_internet_sync_scheduled, Snackbar.LENGTH_LONG).show()
         }
@@ -147,18 +146,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
         val accounts = allAccounts()
         for (account in accounts)
             SyncWorker.enqueueAllAuthorities(this, account)
-    }
-
-
-    @HiltViewModel
-    class Model @Inject constructor(
-        application: Application,
-        val settings: SettingsManager,
-        warnings: AppWarningsManager
-    ): AndroidViewModel(application) {
-
-        val networkAvailable = warnings.networkAvailable
-
     }
 
 }

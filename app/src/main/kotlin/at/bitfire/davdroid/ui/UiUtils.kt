@@ -9,13 +9,36 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.graphics.Typeface
+import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
+import android.text.Spanned
+import android.text.style.StyleSpan
+import android.text.style.URLSpan
 import android.widget.Toast
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.painter.BitmapPainter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.UrlAnnotation
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.core.content.getSystemService
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.text.getSpans
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.Settings
@@ -37,6 +60,19 @@ object UiUtils {
     const val SHORTCUT_SYNC_ALL = "syncAllAccounts"
     const val SNACKBAR_LENGTH_VERY_LONG = 5000          // 5s
 
+    @Composable
+    fun adaptiveIconPainterResource(@DrawableRes id: Int): Painter {
+        val context = LocalContext.current
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val adaptiveIcon = ResourcesCompat.getDrawable(context.resources, id, null) as? AdaptiveIconDrawable
+            if (adaptiveIcon != null)
+                BitmapPainter(adaptiveIcon.toBitmap().asImageBitmap())
+            else
+                painterResource(id)
+        } else
+            painterResource(id)
+    }
+
     fun haveCustomTabs(context: Context) = CustomTabsClient.getPackageName(context, null, false) != null
 
     /**
@@ -50,6 +86,7 @@ object UiUtils {
      * @return true on success, false if the Intent could not be resolved (for instance, because
      * there is no user agent installed)
      */
+    @Deprecated("Use SafeAndroidUriHandler (Compose) instead")
     fun launchUri(context: Context, uri: Uri, action: String = Intent.ACTION_VIEW, toastInstallBrowser: Boolean = true): Boolean {
         val intent = Intent(action, uri)
         try {
@@ -86,6 +123,45 @@ object UiUtils {
                     Logger.log.log(Level.WARNING, "Couldn't update dynamic shortcut(s)", e)
                 }
             }
+    }
+
+
+    @OptIn(ExperimentalTextApi::class)
+    @Composable
+    fun Spanned.toAnnotatedString() = buildAnnotatedString {
+        val style = LocalTextStyle.current.toSpanStyle()
+        pushStyle(style)
+        val spanned = this@toAnnotatedString
+        append(spanned.toString())
+        for (span in getSpans<Any>(0, spanned.length)) {
+            val start = getSpanStart(span)
+            val end = getSpanEnd(span)
+            when (span) {
+                is StyleSpan ->
+                    when (span.style) {
+                        Typeface.BOLD -> addStyle(
+                            style.copy(fontWeight = FontWeight.Bold),
+                            start = start, end = end
+                        )
+                        Typeface.ITALIC -> addStyle(
+                            style.copy(fontStyle = FontStyle.Italic),
+                            start = start, end = end
+                        )
+                    }
+                is URLSpan -> {
+                    addUrlAnnotation(
+                        UrlAnnotation(span.url),
+                        start = start, end = end
+                    )
+                    addStyle(
+                        style.copy(textDecoration = TextDecoration.Underline),
+                        start = start, end = end
+                    )
+                }
+                else ->
+                    Logger.log.warning("Ignoring unknown span type ${span.javaClass.name}")
+            }
+        }
     }
 
 }

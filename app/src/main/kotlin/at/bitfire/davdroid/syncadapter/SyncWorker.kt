@@ -5,21 +5,36 @@
 package at.bitfire.davdroid.syncadapter
 
 import android.accounts.Account
-import android.content.*
+import android.content.ContentProviderClient
+import android.content.ContentResolver
+import android.content.Context
+import android.content.Intent
+import android.content.SyncResult
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.IntDef
-import androidx.concurrent.futures.CallbackToFutureAdapter
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import androidx.hilt.work.HiltWorker
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import androidx.work.*
+import androidx.work.BackoffPolicy
+import androidx.work.Constraints
+import androidx.work.CoroutineWorker
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import androidx.work.WorkQuery
+import androidx.work.WorkRequest
+import androidx.work.WorkerParameters
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.ConnectionUtils.internetAvailable
@@ -31,9 +46,11 @@ import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
-import com.google.common.util.concurrent.ListenableFuture
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
 
@@ -46,6 +63,7 @@ import java.util.logging.Level
  *
  * By enqueuing this worker ([SyncWorker.enqueue]) a sync will be started immediately (as soon as
  * possible). Currently, there are three scenarios starting a sync:
+ *
  * 1) *manual sync*: User presses an in-app sync button and enqueues this worker directly.
  * 2) *periodic sync*: User defines time interval to sync in app settings. The [PeriodicSyncWorker] runs
  * in the background and enqueues this worker when due.
@@ -53,12 +71,15 @@ import java.util.logging.Level
  * button in one of the responsible apps. The [SyncAdapterService] is notified of this and enqueues
  * this worker.
  *
+ * Expedited: when run manually
+ *
+ * Long-running: no
  */
 @HiltWorker
 class SyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters
-) : Worker(appContext, workerParams) {
+) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
 
@@ -66,6 +87,9 @@ class SyncWorker @AssistedInject constructor(
         internal const val ARG_ACCOUNT_NAME = "accountName"
         internal const val ARG_ACCOUNT_TYPE = "accountType"
         internal const val ARG_AUTHORITY = "authority"
+
+        /** Boolean. Set to `true` when the job was requested as expedited job. */
+        private const val ARG_EXPEDITED = "expedited"
 
         private const val ARG_UPLOAD = "upload"
 
@@ -112,7 +136,7 @@ class SyncWorker @AssistedInject constructor(
             upload: Boolean = false
         ) {
             for (authority in SyncUtils.syncAuthorities(context))
-                enqueue(context, account, authority, resync, upload)
+                enqueue(context, account, authority, expedited = true, resync = resync, upload = upload)
         }
 
         /**
@@ -129,6 +153,7 @@ class SyncWorker @AssistedInject constructor(
             context: Context,
             account: Account,
             authority: String,
+            expedited: Boolean,
             @ArgResync resync: Int = NO_RESYNC,
             upload: Boolean = false
         ): String {
@@ -137,6 +162,8 @@ class SyncWorker @AssistedInject constructor(
                 .putString(ARG_AUTHORITY, authority)
                 .putString(ARG_ACCOUNT_NAME, account.name)
                 .putString(ARG_ACCOUNT_TYPE, account.type)
+            if (expedited)
+                argumentsBuilder.putBoolean(ARG_EXPEDITED, true)
             if (resync != NO_RESYNC)
                 argumentsBuilder.putInt(ARG_RESYNC, resync)
             argumentsBuilder.putBoolean(ARG_UPLOAD, upload)
@@ -148,7 +175,6 @@ class SyncWorker @AssistedInject constructor(
             val workRequest = OneTimeWorkRequestBuilder<SyncWorker>()
                 .addTag(workerName(account, authority))
                 .setInputData(argumentsBuilder.build())
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
                 .setBackoffCriteria(
                     BackoffPolicy.EXPONENTIAL,
                     WorkRequest.DEFAULT_BACKOFF_DELAY_MILLIS,   // 30 sec
@@ -162,17 +188,20 @@ class SyncWorker @AssistedInject constructor(
                         addTag(workerName(mainAccount, authority))
                     }
                 }
-                .build()
+
+            if (expedited)
+                workRequest.setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
 
             // enqueue and start syncing
             val name = workerName(account, authority)
-            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, with tags: ${workRequest.tags}")
+            val request = workRequest.build()
+            Logger.log.log(Level.INFO, "Enqueueing unique worker: $name, expedited = $expedited, tags = ${request.tags}")
             WorkManager.getInstance(context).enqueueUniqueWork(
                 name,
                 ExistingWorkPolicy.KEEP,    // If sync is already running, just continue.
                                             // Existing retried work will not be replaced (for instance when
                                             // PeriodicSyncWorker enqueues another scheduled sync).
-                workRequest
+                request
             )
             return name
         }
@@ -278,25 +307,24 @@ class SyncWorker @AssistedInject constructor(
     }
 
 
+    private val dispatcher = SyncWorkDispatcher.getInstance(applicationContext)
     private val notificationManager = NotificationManagerCompat.from(applicationContext)
 
-    /** thread which runs the actual sync code (can be interrupted to stop synchronization)  */
-    var syncThread: Thread? = null
-
-    override fun doWork(): Result {
+    override suspend fun doWork(): Result = withContext(dispatcher) {
         // ensure we got the required arguments
         val account = Account(
             inputData.getString(ARG_ACCOUNT_NAME) ?: throw IllegalArgumentException("$ARG_ACCOUNT_NAME required"),
             inputData.getString(ARG_ACCOUNT_TYPE) ?: throw IllegalArgumentException("$ARG_ACCOUNT_TYPE required")
         )
         val authority = inputData.getString(ARG_AUTHORITY) ?: throw IllegalArgumentException("$ARG_AUTHORITY required")
+        val expedited = inputData.getBoolean(ARG_EXPEDITED, false)
 
-        // Check internet connection
+        // check internet connection
         val ignoreVpns = AccountSettings(applicationContext, account).getIgnoreVpns()
         val connectivityManager = applicationContext.getSystemService<ConnectivityManager>()!!
         if (!internetAvailable(connectivityManager, ignoreVpns)) {
             Logger.log.info("WorkManager started SyncWorker without Internet connection. Aborting.")
-            return Result.failure()
+            return@withContext Result.failure()
         }
 
         Logger.log.info("Running sync worker: account=$account, authority=$authority")
@@ -304,7 +332,7 @@ class SyncWorker @AssistedInject constructor(
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                AddressBookSyncer(applicationContext)
+                AddressBookSyncer(applicationContext, expedited)
             CalendarContract.AUTHORITY ->
                 CalendarSyncer(applicationContext)
             ContactsContract.AUTHORITY ->
@@ -338,19 +366,16 @@ class SyncWorker @AssistedInject constructor(
             }
         if (provider == null) {
             Logger.log.warning("Couldn't acquire ContentProviderClient for $authority")
-            return Result.failure()
+            return@withContext Result.failure()
         }
 
-        // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
-        // is only for legacy reasons and can be replaced by an own result class in the future.
         val result = SyncResult()
-        try {
-            syncThread = Thread.currentThread()
-            syncer.onPerformSync(account, extras.toTypedArray(), authority, provider, result)
-        } catch (e: SecurityException) {
-            Logger.log.log(Level.WARNING, "Security exception when opening content provider for $authority")
-        } finally {
-            provider.close()
+        provider.use {
+            // Start syncing. We still use the sync adapter framework's SyncResult to pass the sync results, but this
+            // is only for legacy reasons and can be replaced by an own result class in the future.
+            runInterruptible {
+                syncer.onPerformSync(account, extras.toTypedArray(), authority, provider, result)
+            }
         }
 
         // Check for errors
@@ -372,10 +397,10 @@ class SyncWorker @AssistedInject constructor(
                     // We block the SyncWorker here so that it won't be started by the sync framework immediately again.
                     // This should be replaced by proper work scheduling as soon as we don't depend on the sync framework anymore.
                     if (blockDuration > 0)
-                        Thread.sleep(blockDuration*1000)
+                        delay(blockDuration*1000)
 
                     Logger.log.warning("Retrying on soft error (attempt $runAttemptCount of $MAX_RUN_ATTEMPTS)")
-                    return Result.retry()
+                    return@withContext Result.retry()
                 }
 
                 Logger.log.warning("Max retries on soft errors reached ($runAttemptCount of $MAX_RUN_ATTEMPTS). Treating as failed")
@@ -394,7 +419,7 @@ class SyncWorker @AssistedInject constructor(
                         .build()
                 )
 
-                return Result.failure(syncResult)
+                return@withContext Result.failure(syncResult)
             }
 
             // If no soft error found, dismiss sync error notification
@@ -407,30 +432,28 @@ class SyncWorker @AssistedInject constructor(
             // Note: SyncManager should have notified the user
             if (result.hasHardError()) {
                 Logger.log.warning("Hard error while syncing: result=$result, stats=${result.stats}")
-                return Result.failure(syncResult)
+                return@withContext Result.failure(syncResult)
             }
         }
 
-        return Result.success()
+        return@withContext Result.success()
     }
 
-    override fun onStopped() {
-        Logger.log.info("Work stopped (reason ${if (Build.VERSION.SDK_INT >= 31) stopReason else "n/a"}), stopping sync thread")
-        syncThread?.interrupt()
+    /**
+     * Used by WorkManager to show a foreground service notification for expedited jobs on Android <12.
+     */
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
+            .setSmallIcon(R.drawable.ic_foreground_notify)
+            .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
+            .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
+            .setStyle(NotificationCompat.BigTextStyle())
+            .setCategory(NotificationCompat.CATEGORY_STATUS)
+            .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_DEFERRED)
+            .build()
+        return ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification)
     }
-
-    override fun getForegroundInfoAsync(): ListenableFuture<ForegroundInfo> =
-        CallbackToFutureAdapter.getFuture { completer ->
-            val notification = NotificationUtils.newBuilder(applicationContext, NotificationUtils.CHANNEL_STATUS)
-                .setSmallIcon(R.drawable.ic_foreground_notify)
-                .setContentTitle(applicationContext.getString(R.string.foreground_service_notify_title))
-                .setContentText(applicationContext.getString(R.string.foreground_service_notify_text))
-                .setStyle(NotificationCompat.BigTextStyle())
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setOngoing(true)
-                .setPriority(NotificationCompat.PRIORITY_LOW)
-                .build()
-            completer.set(ForegroundInfo(NotificationUtils.NOTIFY_SYNC_EXPEDITED, notification))
-        }
 
 }

@@ -1,7 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="app_name">kSync</string>
   <string name="account_invalid">Konto nicht (mehr) vorhanden</string>
   <string name="account_title_address_book">kSync-Adressbuch</string>
   <string name="address_books_authority_title">Adressbücher</string>
@@ -10,8 +9,10 @@
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
+  <string name="navigate_up">Aufwärts navigieren</string>
+  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisierung wird geplant</string>
   <string name="share">Teilen</string>
-  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisation wird geplant</string>
+  <string name="sync_started">Synchronisierung gestartet</string>
   <string name="database_destructive_migration_title">Datenbank beschädigt</string>
   <string name="database_destructive_migration_text">Alle Accounts wurden lokal entfernt.</string>
   <string name="notification_channel_debugging">Fehlersuche</string>
@@ -130,10 +131,12 @@
   <string name="account_list_no_notification_permission">Benachrichtigungen deaktiviert. Sie werden nicht über Fehler bei der Synchronisation informiert.</string>
   <string name="account_list_no_internet">Keine überprüfte Internetverbindung. Synchronisierung funktioniert eventuell nicht.</string>
   <string name="account_list_manage_connections">Verbindungen steuern</string>
-  <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
-  <string name="account_list_manage_storage">Speicherplatz verwalten</string>
   <string name="account_list_datasaver_enabled">Datensparen aktiviert. Die Hintergrundsynchronisierung ist eingeschränkt.</string>
   <string name="account_list_manage_datasaver">Datensparen verwalten</string>
+  <string name="account_list_battery_saver_enabled">Akkusparen aktiviert. Die Synchronisierung kann eingeschränkt sein.</string>
+  <string name="account_list_manage_battery_saver">Akkusparen verwalten</string>
+  <string name="account_list_low_storage">Wenig Speicherplatz. Android wird lokale Änderungen nicht sofort synchronisieren, sondern bei der nächsten regulären Synchronisierung.</string>
+  <string name="account_list_manage_storage">Speicherplatz verwalten</string>
   <string name="account_list_empty">Herzlich willkommen!\n\nSie können jetzt ein CalDAV/CardDAV-Konto hinzufügen.</string>
   <string name="accounts_global_sync_disabled">Systemweite automatische Synchronisierung ist nicht aktiv</string>
   <string name="accounts_global_sync_enable">Aktivieren</string>
@@ -141,10 +144,7 @@
   <!--RefreshCollectionsWorker-->
   <string name="refresh_collections_worker_refresh_failed">Diensterkennung fehlgeschlagen</string>
   <string name="refresh_collections_worker_refresh_couldnt_refresh">Ordnerliste konnte nicht aktualisiert werden</string>
-  <!--Battery Optimization-->
-  <string name="battery_optimization_notify_title">Darf nicht im Vordergrund ausgeführt werden</string>
-  <string name="battery_optimization_notify_text">Ausnahme von Akku-Optimierung erforderlich</string>
-  <!--ForegroundService-->
+  <!--Foreground service used by WorkManager on Android <12-->
   <string name="foreground_service_notify_title">Läuft im Vordergrund</string>
   <string name="foreground_service_notify_text">Auf manchen Geräten für die automatische Synchronisierung benötigt</string>
   <!--AppSettingsActivity-->
@@ -158,8 +158,6 @@
   <string name="app_settings_battery_optimization">Akku-Optimierung</string>
   <string name="app_settings_battery_optimization_whitelisted">App ist ausgenommen (empfohlen)</string>
   <string name="app_settings_battery_optimization_not_whitelisted">App ist nicht ausgenommen (nicht empfohlen)</string>
-  <string name="app_settings_foreground_service">Im Vordergrund bleiben</string>
-  <string name="app_settings_foreground_service_details">Kann helfen, wenn das Gerät automatische Synchronisierung verhindert</string>
   <string name="app_settings_connection">Verbindung</string>
   <string name="app_settings_proxy">Proxy-Typ</string>
   <string-array name="app_settings_proxy_types">
@@ -212,7 +210,8 @@
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
   <string name="account_settings">Konto-Einstellungen</string>
   <string name="account_rename">Konto umbenennen</string>
-  <string name="account_rename_new_name">Ungespeicherte lokale Änderungen können verloren gehen. Nach dem Umbenennen muss neu synchronisiert werden. Neuer Kontoname:</string>
+  <string name="account_rename_new_name_description">Nicht gespeicherte lokale Daten können verloren gehen. Nach dem Umbenennen ist eine erneute Synchronisierung erforderlich.</string>
+  <string name="account_rename_new_name">Neuer Kontoname</string>
   <string name="account_rename_rename">Umbenennen</string>
   <string name="account_rename_exists_already">Kontoname bereits verwendet</string>
   <string name="account_rename_couldnt_rename">Konto konnte nicht umbenannt werden</string>
@@ -237,6 +236,8 @@
   <string name="login_email_address">E-Mail-Adresse</string>
   <string name="login_email_address_error">Gültige E-Mail-Adresse benötigt</string>
   <string name="login_password">Passwort</string>
+  <string name="login_password_hide">Passwort ausblenden</string>
+  <string name="login_password_show">Passwort anzeigen</string>
   <string name="login_password_required">Passwort wird benötigt</string>
   <string name="login_type_url">Mit URL und Benutzername anmelden</string>
   <string name="login_url_must_be_http_or_https">URL muss mit http(s):// beginnen</string>
@@ -264,8 +265,8 @@
   <string name="login_google_account">Google-Konto</string>
   <string name="login_google">Mit Google anmelden</string>
   <string name="login_google_client_id">Client-ID (optional)</string>
-  <string name="login_google_client_privacy_policy"><![CDATA[%1$süberträgt Ihre Google-Kontakte und -Kalenderdaten zur Synchronisierung mit diesem Gerät. Siehe auch unsere <a href="%2$s">Datenschutzrichtlinie</a>für mehr Informationen.]]></string>
-  <string name="login_google_client_limited_use"><![CDATA[%1$srichtet sich nach der <a href="%2$s">Google API Services Nutzerdaten-Richtlinie</a>, inklusive der eingeschränkten Nutzungsbedingungen.]]></string>
+  <string name="login_google_client_privacy_policy"><![CDATA[%1$s überträgt Ihre Google-Kontakte und -Kalenderdaten zur Synchronisierung mit diesem Gerät. Siehe auch unsere <a href="%2$s">Datenschutzrichtlinie</a> für mehr Informationen.]]></string>
+  <string name="login_google_client_limited_use"><![CDATA[%1$s richtet sich nach der <a href="%2$s">Google API Services Nutzerdaten-Richtlinie</a>, inklusive der eingeschränkten Nutzungsbedingungen.]]></string>
   <string name="login_oauth_couldnt_obtain_auth_code">Authentifizierungscode konnte nicht abgerufen werden</string>
   <string name="login_type_nextcloud">Nextcloud</string>
   <string name="login_nextcloud_login_with_nextcloud">Mit Nextcloud anmelden</string>
@@ -361,6 +362,7 @@
   <string name="create_collection_display_name">Titel</string>
   <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
   <string name="create_collection_description">Beschreibung</string>
+  <string name="create_collection_description_optional">Beschreibung (optional)</string>
   <string name="create_collection_optional">optional</string>
   <string name="create_collection_home_set">Speicherort</string>
   <string name="create_collection_home_set_required">Speicherort wird benötigt</string>
@@ -415,6 +417,7 @@
   <string name="webdav_add_mount_display_name">Anzeigename</string>
   <string name="webdav_add_mount_url">WebDAV-Adresse</string>
   <string name="webdav_add_mount_url_invalid">Ungültige Adresse</string>
+  <string name="webdav_add_mount_authentication">Authentifizierung (optional)</string>
   <string name="webdav_add_mount_username">Anmeldename</string>
   <string name="webdav_add_mount_password">Passwort</string>
   <string name="webdav_add_mount_add">Einhängen</string>

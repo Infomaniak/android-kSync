@@ -7,21 +7,39 @@ package at.bitfire.davdroid.ui.account
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.app.Application
-import android.content.*
+import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
-import android.view.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.annotation.CallSuper
-import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.*
-import androidx.paging.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
+import androidx.paging.LoadState
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.PagingDataAdapter
+import androidx.paging.cachedIn
+import androidx.paging.liveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -315,14 +333,14 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
 
         // observe RefreshCollectionsWorker status
-        val isRefreshing = RefreshCollectionsWorker.isWorkerInState(getApplication(), RefreshCollectionsWorker.workerName(serviceId), WorkInfo.State.RUNNING)
+        val isRefreshing = RefreshCollectionsWorker.exists(getApplication(), RefreshCollectionsWorker.workerName(serviceId))
 
         // observe SyncWorker state
         private val authorities =
             if (collectionType == Collection.TYPE_ADDRESSBOOK)
                 listOf(getApplication<Application>().getString(R.string.address_books_authority), ContactsContract.AUTHORITY)
             else
-                listOf(CalendarContract.AUTHORITY, taskProvider?.authority).filterNotNull()
+                listOfNotNull(CalendarContract.AUTHORITY, taskProvider?.authority)
         val isSyncActive = SyncWorker.exists(getApplication(),
             listOf(WorkInfo.State.RUNNING),
             accountModel.account,
@@ -335,7 +353,7 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // actions
 
         fun refresh() {
-            RefreshCollectionsWorker.refreshCollections(getApplication(), serviceId)
+            RefreshCollectionsWorker.enqueue(getApplication(), serviceId)
         }
 
     }

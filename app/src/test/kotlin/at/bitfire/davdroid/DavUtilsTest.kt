@@ -7,6 +7,7 @@ package at.bitfire.davdroid
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.davdroid.util.DavUtils.parent
 import okhttp3.HttpUrl.Companion.toHttpUrl
+import okhttp3.MediaType.Companion.toMediaType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -18,6 +19,13 @@ import org.xbill.DNS.SRVRecord
 class DavUtilsTest {
 
     val exampleURL = "http://example.com/"
+
+
+    @Test
+    fun testAcceptAnything() {
+        assertEquals("*/*", DavUtils.acceptAnything(null))
+        assertEquals("some/thing;v=2.1, */*;q=0.8", DavUtils.acceptAnything("some/thing;v=2.1".toMediaType()))
+    }
 
     @Test
     fun testARGBtoCalDAVColor() {
@@ -76,8 +84,8 @@ class DavUtilsTest {
                 else -> throw AssertionError()
             }
         }
-        assertTrue(result[0] > 200 && result[0] < 500)
-        assertTrue(result[1] > 500 && result[1] < 800)
+        assertTrue(result[0] in 201..499)
+        assertTrue(result[1] in 501..799)
     }
 
 }

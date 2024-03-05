@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- kSync -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <color name="accounts_background_blue">#186DB1</color>
+    <color name="accounts_background_teal">#61AAB3</color>
+    <color name="accounts_background_light">#919191</color>
+    <color name="accounts_background_white">#C6C6C6</color>
+    <color name="accounts_background_grey">#474747</color>
 
+    <!-- kSync -->
     <color name="appintro_background_color" tools:override="true">@color/infomaniakBackground</color>
     <color name="appintro_default_fab_background_color" tools:override="true">@color/primaryColor</color>
     <color name="appintro_ripple_color" tools:override="true">@color/infomaniakText</color>

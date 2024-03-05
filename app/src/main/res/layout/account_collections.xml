@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:max="100"
             android:indeterminate="true"
-            android:visibility="invisible"
+            android:visibility="gone"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
         <com.google.android.material.card.MaterialCardView
@@ -27,7 +27,6 @@
             android:layout_marginLeft="@dimen/activity_margin"
             android:layout_marginRight="@dimen/activity_margin"
             android:layout_marginBottom="@dimen/card_padding"
-            android:layout_marginTop="@dimen/activity_margin"
             android:visibility="gone">
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"

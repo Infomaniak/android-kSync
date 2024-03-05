@@ -8,8 +8,8 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -22,7 +22,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.android.components.ActivityComponent
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroActivity: AppIntro2() {
@@ -68,7 +67,7 @@ class IntroActivity: AppIntro2() {
                 addSlide(factory.create())
         }
 
-        setIndicatorColor(ContextCompat.getColor(this, R.color.primaryColor), ContextCompat.getColor(this, R.color.grey700))
+        setIndicatorColor(ContextCompat.getColor(this, R.color.primaryColor), ContextCompat.getColor(this, R.color.grey700)) // kSync
 //        setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
         isSkipButtonEnabled = false
 

@@ -17,7 +17,7 @@ import androidx.work.testing.WorkManagerTestInitHelper
 import at.bitfire.dav4jvm.PropStat
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.Response.HrefRelation
-import at.bitfire.dav4jvm.property.GetETag
+import at.bitfire.dav4jvm.property.webdav.GetETag
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.TestUtils.assertWithin
 import at.bitfire.davdroid.db.Credentials
@@ -146,24 +146,26 @@ class SyncManagerTest {
 
     private fun queryCapabilitiesResponse(cTag: String? = null): MockResponse {
         val body = StringBuilder()
-        body.append("<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
-                "<multistatus xmlns=\"DAV:\" xmlns:CALDAV=\"http://calendarserver.org/ns/\">\n" +
-                "  <response>\n" +
-                "    <href>/</href>\n" +
-                "    <propstat>\n" +
-                "      <prop>\n")
-        if (cTag != null)
-                body.append("<CALDAV:getctag>$cTag</CALDAV:getctag>\n")
         body.append(
-                "      </prop>\n" +
-                "    </propstat>\n" +
-                "  </response>\n" +
-                "</multistatus>")
-        val response = MockResponse()
-                .setResponseCode(207)
-                .setHeader("Content-Type", "text/xml")
-                .setBody(body.toString())
-        return response
+            "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n" +
+                    "<multistatus xmlns=\"DAV:\" xmlns:CALDAV=\"http://calendarserver.org/ns/\">\n" +
+                    "  <response>\n" +
+                    "    <href>/</href>\n" +
+                    "    <propstat>\n" +
+                    "      <prop>\n"
+        )
+        if (cTag != null)
+            body.append("<CALDAV:getctag>$cTag</CALDAV:getctag>\n")
+        body.append(
+            "      </prop>\n" +
+                    "    </propstat>\n" +
+                    "  </response>\n" +
+                    "</multistatus>"
+        )
+        return MockResponse()
+            .setResponseCode(207)
+            .setHeader("Content-Type", "text/xml")
+            .setBody(body.toString())
     }
 
     @Test

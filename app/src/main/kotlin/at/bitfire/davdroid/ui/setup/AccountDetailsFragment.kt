@@ -17,14 +17,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -72,8 +70,8 @@ class AccountDetailsFragment : Fragment() {
 
         // default account name
         model.name.value =
-                config.calDAV?.emails?.firstOrNull()
-                        ?: loginModel.suggestedAccountName
+            config.calDAV?.emails?.firstOrNull()
+                ?: loginModel.suggestedAccountName
                         ?: loginModel.credentials?.userName
                         ?: loginModel.credentials?.certificateAlias
                         ?: loginModel.baseURI?.host
@@ -98,11 +96,6 @@ class AccountDetailsFragment : Fragment() {
                 val am = AccountManager.get(requireActivity())
                 if (am.getAccountsByType(getString(R.string.account_type)).any { it.name == name }) {
                     model.nameError.value = getString(R.string.login_account_name_already_taken)
-
-                    // kSync
-                    Toast.makeText(context, R.string.login_account_name_already_taken,Toast.LENGTH_LONG).show()
-                    activity?.finish()
-
                     return@setOnClickListener
                 }
 
@@ -117,7 +110,7 @@ class AccountDetailsFragment : Fragment() {
                     loginModel.credentials,
                     config,
                     GroupMethod.valueOf(groupMethodName)
-                ).observe(viewLifecycleOwner, Observer { success ->
+                ).observe(viewLifecycleOwner, { success ->
                     if (success) {
                         // close Create account activity
                         requireActivity().finish()
@@ -176,7 +169,7 @@ class AccountDetailsFragment : Fragment() {
 
         val name = MutableLiveData<String>()
         val nameError = MutableLiveData<String>()
-        val showApostropheWarning = MutableLiveData<Boolean>(false)
+        val showApostropheWarning = MutableLiveData(false)
 
         val context: Context get() = getApplication()
 
@@ -225,7 +218,7 @@ class AccountDetailsFragment : Fragment() {
                         accountSettings.setGroupMethod(groupMethod)
 
                         // start CardDAV service detection (refresh collections)
-                        RefreshCollectionsWorker.refreshCollections(context, id)
+                        RefreshCollectionsWorker.enqueue(context, id)
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, addrBookAuthority, 1)
@@ -239,7 +232,7 @@ class AccountDetailsFragment : Fragment() {
                         val id = insertService(name, Service.TYPE_CALDAV, config.calDAV)
 
                         // start CalDAV service detection (refresh collections)
-                        RefreshCollectionsWorker.refreshCollections(context, id)
+                        RefreshCollectionsWorker.enqueue(context, id)
 
                         // set default sync interval and enable sync regardless of permissions
                         ContentResolver.setIsSyncable(account, CalendarContract.AUTHORITY, 1)

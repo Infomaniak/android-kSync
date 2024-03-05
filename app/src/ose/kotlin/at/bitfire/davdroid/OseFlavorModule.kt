@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid
 
+import at.bitfire.davdroid.ui.AboutActivity
 import at.bitfire.davdroid.ui.AccountsDrawerHandler
 import at.bitfire.davdroid.ui.OseAccountsDrawerHandler
 import at.bitfire.davdroid.ui.intro.IntroFragmentFactory
@@ -14,42 +15,39 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
-import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
 
-@Module
-@InstallIn(SingletonComponent::class)
-abstract class OseFlavorModule {
+interface OseFlavorModules {
 
-    //// navigation drawer handler ////
-
-    @Binds
-    abstract fun accountsDrawerHandler(handler: OseAccountsDrawerHandler): AccountsDrawerHandler
+    @Module
+    @InstallIn(ActivityComponent::class)
+    interface ForActivities {
+        @Binds
+        fun accountsDrawerHandler(impl: OseAccountsDrawerHandler): AccountsDrawerHandler
+    }
 
 
     //// intro fragments ////
 
-    // WelcomeFragment and BatteryOptimizationsFragment modules are hardcoded there
-
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class OpenSourceFragmentModule {
+    interface OpenSourceFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: OpenSourceFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: OpenSourceFragment.Factory): IntroFragmentFactory
     }
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class PermissionsIntroFragmentModule {
+    interface PermissionsIntroFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: PermissionsIntroFragment.Factory): IntroFragmentFactory
     }
 
     @Module
     @InstallIn(ActivityComponent::class)
-    abstract class TasksIntroFragmentModule {
+    interface TasksIntroFragmentModule {
         @Binds @IntoSet
-        abstract fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
+        fun getFactory(factory: TasksIntroFragment.Factory): IntroFragmentFactory
     }
 
 }

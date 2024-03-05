@@ -7,8 +7,10 @@ package at.bitfire.davdroid.resource
 import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentValues
-import at.bitfire.davdroid.db.*
+import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.Principal
+import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.util.DavUtils
 import at.bitfire.ical4android.JtxCollection
@@ -24,11 +26,11 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
     companion object {
 
         fun create(account: Account, client: ContentProviderClient, info: Collection, owner: Principal?) {
-            val values = valuesFromCollection(info, account, owner)
+            val values = valuesFromCollection(info, account, owner, true)
             create(account, client, values)
         }
 
-        fun valuesFromCollection(info: Collection, account: Account, owner: Principal?) =
+        fun valuesFromCollection(info: Collection, account: Account, owner: Principal?, withColor: Boolean) =
             ContentValues().apply {
                 put(JtxContract.JtxCollection.URL, info.url.toString())
                 put(JtxContract.JtxCollection.DISPLAYNAME, info.displayName ?: DavUtils.lastSegmentOfUrl(info.url))
@@ -37,7 +39,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
                     put(JtxContract.JtxCollection.OWNER, owner.url.toString())
                 else Logger.log.log(Level.SEVERE, "No collection owner given. Will create jtx collection without owner")
                 put(JtxContract.JtxCollection.OWNER_DISPLAYNAME, owner?.displayName)
-                put(JtxContract.JtxCollection.COLOR, info.color)
+                if (withColor)
+                    put(JtxContract.JtxCollection.COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)
                 put(JtxContract.JtxCollection.SUPPORTSVEVENT, info.supportsVEVENT)
                 put(JtxContract.JtxCollection.SUPPORTSVJOURNAL, info.supportsVJOURNAL)
                 put(JtxContract.JtxCollection.SUPPORTSVTODO, info.supportsVTODO)
@@ -47,6 +50,9 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
             }
     }
 
+    override val readOnly: Boolean
+        get() = throw NotImplementedError()
+
     override val tag: String
         get() =  "jtx-${account.name}-$id"
     override val title: String
@@ -55,8 +61,8 @@ class LocalJtxCollection(account: Account, client: ContentProviderClient, id: Lo
         get() = SyncState.fromString(syncstate)
         set(value) { syncstate = value.toString() }
 
-    fun updateCollection(info: Collection, owner: Principal?) {
-        val values = valuesFromCollection(info, account, owner)
+    fun updateCollection(info: Collection, owner: Principal?, withColor: Boolean) {
+        val values = valuesFromCollection(info, account, owner, withColor)
         update(values)
     }
 

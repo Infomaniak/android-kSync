@@ -16,10 +16,13 @@ class LocalTestCollection: LocalCollection<LocalTestResource> {
 
     val entries = mutableListOf<LocalTestResource>()
 
+    override val readOnly: Boolean
+        get() = throw NotImplementedError()
+
     override fun findDeleted() = entries.filter { it.deleted }
     override fun findDirty() = entries.filter { it.dirty }
 
-    override fun findByName(name: String) = entries.filter { it.fileName == name }.firstOrNull()
+    override fun findByName(name: String) = entries.firstOrNull { it.fileName == name }
 
     override fun markNotDirty(flags: Int): Int {
         var updated = 0
