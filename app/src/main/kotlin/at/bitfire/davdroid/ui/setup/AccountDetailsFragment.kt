@@ -17,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -96,6 +97,7 @@ class AccountDetailsFragment : Fragment() {
                 val am = AccountManager.get(requireActivity())
                 if (am.getAccountsByType(getString(R.string.account_type)).any { it.name == name }) {
                     model.nameError.value = getString(R.string.login_account_name_already_taken)
+                    v.mainLayout.isVisible = true // kSync
                     return@setOnClickListener
                 }
 
