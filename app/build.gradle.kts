@@ -25,7 +25,7 @@ android {
         applicationId = "com.infomaniak.sync"
         resValue("string", "application_id", "com.infomaniak.sync")
 
-        versionCode = 403140002
+        versionCode = 403140003
         versionName = "4.3.14"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")

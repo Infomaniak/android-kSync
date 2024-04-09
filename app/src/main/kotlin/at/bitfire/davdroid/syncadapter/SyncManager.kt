@@ -773,6 +773,7 @@ abstract class SyncManager<ResourceType: LocalResource<*>, out CollectionType: L
                         mainAccount
                     else
                         account)
+            contentIntent.putExtra(SettingsActivity.EXTRA_WRONG_CREDENTIALS, true) // kSync
         } else {
             contentIntent = buildDebugInfoIntent(e, local, remote)
             if (local != null)

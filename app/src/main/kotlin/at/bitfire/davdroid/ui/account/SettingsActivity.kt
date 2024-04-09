@@ -55,6 +55,7 @@ class SettingsActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
+        const val EXTRA_WRONG_CREDENTIALS = "wrong_credentials"
     }
 
     private val account by lazy { intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set") }
@@ -84,6 +85,7 @@ class SettingsActivity: AppCompatActivity() {
     class AccountSettingsFragment : PreferenceFragmentCompat() {
 
         private val account by lazy { requireArguments().getParcelable<Account>(EXTRA_ACCOUNT)!! }
+        private val isWrongCredentials by lazy { requireArguments().getBoolean(EXTRA_WRONG_CREDENTIALS, false) } // kSync
         @Inject lateinit var settings: SettingsManager
 
         @Inject lateinit var modelFactory: Model.Factory
@@ -230,6 +232,7 @@ class SettingsActivity: AppCompatActivity() {
             }
 
             // preference group: authentication
+            val prefCategory = findPreference<PreferenceCategory>("authentication")!! // kSync
             val prefUserName = findPreference<EditTextPreference>(getString(R.string.settings_username_key))!!
             val prefPassword = findPreference<EditTextPreference>(getString(R.string.settings_password_key))!!
             val prefCertAlias = findPreference<Preference>(getString(R.string.settings_certificate_alias_key))!!
@@ -238,7 +241,7 @@ class SettingsActivity: AppCompatActivity() {
             model.credentials.observe(viewLifecycleOwner) { credentials ->
                 if (credentials.authState != null) {
                     // using OAuth, hide other settings
-                    prefOAuth.isVisible = true
+                    prefOAuth.isVisible = false // kSync
                     prefUserName.isVisible = false
                     prefPassword.isVisible = false
                     prefCertAlias.isVisible = false
@@ -253,9 +256,9 @@ class SettingsActivity: AppCompatActivity() {
                 } else {
                     // not using OAuth, hide OAuth setting, show the others
                     prefOAuth.isVisible = false
-                    prefUserName.isVisible = true
-                    prefPassword.isVisible = true
-                    prefCertAlias.isVisible = true
+                    prefUserName.isVisible = false // kSync
+                    // prefPassword.isVisible = true kSync
+                    prefCertAlias.isVisible = false // kSync
 
                     prefUserName.summary = credentials.userName
                     prefUserName.text = credentials.userName
@@ -270,7 +273,8 @@ class SettingsActivity: AppCompatActivity() {
                     }
 
                     if (credentials.userName != null) {
-                        prefPassword.isVisible = true
+                        prefPassword.isVisible = isWrongCredentials // kSync
+                        prefCategory.isVisible = isWrongCredentials // kSync
                         prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
                             model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
                             false
