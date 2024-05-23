@@ -255,7 +255,7 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
             supportVEVENT.value = true
             supportVTODO.value = true
-            supportVJOURNAL.value = true
+            supportVJOURNAL.value = false // kSync
 
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info

@@ -134,6 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:checked="@={model.supportVJOURNAL}"
+                    android:visibility="gone"
                     android:text="@string/create_calendar_type_vjournal"/>
 
             </com.google.android.flexbox.FlexboxLayout>
