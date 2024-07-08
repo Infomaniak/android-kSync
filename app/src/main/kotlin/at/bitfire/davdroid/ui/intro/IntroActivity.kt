@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.intro
 
@@ -8,8 +8,15 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.addCallback
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.runtime.rememberCoroutineScope
+import at.bitfire.davdroid.ui.AppTheme
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -20,52 +27,33 @@ import com.github.appintro.AppIntro2
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.EntryPointAccessors
-import dagger.hilt.android.components.ActivityComponent
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class IntroActivity: AppIntro2() {
+@OptIn(ExperimentalFoundationApi::class)
+class IntroActivity : AppCompatActivity() {
 
-    @EntryPoint
-    @InstallIn(ActivityComponent::class)
-    interface IntroActivityEntryPoint {
-        fun introFragmentFactories(): Set<@JvmSuppressWildcards IntroFragmentFactory>
-    }
-
-    companion object {
-
-        @WorkerThread
-        fun shouldShowIntroActivity(activity: Activity): Boolean {
-            val factories = EntryPointAccessors.fromActivity(activity, IntroActivityEntryPoint::class.java).introFragmentFactories()
-            return factories.any {
-                it.getOrder(activity) > 0
-            }
-        }
-
-    }
-
-    private var currentSlide = 0
+    val model by viewModels<IntroModel>()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val factories = EntryPointAccessors.fromActivity(this, IntroActivityEntryPoint::class.java).introFragmentFactories()
-        for (factory in factories)
-            Logger.log.fine("Found intro fragment factory ${factory::class.java} with order ${factory.getOrder(this)}")
+        val pages = model.pages
 
-        val factoriesWithOrder = factories
-            .associateWith { it.getOrder(this) }
-            .filterValues { it != IntroFragmentFactory.DONT_SHOW }
+        setContent {
+            AppTheme {
+                val scope = rememberCoroutineScope()
+                val pagerState = rememberPagerState { pages.size }
 
-        val anyPositiveOrder = factoriesWithOrder.values.any { it > 0 }
-        if (anyPositiveOrder) {
-            val factoriesSortedByOrder = factoriesWithOrder
-                .toList()
-                .sortedBy { (_, v) -> v }       // sort by value (= getOrder())
-            for ((factory, _) in factoriesSortedByOrder)
-                addSlide(factory.create())
-        }
+                BackHandler {
+                    if (pagerState.settledPage == 0) {
+                        setResult(Activity.RESULT_CANCELED)
+                        finish()
+                    } else scope.launch {
+                        pagerState.animateScrollToPage(pagerState.settledPage - 1)
+                    }
+                }
 
         setIndicatorColor(ContextCompat.getColor(this, R.color.primaryColor), ContextCompat.getColor(this, R.color.grey700)) // kSync
 //        setBarColor(ResourcesCompat.getColor(resources, R.color.primaryDarkColor, null))
@@ -79,17 +67,6 @@ class IntroActivity: AppIntro2() {
                 goToPreviousSlide()
             }
         }
-    }
-
-    override fun onPageSelected(position: Int) {
-        super.onPageSelected(position)
-        currentSlide = position
-    }
-
-    override fun onDonePressed(currentFragment: Fragment?) {
-        super.onDonePressed(currentFragment)
-        setResult(Activity.RESULT_OK)
-        finish()
     }
 
 

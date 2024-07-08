@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui
 
@@ -77,13 +77,8 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (savedInstanceState == null) {
-            // use a separate thread to check whether IntroActivity should be shown
-            CoroutineScope(Dispatchers.Default).launch {
-                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity))
-                    introActivityLauncher.launch(null)
-            }
-        }
+        // handle "Sync all" intent from launcher shortcut
+        val syncAccounts = intent.action == Intent.ACTION_SYNC
 
         binding = ActivityAccountsBinding.inflate(layoutInflater)
         setContentView(binding.root)

@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.util
 
@@ -20,6 +20,8 @@ import org.xbill.DNS.SRVRecord
 import org.xbill.DNS.SimpleResolver
 import org.xbill.DNS.TXTRecord
 import java.net.InetAddress
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.Locale
 import java.util.TreeMap
@@ -56,14 +58,6 @@ object DavUtils {
         val alpha = (colorWithAlpha shr 24) and 0xFF
         val color = colorWithAlpha and 0xFFFFFF
         return String.format(Locale.ROOT, "#%06X%02X", color, alpha)
-    }
-
-    fun lastSegmentOfUrl(url: HttpUrl): String {
-        // the list returned by HttpUrl.pathSegments() is unmodifiable, so we have to create a copy
-        val segments = LinkedList(url.pathSegments)
-        segments.reverse()
-
-        return segments.firstOrNull { it.isNotEmpty() } ?: "/"
     }
 
     fun prepareLookup(context: Context, lookup: Lookup) {
@@ -205,5 +199,11 @@ object DavUtils {
      */
     fun MediaType.sameTypeAs(other: MediaType) =
         type == other.type && subtype == other.subtype
+
+    fun String.toURIorNull(): URI? = try {
+        URI(this)
+    } catch (_: URISyntaxException) {
+        null
+    }
 
 }

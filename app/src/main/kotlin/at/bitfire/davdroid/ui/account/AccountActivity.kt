@@ -1,88 +1,57 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.account
 
+import AccountScreen
 import android.accounts.Account
-import android.accounts.AccountManager
-import android.accounts.OnAccountsUpdateListener
-import android.app.Application
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import androidx.activity.viewModels
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.TooltipCompat
-import androidx.core.view.MenuProvider
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import at.bitfire.davdroid.R
-import at.bitfire.davdroid.databinding.ActivityAccountBinding
-import at.bitfire.davdroid.db.AppDatabase
-import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.db.Service
-import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.SyncWorker
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayoutMediator
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.launch
-import java.util.logging.Level
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class AccountActivity: AppCompatActivity() {
+class AccountActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    @Inject lateinit var modelFactory: Model.Factory
-    val model by viewModels<Model> {
-        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
-                ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
-        object: ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T: ViewModel> create(modelClass: Class<T>) =
-                modelFactory.create(account) as T
-        }
-    }
-
-    private val warningsModel by viewModels<AppWarningsModel>()
-
-    private lateinit var binding: ActivityAccountBinding
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        title = model.account.name
+        val account = intent.getParcelableExtra(EXTRA_ACCOUNT) as? Account
+            ?: throw IllegalArgumentException("AccountActivity requires EXTRA_ACCOUNT")
 
-        binding = ActivityAccountBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setSupportActionBar(binding.toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        model.accountExists.observe(this) { accountExists ->
-            if (!accountExists)
-                finish()
+        setContent {
+            AccountScreen(
+                account = account,
+                onAccountSettings = {
+                    val intent = Intent(this, AccountSettingsActivity::class.java)
+                    intent.putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+                    startActivity(intent, null)
+                },
+                onCreateAddressBook = {
+                    val intent = Intent(this, CreateAddressBookActivity::class.java)
+                    intent.putExtra(CreateAddressBookActivity.EXTRA_ACCOUNT, account)
+                    startActivity(intent)
+                },
+                onCreateCalendar = {
+                    val intent = Intent(this, CreateCalendarActivity::class.java)
+                    intent.putExtra(CreateCalendarActivity.EXTRA_ACCOUNT, account)
+                    startActivity(intent)
+                },
+                onCollectionDetails = { collection ->
+                    val intent = Intent(this, CollectionActivity::class.java)
+                    intent.putExtra(CollectionActivity.EXTRA_ACCOUNT, account)
+                    intent.putExtra(CollectionActivity.EXTRA_COLLECTION_ID, collection.id)
+                    startActivity(intent, null)
+                },
+                onNavUp = ::onSupportNavigateUp,
+                onFinish = ::finish
+            )
         }
 
         model.services.observe(this) { services ->

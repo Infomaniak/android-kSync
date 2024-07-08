@@ -5,16 +5,10 @@
 plugins {
     alias(libs.plugins.mikepenz.aboutLibraries)
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.ksp)
-}
-
-aboutLibraries {
-    // This means that we have to generate the dependencies explicitly:
-    // ./gradlew --no-configuration-cache --no-build-cache -PaboutLibraries.exportPath=src/main/res/raw/ app:exportLibraryDefinitions
-    registerAndroidTasks = false
 }
 
 // Android configuration
@@ -25,8 +19,8 @@ android {
         applicationId = "com.infomaniak.sync"
         resValue("string", "application_id", "com.infomaniak.sync")
 
-        versionCode = 403140003
-        versionName = "4.3.14"
+        versionCode = 404010005
+        versionName = "4.4.1"
 
         buildConfigField("long", "buildTime", "${System.currentTimeMillis()}L")
 
@@ -42,22 +36,20 @@ android {
         testInstrumentationRunner = "com.infomaniak.sync.CustomTestRunner"
     }
 
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
+    }
+
     compileOptions {
         // enable because ical4android requires desugaring
         isCoreLibraryDesugaringEnabled = true
-
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
         buildConfig = true
         compose = true
-        viewBinding = true
-        dataBinding = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -155,31 +147,30 @@ dependencies {
     implementation(libs.androidx.activityCompose)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
-    implementation(libs.androidx.cardView)
-    implementation(libs.androidx.concurrentFuture)
-    implementation(libs.androidx.constraintLayout)
     implementation(libs.androidx.core)
-    implementation(libs.androidx.fragment)
+    implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.base)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.security)
-    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.work.base)
-    implementation(libs.android.flexbox)
-    implementation(libs.android.material)
 
     // Jetpack Compose
     implementation(libs.compose.accompanist.permissions)
-    implementation(libs.compose.accompanist.themeAdapter)
     implementation(platform(libs.compose.bom))
-    implementation(libs.compose.material)
+    implementation(libs.compose.material3)
     implementation(libs.compose.materialIconsExtended)
     implementation(libs.compose.runtime.livedata)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.ui.toolingPreview)
+
+    // Glance Widgets
+    implementation(libs.glance.base)
+    implementation(libs.glance.material)
 
     // Jetpack Room
     implementation(libs.room.runtime)
@@ -196,9 +187,6 @@ dependencies {
     implementation(libs.bitfire.vcard4android)
 
     // third-party libs
-    implementation(libs.openid.appauth)
-    implementation(libs.appintro)
-    implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.commons.collections)
     @Suppress("RedundantSuppression")
     implementation(libs.commons.io)
@@ -206,11 +194,13 @@ dependencies {
     implementation(libs.commons.text)
     @Suppress("RedundantSuppression")
     implementation(libs.dnsjava)
-    implementation(libs.jaredrummler.colorpicker)
+    implementation(libs.mikepenz.aboutLibraries)
     implementation(libs.nsk90.kstatemachine)
     implementation(libs.okhttp.base)
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
+    implementation(libs.openid.appauth)
+    implementation(libs.unifiedpush)
 
     // kSync
     implementation(libs.login.infomaniak)

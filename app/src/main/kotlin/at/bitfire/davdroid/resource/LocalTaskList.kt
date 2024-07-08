@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.resource
 
@@ -13,7 +13,7 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.SyncState
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.davdroid.util.lastSegment
 import at.bitfire.ical4android.DmfsTaskList
 import at.bitfire.ical4android.DmfsTaskListFactory
 import at.bitfire.ical4android.TaskProvider
@@ -53,7 +53,8 @@ class LocalTaskList private constructor(
         private fun valuesFromCollectionInfo(info: Collection, withColor: Boolean): ContentValues {
             val values = ContentValues(3)
             values.put(TaskLists._SYNC_ID, info.url.toString())
-            values.put(TaskLists.LIST_NAME, if (info.displayName.isNullOrBlank()) DavUtils.lastSegmentOfUrl(info.url) else info.displayName)
+            values.put(TaskLists.LIST_NAME,
+                if (info.displayName.isNullOrBlank()) info.url.lastSegment else info.displayName)
 
             if (withColor)
                 values.put(TaskLists.LIST_COLOR, info.color ?: Constants.DAVDROID_GREEN_RGBA)

@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.db
 
@@ -12,7 +12,13 @@ import android.database.sqlite.SQLiteQueryBuilder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.database.getStringOrNull
-import androidx.room.*
+import androidx.room.AutoMigration
+import androidx.room.Database
+import androidx.room.DeleteColumn
+import androidx.room.ProvidedAutoMigrationSpec
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
@@ -40,10 +46,11 @@ import javax.inject.Singleton
     SyncStats::class,
     WebDavDocument::class,
     WebDavMount::class
-], exportSchema = true, version = 12, autoMigrations = [
+], exportSchema = true, version = 13, autoMigrations = [
     AutoMigration(from = 9, to = 10),
     AutoMigration(from = 10, to = 11),
-    AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class)
+    AutoMigration(from = 11, to = 12, spec = AppDatabase.AutoMigration11_12::class),
+    AutoMigration(from = 12, to = 13)
 ])
 @TypeConverters(Converters::class)
 abstract class AppDatabase: RoomDatabase() {

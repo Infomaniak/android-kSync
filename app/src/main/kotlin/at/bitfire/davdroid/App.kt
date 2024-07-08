@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid
 
@@ -89,24 +89,20 @@ class App: Application(), Thread.UncaughtExceptionHandler, Configuration.Provide
         NotificationUtils.createChannels(this)
 
         // set light/dark mode
-        UiUtils.setTheme(this)   // when this is called in the asynchronous thread below, it recreates
-        // some current activity and causes an IllegalStateException in rare cases
+        UiUtils.updateTheme(this)   // when this is called in the asynchronous thread below, it recreates
+                                 // some current activity and causes an IllegalStateException in rare cases
 
         // don't block UI for some background checks
-        thread {
-            // watch for account changes/deletions
-            accountsUpdatedListener.listen()
+        @OptIn(DelicateCoroutinesApi::class)
+        GlobalScope.launch(Dispatchers.Default) {
+            // clean up orphaned accounts in DB from time to time
+            AccountsCleanupWorker.enqueue(this@App)
 
-            // watch storage because low storage means synchronization is stopped
-            storageLowReceiver.listen()
-
-            // watch installed/removed apps
-            TasksWatcher.watch(this)
-            // check whether a tasks app is currently installed
-            SyncUtils.updateTaskSync(this)
+            // watch installed/removed tasks apps over whole app lifetime and update sync settings accordingly
+            TasksAppWatcher.watchInstalledTaskApps(this@App, this)
 
             // create/update app shortcuts
-            UiUtils.updateShortcuts(this)
+            UiUtils.updateShortcuts(this@App)
         }
     }
 
