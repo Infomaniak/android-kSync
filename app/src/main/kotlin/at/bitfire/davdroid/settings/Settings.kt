@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatDelegate
 
 object Settings {
 
+    const val BATTERY_OPTIMIZATION = "battery_optimization"
+
     const val DISTRUST_SYSTEM_CERTIFICATES = "distrust_system_certs"
 
     const val PROXY_TYPE = "proxy_type"         // Integer
@@ -37,6 +39,8 @@ object Settings {
     const val PREFERRED_THEME = "preferred_theme"
     const val PREFERRED_THEME_DEFAULT = AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
 
+    const val PREFERRED_TASKS_PROVIDER = "preferred_tasks_provider"
+
     /**
      * Selected tasks app. When at least one tasks app is installed, this setting is set to its authority.
      * In case of multiple available tasks app, the user can choose one and this setting will reflect the selected one.
@@ -60,5 +64,5 @@ object Settings {
 
     /** whether all address books are forced to be read-only */
     const val FORCE_READ_ONLY_ADDRESSBOOKS = "force_read_only_addressbooks"
-    
+
 }

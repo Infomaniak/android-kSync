@@ -16,6 +16,7 @@ import android.view.*
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.text.HtmlCompat
@@ -40,8 +41,7 @@ import at.bitfire.davdroid.databinding.AboutLanguagesBinding
 import at.bitfire.davdroid.databinding.AboutTranslationBinding
 import at.bitfire.davdroid.databinding.ActivityAboutBinding
 import at.bitfire.davdroid.log.Logger
-import com.google.accompanist.themeadapter.material.MdcTheme
-import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -251,7 +251,7 @@ class AboutActivity: AppCompatActivity() {
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             ComposeView(requireContext()).apply {
                 setContent {
-                    MdcTheme {
+                    AppTheme {
                         LibrariesContainer(
                             Modifier.fillMaxSize()
                         )

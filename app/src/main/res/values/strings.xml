@@ -17,6 +17,7 @@
     <string name="help">Help</string>
     <string name="manage_accounts">Manage accounts</string>
     <string name="navigate_up">Navigate up</string>
+    <string name="no_internet_sync_scheduled">No Internet, scheduling sync</string>
     <string name="optional_label">* optional</string>
     <string name="options_menu">Options menu</string>
     <string name="share">Share</string>
@@ -112,6 +113,7 @@
     <string name="about_build_date">Compiled on %s</string>
     <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) and contributors</string>
     <string name="about_license_info_no_warranty">This program comes with ABSOLUTELY NO WARRANTY. It is free software, and you are welcome to redistribute it under certain conditions.</string>
+    <string name="about_translations_thanks"><![CDATA[<i>Thanks to: </i> %s]]></string>
 
     <!-- global settings -->
     <string name="logging_couldnt_create_file">Couldn\'t create log file</string>
@@ -125,6 +127,7 @@
     <string name="navigation_drawer_subtitle">CalDAV/CardDAV Sync Adapter</string>
     <string name="navigation_drawer_about">About / License</string>
     <string name="navigation_drawer_beta_feedback">Beta feedback</string>
+    <string name="install_email_client">Please install an email client</string>
     <string name="install_browser">Please install a Web browser</string>
     <string name="navigation_drawer_settings">Settings</string>
     <string name="navigation_drawer_news_updates">News &amp; updates</string>
@@ -214,6 +217,7 @@
     <string name="app_settings_reset_hints_success">All hints will be shown again</string>
     <string name="app_settings_integration">Integration</string>
     <string name="app_settings_tasks_provider">Tasks app</string>
+    <string name="app_settings_tasks_provider_synchronizing_with">Synchronizing with %s</string>
     <string name="app_settings_tasks_provider_none">No compatible tasks app found</string>
     <string name="app_settings_unifiedpush">UnifiedPush (experimental)</string>
     <string name="app_settings_unifiedpush_endpoint_domain">Ready to receive push notifications (%s)</string>
@@ -223,6 +227,11 @@
     <string name="account_carddav">CardDAV</string>
     <string name="account_caldav">CalDAV</string>
     <string name="account_webcal">Webcal</string>
+    <string name="account_permissions_action">Permissions</string>
+    <string name="account_no_address_books">There are no address books (yet).</string>
+    <string name="account_no_calendars">There are no calendars (yet).</string>
+    <string name="account_no_webcals">There are no calendar subscriptions (yet).</string>
+    <string name="account_swipe_down">Swipe down to refresh the list from the server.</string>
     <string name="account_missing_permissions">Additional permissions are required to synchronize these collections.</string>
     <string name="account_manage_permissions">Manage permissions</string>
     <string name="account_synchronize_now">Synchronize now</string>
@@ -243,7 +252,9 @@
     <string name="account_journal">journal</string>
     <string name="account_task_list">tasks</string>
     <string name="account_only_personal">Show only personal</string>
+    <string name="account_create_new_calendar">Create new calendar</string>
     <string name="account_refresh_collections">Refresh list</string>
+    <string name="account_create_new_address_book">Create new address book</string>
     <string name="account_webcal_external_app">Webcal subscriptions can be synchronized with external apps.</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsx5">Install ICSx⁵</string>
@@ -308,11 +319,15 @@
     <string name="login_view_logs">View logs</string>
 
     <!-- AccountSettingsActivity -->
+    <string name="settings_title">Settings: %s</string>
     <string name="settings_sync">Synchronization</string>
+    <string name="settings_sync_interval_contacts_key" translatable="false">sync_interval_contacts</string>
     <string name="settings_sync_interval_contacts">Contacts sync. interval</string>
     <string name="settings_sync_summary_manually">Only manually</string>
     <string name="settings_sync_summary_periodically" tools:ignore="PluralsCandidate">Every %d minutes + immediately on local changes</string>
+    <string name="settings_sync_interval_calendars_key" translatable="false">sync_interval_calendars</string>
     <string name="settings_sync_interval_calendars">Calendars sync. interval</string>
+    <string name="settings_sync_interval_tasks_key" translatable="false">sync_interval_tasks</string>
     <string name="settings_sync_interval_tasks">Tasks sync. interval</string>
     <string-array name="settings_sync_interval_seconds" translatable="false">
         <item>-1</item>
@@ -332,27 +347,41 @@
         <item>Every 4 hours</item>
         <item>Once a day</item>
     </string-array>
+    <string name="settings_sync_wifi_only_key" translatable="false">sync_wifi_only</string>
     <string name="settings_sync_wifi_only">Sync over WiFi only</string>
     <string name="settings_sync_wifi_only_on">Synchronization is restricted to WiFi connections</string>
     <string name="settings_sync_wifi_only_off">Connection type is not taken into consideration</string>
+    <string name="settings_sync_wifi_only_ssids_key" translatable="false">sync_wifi_only_ssids</string>
     <string name="settings_sync_wifi_only_ssids">WiFi SSID restriction</string>
     <string name="settings_sync_wifi_only_ssids_on">Will only sync over %s</string>
+    <string name="settings_sync_wifi_only_ssids_on_location_services">Will only sync over %s (requires active location services)</string>
     <string name="settings_sync_wifi_only_ssids_off">All WiFi connections will be used</string>
     <string name="settings_sync_wifi_only_ssids_message">Comma-separated names (SSIDs) of allowed WiFi networks (leave blank for all)</string>
     <string name="settings_sync_wifi_only_ssids_permissions_required">WiFi SSID restriction requires further settings</string>
     <string name="settings_sync_wifi_only_ssids_permissions_action">Manage</string>
+    <string name="settings_ignore_vpns_key" translatable="false">ignore_vpns</string>
     <string name="settings_ignore_vpns">VPN requires underlying Internet</string>
     <string name="settings_ignore_vpns_on">VPN without underlying validated Internet connection is not enough to run synchronization (recommended)</string>
     <string name="settings_ignore_vpns_off">VPN without underlying validated Internet connection is enough to run synchronization</string>
     <string name="settings_authentication">Authentication</string>
+    <string name="settings_oauth">Re-authenticate</string>
+    <string name="settings_oauth_summary">Perform OAuth login again</string>
+    <string name="settings_oauth_key" translatable="false">oauth</string>
+    <string name="settings_username_key" translatable="false">username</string>
     <string name="settings_username">User name</string>
+    <string name="settings_enter_username">Enter user name:</string>
+    <string name="settings_password_key" translatable="false">password</string>
     <string name="settings_password">Password</string>
     <string name="settings_new_password">New password</string>
     <string name="settings_password_summary">Update the password according to your server.</string>
+    <string name="settings_enter_password">Enter your password:</string>
+    <string name="settings_certificate_alias_key" translatable="false">certificate_alias</string>
+    <string name="settings_caldav_key" translatable="false">caldav</string>
     <string name="settings_certificate_alias">Client certificate</string>
     <string name="settings_certificate_alias_empty">No certificate available or selected</string>
     <string name="settings_certificate_install">Install certificate</string>
     <string name="settings_caldav">CalDAV</string>
+    <string name="settings_sync_time_range_past_key" translatable="false">time_range_past_days</string>
     <string name="settings_sync_time_range_past">Past event time limit</string>
     <string name="settings_sync_time_range_past_none">All events will be synchronized</string>
     <plurals name="settings_sync_time_range_past_days">
@@ -360,6 +389,7 @@
         <item quantity="other">Events more than %d days in the past will be ignored</item>
     </plurals>
     <string name="settings_sync_time_range_past_message">Events which are more than this number of days in the past will be ignored (may be 0). Leave blank to synchronize all events.</string>
+    <string name="settings_key_default_alarm" translatable="false">default_alarm</string>
     <string name="settings_default_alarm">Default reminder</string>
     <plurals name="settings_default_alarm_on">
         <item quantity="one">Default reminder one minute before event</item>
@@ -367,12 +397,16 @@
     </plurals>
     <string name="settings_default_alarm_off">No default reminders are created</string>
     <string name="settings_default_alarm_message">If default reminders shall be created for events without reminder: the desired number of minutes before the event. Leave blank to disable default reminders.</string>
+    <string name="settings_manage_calendar_colors_key" translatable="false">manage_calendar_colors</string>
     <string name="settings_manage_calendar_colors">Manage calendar colors</string>
     <string name="settings_manage_calendar_colors_on">Calendar colors are reset at each sync</string>
     <string name="settings_manage_calendar_colors_off">Calendar colors can be set by other apps</string>
+    <string name="settings_event_colors_key" translatable="false">event_colors</string>
     <string name="settings_event_colors">Event color support</string>
     <string name="settings_event_colors_on">Event colors are synced</string>
     <string name="settings_event_colors_off">Event colors are not synced</string>
+    <string name="settings_carddav_key" translatable="false">carddav</string>
+    <string name="settings_contact_group_method_key" translatable="false">contact_group_method</string>
     <string name="settings_carddav">CardDAV</string>
     <string name="settings_contact_group_method">Contact group method</string>
     <string-array name="settings_contact_group_method_values" translatable="false">
@@ -388,6 +422,7 @@
     <string name="create_addressbook">Create address book</string>
     <string name="create_addressbook_maybe_not_supported">Address book creation over CardDAV may not be supported by the server.</string>
     <string name="create_calendar">Create calendar</string>
+    <string name="create_calendar_time_zone">Time zone</string>
     <string name="create_calendar_time_zone_optional">Default time zone*</string>
     <string name="create_calendar_time_zone_none">—</string>
     <string name="create_calendar_type">Possible calendar entries</string>
@@ -397,9 +432,20 @@
     <string name="create_calendar_maybe_not_supported">Calendar creation over CalDAV may not be supported by the server.</string>
     <string name="create_collection_color">Color</string>
     <string name="create_collection_display_name">Title</string>
+    <string name="create_collection_display_name_required">Title is required</string>
     <string name="create_collection_home_set">Storage location</string>
+    <string name="create_collection_home_set_required">Storage location is required</string>
     <string name="create_collection_description_optional">Description*</string>
     <string name="create_collection_create">Create</string>
+    <string name="delete_collection">Delete collection</string>
+    <string name="delete_collection_confirm_title">Are you sure?</string>
+    <string name="delete_collection_data_shall_be_deleted">These data shall be deleted from the server.</string>
+    <string name="collection_force_read_only">Force read-only</string>
+    <string name="collection_properties">Properties</string>
+    <string name="collection_properties_sync_time">Ultima sincronizzazione:</string>
+    <string name="collection_properties_sync_time_never">Mai sincronizzato</string>
+    <string name="collection_properties_url">Address (URL):</string>
+    <string name="collection_properties_owner">Owner:</string>
     <string name="create_collection_optional">* optional</string>
 
     <!-- CollectionScreen -->

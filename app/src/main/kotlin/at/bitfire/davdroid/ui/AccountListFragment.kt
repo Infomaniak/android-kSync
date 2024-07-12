@@ -42,7 +42,7 @@ import androidx.work.WorkQuery
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountListBinding
 import at.bitfire.davdroid.databinding.AccountListItemBinding
-import at.bitfire.davdroid.syncadapter.SyncUtils.syncAuthorities
+import at.bitfire.davdroid.sync.SyncUtils.syncAuthorities
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.account.AccountActivity
 import at.bitfire.davdroid.ui.account.AppWarningsModel
@@ -304,7 +304,7 @@ class AccountListFragment: Fragment() {
              */
             fun fromAccount(context: Context, account: Account): SyncStatus {
                 // Add contacts authority, so sync status of address-book-accounts is also checked
-                val workerNames = syncAuthorities(context, true).map { authority ->
+                val workerNames = syncAuthorities(context).map { authority ->
                     SyncWorker.workerName(account, authority)
                 }
                 val workQuery = WorkQuery.Builder

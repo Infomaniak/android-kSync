@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="@string/create_collection_description"
+                android:hint="@string/create_collection_description_optional"
                 app:helperText="@string/create_collection_optional"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 app:layout_constraintStart_toStartOf="parent"

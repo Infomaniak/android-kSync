@@ -13,12 +13,16 @@ import androidx.core.graphics.drawable.toBitmap
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import at.bitfire.davdroid.syncadapter.AccountsUpdatedListener
-import at.bitfire.davdroid.syncadapter.SyncUtils
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.UiUtils
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.logging.Level
 import javax.inject.Inject
 import kotlin.concurrent.thread

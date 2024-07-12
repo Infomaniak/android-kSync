@@ -10,6 +10,7 @@
   <string name="field_required">Feld wird benötigt</string>
   <string name="help">Hilfe</string>
   <string name="manage_accounts">Konten verwalten</string>
+  <string name="no_internet_sync_scheduled">Kein Internet, Synchronisierung wird geplant</string>
   <string name="navigate_up">Aufwärts navigieren</string>
   <string name="optional_label">* optional</string>
   <string name="options_menu">Auswahlmenü</string>
@@ -99,6 +100,7 @@
   <string name="about_build_date">Erstellt am %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) und Mitwirkende</string>
   <string name="about_license_info_no_warranty">Dieses Programm wird OHNE JEDE GEWÄHRLEISTUNG bereitgestellt. Es ist freie Software – Sie können es also unter bestimmten Bedingungen weiterverbreiten.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Dank an: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">Protokolldatei konnte nicht angelegt werden</string>
   <string name="logging_notification_text">Alle %s-Aktivitäten werden protokolliert</string>
@@ -110,6 +112,7 @@
   <string name="navigation_drawer_subtitle">CalDAV/CardDAV-Sync-Adapter</string>
   <string name="navigation_drawer_about">Über / Lizenz</string>
   <string name="navigation_drawer_beta_feedback">Beta-Rückmeldung</string>
+  <string name="install_email_client">Bitte installieren Sie eine E-Mail-Anwendung</string>
   <string name="install_browser">Bitte installieren Sie einen Web-Browser</string>
   <string name="navigation_drawer_settings">Einstellungen</string>
   <string name="navigation_drawer_news_updates">Aktuelles</string>
@@ -188,6 +191,11 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_permissions_action">Berechtigungen</string>
+  <string name="account_no_address_books">(Noch) keine Adressbücher vorhanden</string>
+  <string name="account_no_calendars">(Noch) keine Kalender vorhanden</string>
+  <string name="account_no_webcals">(Noch) keine Kalender-Abos vorhanden</string>
+  <string name="account_swipe_down">Nach unten wischen, um neue Einträge am Server zu suchen.</string>
   <string name="account_missing_permissions">Für die Synchronisierung dieser Ordner sind zusätzliche Berechtigungen erforderlich.</string>
   <string name="account_manage_permissions">Berechtigungen verwalten</string>
   <string name="account_synchronize_now">Jetzt synchronisieren</string>
@@ -208,7 +216,9 @@
   <string name="account_journal">Journal</string>
   <string name="account_task_list">Aufgaben</string>
   <string name="account_only_personal">Nur eigene anzeigen</string>
+  <string name="account_create_new_calendar">Neuen Kalender erstellen</string>
   <string name="account_refresh_collections">Liste aktualisieren</string>
+  <string name="account_create_new_address_book">Neues Adressbuch erstellen</string>
   <string name="account_webcal_external_app">Webcal-Abonnements können mit externen Apps synchronisiert werden.</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
@@ -270,6 +280,7 @@
   <string name="login_logs_available">Weitere technische Informationen sind den Protokollen zu entnehmen.</string>
   <string name="login_view_logs">Logs anzeigen</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Einstellungen: %s</string>
   <string name="settings_sync">Synchronisierung</string>
   <string name="settings_sync_interval_contacts">Häufigkeit der Kontakte-Synchronisierung</string>
   <string name="settings_sync_summary_manually">Nur manuell</string>
@@ -290,6 +301,7 @@
   <string name="settings_sync_wifi_only_off">Verbindungstyp wird nicht beachtet</string>
   <string name="settings_sync_wifi_only_ssids">WLAN-SSID-Beschränkung</string>
   <string name="settings_sync_wifi_only_ssids_on">Synchronisierung nur über %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronisierung nur über %s (benötigt aktive Standortdienste)</string>
   <string name="settings_sync_wifi_only_ssids_off">Alle WLAN-Verbindungen werden verwendet</string>
   <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
@@ -336,6 +348,7 @@
   <string name="create_addressbook">Adressbuch erstellen</string>
   <string name="create_addressbook_maybe_not_supported">Das Erstellen von Adressbüchern über CardDAV wird vom Server möglicherweise nicht unterstützt.</string>
   <string name="create_calendar">Kalender anlegen</string>
+  <string name="create_calendar_time_zone">Zeitzone</string>
   <string name="create_calendar_time_zone_optional">Standard-Zeitzone*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Mögliche Kalendereinträge</string>
@@ -345,9 +358,20 @@
   <string name="create_calendar_maybe_not_supported">Das Erstellen von Kalendern über CardDAV wird vom Server möglicherweise nicht unterstützt.</string>
   <string name="create_collection_color">Farbe</string>
   <string name="create_collection_display_name">Titel</string>
+  <string name="create_collection_display_name_required">Ein Titel wird benötigt</string>
   <string name="create_collection_home_set">Speicherort</string>
+  <string name="create_collection_home_set_required">Speicherort wird benötigt</string>
   <string name="create_collection_description_optional">Beschreibung*</string>
   <string name="create_collection_create">Erstellen</string>
+  <string name="delete_collection">Ordner löschen</string>
+  <string name="delete_collection_confirm_title">Sind Sie sicher?</string>
+  <string name="delete_collection_data_shall_be_deleted">Diese Daten sollen vom Server gelöscht werden.</string>
+  <string name="collection_force_read_only">Schreibschutz erzwingen</string>
+  <string name="collection_properties">Eigenschaften</string>
+  <string name="collection_properties_sync_time">Zuletzt synchronisiert:</string>
+  <string name="collection_properties_sync_time_never">Nie synchronisiert</string>
+  <string name="collection_properties_url">Adresse (URL):</string>
+  <string name="collection_properties_owner">Besitzer:</string>
   <string name="create_collection_optional">* optional</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Ordner löschen</string>

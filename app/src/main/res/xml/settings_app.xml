@@ -23,8 +23,8 @@
         <SwitchPreferenceCompat
             android:key="battery_optimization"
             android:title="@string/app_settings_battery_optimization"
-            android:summaryOn="@string/app_settings_battery_optimization_whitelisted"
-            android:summaryOff="@string/app_settings_battery_optimization_not_whitelisted"/>
+            android:summaryOn="@string/app_settings_battery_optimization_exempted"
+            android:summaryOff="@string/app_settings_battery_optimization_optimized"/>
 
     </PreferenceCategory>
 

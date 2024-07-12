@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.account
 
@@ -11,6 +11,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.ContactsContract
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
@@ -30,6 +31,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
@@ -51,16 +53,20 @@ import at.bitfire.davdroid.databinding.AccountCollectionsBinding
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
 import at.bitfire.davdroid.ui.PermissionsActivity
+import at.bitfire.davdroid.util.TaskUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.coroutineContext
+import kotlin.math.acos
 
 @AndroidEntryPoint
 abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -220,12 +226,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         @CallSuper
         override fun onPrepareMenu(menu: Menu) {
             menu.findItem(R.id.showOnlyPersonal).let { showOnlyPersonal ->
-                accountModel.showOnlyPersonal.value?.let { value ->
-                    showOnlyPersonal.isChecked = value
-                }
-                accountModel.showOnlyPersonalWritable.value?.let { writable ->
-                    showOnlyPersonal.isEnabled = writable
-                }
+                showOnlyPersonal.isChecked =
+                    accountModel.accountSettings.getShowOnlyPersonal().onlyPersonal
+                showOnlyPersonal.isEnabled =
+                    !accountModel.accountSettings.getShowOnlyPersonal().locked
             }
         }
 
@@ -311,7 +315,9 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
         // cache task provider
         val taskProvider by lazy { TaskUtils.currentProvider(getApplication()) }
 
-        val hasWriteableCollections = db.homeSetDao().hasBindableByServiceLive(serviceId)
+        val hasWriteableCollections = db.homeSetDao().getBindableByServiceFlow(serviceId)
+            .flowOn(Dispatchers.Default)
+            .asLiveData()
         val collectionColors = db.collectionDao().colorsByServiceLive(serviceId)
         val collections: LiveData<PagingData<Collection>> =
             accountModel.showOnlyPersonal.switchMap { onlyPersonal ->
@@ -333,7 +339,10 @@ abstract class CollectionsFragment: Fragment(), SwipeRefreshLayout.OnRefreshList
             }
 
         // observe RefreshCollectionsWorker status
-        val isRefreshing = RefreshCollectionsWorker.exists(getApplication(), RefreshCollectionsWorker.workerName(serviceId))
+        val isRefreshing = RefreshCollectionsWorker.existsFlow(
+            getApplication(),
+            RefreshCollectionsWorker.workerName(serviceId)
+        ).flowOn(Dispatchers.Default).asLiveData()
 
         // observe SyncWorker state
         private val authorities =

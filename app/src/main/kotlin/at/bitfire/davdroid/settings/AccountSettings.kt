@@ -9,6 +9,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.provider.CalendarContract
+import android.util.Log
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R

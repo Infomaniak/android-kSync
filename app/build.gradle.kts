@@ -8,7 +8,14 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.hilt)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.ksp)
+}
+
+aboutLibraries {
+    // This means that we have to generate the dependencies explicitly:
+    // ./gradlew --no-configuration-cache --no-build-cache -PaboutLibraries.exportPath=src/main/res/raw/ app:exportLibraryDefinitions
+    registerAndroidTasks = false
 }
 
 // Android configuration
@@ -50,6 +57,8 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+        viewBinding = true
+        dataBinding = true
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
@@ -136,6 +145,13 @@ dependencies {
     // core
     implementation(libs.kotlin.stdlib)
     implementation(libs.kotlinx.coroutines)
+    // TODO: Reorder:
+    implementation(libs.jaredrummler.colorpicker)
+    implementation(libs.android.flexbox)
+    implementation(libs.androidx.cardView)
+    implementation(libs.androidx.constraintLayout)
+    implementation(libs.android.material)
+    implementation(libs.androidx.databinding.runtime)
     coreLibraryDesugaring(libs.android.desugaring)
 
     // Hilt
@@ -148,6 +164,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.browser)
     implementation(libs.androidx.core)
+    implementation(libs.androidx.fragment)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.lifecycle.runtime.compose)
@@ -157,6 +174,7 @@ dependencies {
     implementation(libs.androidx.paging.compose)
     implementation(libs.androidx.preference)
     implementation(libs.androidx.security)
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.work.base)
 
     // Jetpack Compose
@@ -187,6 +205,7 @@ dependencies {
     implementation(libs.bitfire.vcard4android)
 
     // third-party libs
+    implementation(libs.appintro)
     implementation(libs.commons.collections)
     @Suppress("RedundantSuppression")
     implementation(libs.commons.io)
@@ -200,7 +219,6 @@ dependencies {
     implementation(libs.okhttp.brotli)
     implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
-    implementation(libs.unifiedpush)
 
     // kSync
     implementation(libs.login.infomaniak)

@@ -11,6 +11,7 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.hilt.work.HiltWorker
+import androidx.lifecycle.map
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.ExistingWorkPolicy
@@ -44,7 +45,7 @@ import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.ui.DebugInfoActivity
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
-import at.bitfire.davdroid.ui.account.AccountSettingsActivity
+import at.bitfire.davdroid.ui.account.SettingsActivity
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.map

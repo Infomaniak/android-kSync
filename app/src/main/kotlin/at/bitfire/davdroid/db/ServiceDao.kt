@@ -4,6 +4,8 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.lifecycle.LiveData
+import androidx.room.ColumnInfo
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -19,8 +21,8 @@ interface ServiceDao {
     @Query("SELECT * FROM service WHERE accountName=:accountName AND type=:type")
     fun getByAccountAndTypeFlow(accountName: String, type: String): Flow<Service?>
 
-    @Query("SELECT id FROM service WHERE accountName=:accountName")
-    suspend fun getIdsByAccountAsync(accountName: String): List<Long>
+    @Query("SELECT type, id FROM service WHERE accountName=:accountName")
+    fun getServiceTypeAndIdsByAccount(accountName: String): LiveData<List<ServiceTypeAndId>>
 
     @Query("SELECT * FROM service WHERE id=:id")
     fun get(id: Long): Service?
@@ -38,6 +40,10 @@ interface ServiceDao {
     fun deleteExceptAccounts(accountNames: Array<String>)
 
     @Query("UPDATE service SET accountName=:newName WHERE accountName=:oldName")
-    suspend fun renameAccount(oldName: String, newName: String)
+    fun renameAccount(oldName: String, newName: String)
 
+    data class ServiceTypeAndId(
+        @ColumnInfo(name = "type") val type: String,
+        @ColumnInfo(name = "id") val id: Long
+    )
 }

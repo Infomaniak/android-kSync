@@ -33,10 +33,12 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 object TaskUtils {
 
@@ -200,4 +202,11 @@ object TaskUtils {
         }
     }
 
+    fun setPreferredProvider(context: Context, providerName: ProviderName) {
+        val settingsManager = EntryPointAccessors.fromApplication(context, TaskUtilsEntryPoint::class.java).settingsManager()
+        settingsManager.putString(Settings.PREFERRED_TASKS_PROVIDER, providerName.authority)
+        CoroutineScope(Dispatchers.Default).launch {
+            SyncUtils.updateTaskSync(context)
+        }
+    }
 }

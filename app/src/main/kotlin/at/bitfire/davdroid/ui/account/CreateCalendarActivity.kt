@@ -5,41 +5,107 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
+import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import androidx.activity.compose.setContent
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.TaskStackBuilder
-import at.bitfire.davdroid.ui.AppTheme
+import androidx.core.app.NavUtils
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.databinding.ActivityCreateCalendarBinding
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.db.Service
+import at.bitfire.davdroid.ui.HomeSetAdapter
+import at.bitfire.ical4android.util.DateUtils
+import com.jaredrummler.android.colorpicker.ColorPickerDialog
+import com.jaredrummler.android.colorpicker.ColorPickerDialogListener
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.launch
+import net.fortuna.ical4j.model.Calendar
+import org.apache.commons.lang3.StringUtils
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
+import java.util.TimeZone
+import java.util.UUID
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class CreateCalendarActivity: AppCompatActivity() {
+class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
     }
 
-    val account by lazy {
-        intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            AppTheme {
-                CreateCalendarScreen(
-                    account = account,
-                    onNavUp = ::onSupportNavigateUp,
-                    onFinish = ::finish
-                )
+    @Inject lateinit var modelFactory: Model.Factory
+    val model by viewModels<Model> {
+        object: ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                val account = intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+                return modelFactory.create(account) as T
             }
         }
     }
 
-    override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
+    lateinit var binding: ActivityCreateCalendarBinding
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_calendar)
+        binding.lifecycleOwner = this
+        binding.model = model
+
+        binding.color.setOnClickListener {
+            ColorPickerDialog.newBuilder()
+                    .setShowAlphaSlider(false)
+                    .setColor((binding.color.background as ColorDrawable).color)
+                    .show(this)
+        }
+
+        val homeSetAdapter = HomeSetAdapter(this)
+        model.homeSets.observe(this) { homeSets ->
+            homeSetAdapter.clear()
+            if (homeSets.isNotEmpty()) {
+                homeSetAdapter.addAll(homeSets)
+                val firstHomeSet = homeSets.first()
+                binding.homeset.setText(firstHomeSet.url.toString(), false)
+                model.homeSet = firstHomeSet
+            }
+        }
+        binding.homeset.setAdapter(homeSetAdapter)
+        binding.homeset.setOnItemClickListener { parent, _, position, _ ->
+            model.homeSet = parent.getItemAtPosition(position) as HomeSet?
+        }
+
+        binding.timezone.setAdapter(TimeZoneAdapter(this))
+        binding.timezone.setText(TimeZone.getDefault().id, false)
+    }
 
     override fun onColorSelected(dialogId: Int, rgb: Int) {
         model.color.value = rgb
@@ -196,13 +262,14 @@ class CreateCalendarActivity: AppCompatActivity() {
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
-                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
+                    db.homeSetDao()
+                        .getBindableByAccountAndServiceTypeFlow(account.name, service.type)
+                        .collect { homesets ->
+                            homeSets.postValue(homesets)
+                        }
                 }
             }
         }
 
-    override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
-        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
     }
-
 }

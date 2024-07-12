@@ -13,11 +13,11 @@ object M3ColorScheme {
 
     // All colors hand-crafted because Material Theme Builder generates unbelievably ugly colors
 
-    val primaryLight = Color(0xFF7cb342)
+    val primaryLight = Color(0xFF0098ff)
     val onPrimaryLight = Color(0xFFffffff)
     val primaryContainerLight = Color(0xFFb4e47d)
     val onPrimaryContainerLight = Color(0xFF232d18)
-    val secondaryLight = Color(0xFFff7f2a)
+    val secondaryLight = Color(0xFF0098ff)
     val onSecondaryLight = Color(0xFFFFFFFF)
     val secondaryContainerLight = Color(0xFFffa565)
     val onSecondaryContainerLight = Color(0xFF3a271b)
@@ -49,7 +49,7 @@ object M3ColorScheme {
     val surfaceContainerHighLight = Color(0xFFf0f0ef)
     val surfaceContainerHighestLight = Color(0xFFebebea)
 
-    val primaryDark = Color(0xFFc4e3a4)
+    val primaryDark = Color(0xFF0098ff)
     val onPrimaryDark = Color(0xFF2b4310)
     val primaryContainerDark = Color(0xFF7cb342)
     val onPrimaryContainerDark = Color(0xFFedf5e4)

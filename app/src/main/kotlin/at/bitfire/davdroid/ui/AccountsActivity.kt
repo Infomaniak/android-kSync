@@ -67,13 +67,6 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             }
         }
 
-    private val introActivityLauncher = registerForActivityResult(IntroActivity.Contract) { cancelled ->
-        if (cancelled) {
-            finish()
-        }
-    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

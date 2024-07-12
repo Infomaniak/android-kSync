@@ -72,6 +72,7 @@
 
         <activity
             android:name=".ui.AccountsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -82,11 +83,13 @@
         <activity
             android:name=".ui.AboutActivity"
             android:label="@string/navigation_drawer_about"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.AccountsActivity"/>
 
         <activity
             android:name=".ui.AppSettingsActivity"
             android:label="@string/app_settings"
+            android:theme="@style/AppTheme.ActionBar"
             android:parentActivityName=".ui.AccountsActivity"
             android:exported="true">
             <intent-filter>
@@ -107,6 +110,7 @@
         <activity
             android:name=".ui.PermissionsActivity"
             android:label="@string/app_settings_security_app_permissions"
+            android:theme="@style/AppTheme.ActionBar"
             android:parentActivityName=".ui.AppSettingsActivity" />
         <activity
             android:name=".ui.TasksActivity"
@@ -144,24 +148,26 @@
 
         <activity
             android:name=".ui.account.AccountActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.AccountsActivity"
             android:exported="true">
         </activity>
         <activity
-            android:name=".ui.account.CollectionActivity"
-            android:parentActivityName=".ui.account.AccountActivity" />
-        <activity
             android:name=".ui.account.CreateAddressBookActivity"
+            android:theme="@style/AppTheme.NoActionBar"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity
             android:name=".ui.account.CreateCalendarActivity"
+            android:theme="@style/AppTheme.ActionBar"
+            android:label="@string/create_calendar"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity
-            android:name=".ui.account.AccountSettingsActivity"
+            android:name=".ui.account.SettingsActivity"
+            android:theme="@style/AppTheme.ActionBar"
             android:parentActivityName=".ui.account.AccountActivity" />
         <activity
             android:name=".ui.account.WifiPermissionsActivity"
-            android:parentActivityName=".ui.account.AccountSettingsActivity" />
+            android:parentActivityName=".ui.account.SettingsActivity" />
 
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"
@@ -169,8 +175,8 @@
             android:parentActivityName=".ui.AccountsActivity" />
         <activity
             android:name=".ui.webdav.AddWebdavMountActivity"
-            android:parentActivityName=".ui.webdav.WebdavMountsActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:label="@string/webdav_add_mount_title"
+            android:parentActivityName=".ui.webdav.WebdavMountsActivity" />
 
         <!-- account type "DAVx⁵" -->
         <service

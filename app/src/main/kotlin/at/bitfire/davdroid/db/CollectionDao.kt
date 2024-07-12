@@ -4,6 +4,7 @@
 
 package at.bitfire.davdroid.db
 
+import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
@@ -17,11 +18,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface CollectionDao {
 
+    @Query("SELECT DISTINCT color FROM collection WHERE serviceId=:id")
+    fun colorsByServiceLive(id: Long): LiveData<List<Int>>
+
     @Query("SELECT * FROM collection WHERE id=:id")
     fun get(id: Long): Collection?
 
     @Query("SELECT * FROM collection WHERE id=:id")
-    fun getFlow(id: Long): Flow<Collection?>
+    fun getLive(id: Long): LiveData<Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId")
     fun getByService(serviceId: Long): List<Collection>
@@ -43,8 +47,10 @@ interface CollectionDao {
      *   - support VEVENT and/or VTODO (= supported calendar collections), or
      *   - have supportsVEVENT = supportsVTODO = null (= address books)
      */
-    @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
-            "AND (supportsVTODO OR supportsVEVENT OR supportsVJOURNAL OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL AND supportsVJOURNAL IS NULL)) ORDER BY displayName COLLATE NOCASE, URL COLLATE NOCASE")
+    @Query(
+        "SELECT * FROM collection WHERE serviceId=:serviceId AND type=:type " +
+                "AND (supportsVTODO OR supportsVEVENT OR supportsVJOURNAL OR (supportsVEVENT IS NULL AND supportsVTODO IS NULL AND supportsVJOURNAL IS NULL)) ORDER BY displayName COLLATE NOCASE, URL COLLATE NOCASE"
+    )
     fun pageByServiceAndType(serviceId: Long, type: String): PagingSource<Int, Collection>
 
     @Query("SELECT * FROM collection WHERE serviceId=:serviceId AND sync")
@@ -85,7 +91,11 @@ interface CollectionDao {
     suspend fun updateForceReadOnly(id: Long, forceReadOnly: Boolean)
 
     @Query("UPDATE collection SET pushSubscription=:pushSubscription, pushSubscriptionCreated=:updatedAt WHERE id=:id")
-    suspend fun updatePushSubscription(id: Long, pushSubscription: String, updatedAt: Long = System.currentTimeMillis())
+    suspend fun updatePushSubscription(
+        id: Long,
+        pushSubscription: String,
+        updatedAt: Long = System.currentTimeMillis()
+    )
 
     @Query("UPDATE collection SET sync=:sync WHERE id=:id")
     suspend fun updateSync(id: Long, sync: Boolean)

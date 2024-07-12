@@ -11,6 +11,7 @@
   <string name="help">Ayuda</string>
   <string name="manage_accounts">Administrar cuentas</string>
   <string name="navigate_up">Navegar hacia arriba</string>
+  <string name="no_internet_sync_scheduled">Sin conexión a Internet, sincronización programada</string>
   <string name="optional_label">* opcional</string>
   <string name="options_menu">Menú de opciones</string>
   <string name="share">Compartir</string>
@@ -99,6 +100,7 @@
   <string name="about_build_date">Compilada en %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) y colaboradores </string>
   <string name="about_license_info_no_warranty">Este programa viene sin NINGÚN TIPO DE GARANTÍA. Es software libre, y cualquier contribución es bienvenida y redistribuida bajo ciertas condiciones.</string>
+  <string name="about_translations_thanks"><![CDATA[<i>Agradecimientos para: </i> %s]]></string>
   <!--global settings-->
   <string name="logging_couldnt_create_file">No se puede crear el fichero del registro.</string>
   <string name="logging_notification_text">Ahora se registran todas las activdades %s </string>
@@ -110,6 +112,7 @@
   <string name="navigation_drawer_subtitle">Adaptador de sincronización CalDAV/CardDAV</string>
   <string name="navigation_drawer_about">Acerca de / Licencia</string>
   <string name="navigation_drawer_beta_feedback">Retroalimentación Beta</string>
+  <string name="install_email_client">Por favor, instale un cliente de email</string>
   <string name="install_browser">Por favor, instale un navegador web</string>
   <string name="navigation_drawer_settings">Ajustes</string>
   <string name="navigation_drawer_news_updates">Noticias y actualizaciones</string>
@@ -190,6 +193,11 @@
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
+  <string name="account_permissions_action">Permisos</string>
+  <string name="account_no_address_books">No hay libretas de direciones (todavía).</string>
+  <string name="account_no_calendars">No hay calendarios (todavía). </string>
+  <string name="account_no_webcals">No hay suscripciones a calendarios (todavía).</string>
+  <string name="account_swipe_down">Desliza hacia abajo para actualizar la lista desde el servidor. </string>
   <string name="account_missing_permissions">Se requieren permisos adicionales para sincronizar estas colecciones.</string>
   <string name="account_manage_permissions">Administrar permisos</string>
   <string name="account_synchronize_now">Sincronizar ahora</string>
@@ -210,7 +218,9 @@
   <string name="account_journal">diario</string>
   <string name="account_task_list">tareas</string>
   <string name="account_only_personal">Mostrar solo personal</string>
+  <string name="account_create_new_calendar">Crear nuevo calendario</string>
   <string name="account_refresh_collections">Recargar lista</string>
+  <string name="account_create_new_address_book">Crear nueva agenda</string>
   <string name="account_webcal_external_app">Las subscripciones webcal pueden ser sincronizadas con apps externas.</string>
   <string name="account_no_webcal_handler_found">No se encontró aplicación para administrar Webcal</string>
   <string name="account_install_icsx5">Instalar ICSx⁵</string>
@@ -272,6 +282,7 @@
   <string name="login_logs_available">Hay más información técnica disponible en los registros.</string>
   <string name="login_view_logs">Ver registros</string>
   <!--AccountSettingsActivity-->
+  <string name="settings_title">Ajustes: %s</string>
   <string name="settings_sync">Sincronización</string>
   <string name="settings_sync_interval_contacts">Intervalo de sincronización de contactos</string>
   <string name="settings_sync_summary_manually">Solo manualmente</string>
@@ -292,6 +303,7 @@
   <string name="settings_sync_wifi_only_off">Tipo de conexión no tenido en cuenta</string>
   <string name="settings_sync_wifi_only_ssids">Restricción WiFi SSID</string>
   <string name="settings_sync_wifi_only_ssids_on">Solo se sincronizará a través de %s</string>
+  <string name="settings_sync_wifi_only_ssids_on_location_services">Solo sincronizará sobre %s (requiere servicios de ubicación activos)</string>
   <string name="settings_sync_wifi_only_ssids_off">Todas las conexiones WiFi serán usadas</string>
   <string name="settings_sync_wifi_only_ssids_message">Nombres separados por comas (SSIDs) de redes WiFi permitidas (deje vacío para todas)</string>
   <string name="settings_sync_wifi_only_ssids_permissions_required">La restricción del SSID WiFi requiere más ajustes</string>
@@ -340,6 +352,7 @@
   <string name="create_addressbook">Crear nueva agenda</string>
   <string name="create_addressbook_maybe_not_supported">La creación de agendas de contactos sobre CardDAV puede no ser soportada por el servidor.</string>
   <string name="create_calendar">Crear calendario</string>
+  <string name="create_calendar_time_zone">Huso horario</string>
   <string name="create_calendar_time_zone_optional">Zona horaria por defecto*</string>
   <string name="create_calendar_time_zone_none">—</string>
   <string name="create_calendar_type">Posibles entradas de calendario</string>
@@ -349,9 +362,20 @@
   <string name="create_calendar_maybe_not_supported">La creación de calendarios sobre CalDAV puede no ser soportada por el servidor.</string>
   <string name="create_collection_color">Color</string>
   <string name="create_collection_display_name">Título </string>
+  <string name="create_collection_display_name_required">Título requerido</string>
   <string name="create_collection_home_set">Ubicación del almacenamiento</string>
+  <string name="create_collection_home_set_required">Se requiere ubicación de almacenamiento</string>
   <string name="create_collection_description_optional">Descripción*</string>
   <string name="create_collection_create">Crear</string>
+  <string name="delete_collection">Eliminar colección</string>
+  <string name="delete_collection_confirm_title">¿Estás seguro/a?</string>
+  <string name="delete_collection_data_shall_be_deleted">Estos datos se eliminarán del servidor.</string>
+  <string name="collection_force_read_only">Forzar solo-lectura</string>
+  <string name="collection_properties">Propiedades</string>
+  <string name="collection_properties_sync_time">Última sincronización:</string>
+  <string name="collection_properties_sync_time_never">Nunca sincronizado</string>
+  <string name="collection_properties_url">Dirección (URL):</string>
+  <string name="collection_properties_owner">Propietario:</string>
   <string name="create_collection_optional">* opcional</string>
   <!--CollectionScreen-->
   <string name="collection_delete">Eliminar colección</string>

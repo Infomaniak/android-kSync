@@ -4,9 +4,12 @@
 
 package at.bitfire.davdroid.ui
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.view.Menu
+import android.view.MenuItem
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,7 +35,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -61,36 +63,21 @@ val LocalCloseDrawerHandler = compositionLocalOf {
 
 abstract class AccountsDrawerHandler {
 
+    abstract fun initMenu(context: Context, menu: Menu)
+
+    abstract fun onNavigationItemSelected(activity: Activity, item: MenuItem)
+
     open class CloseDrawerHandler {
         open fun closeDrawer() {}
     }
 
-
     @Composable
-    abstract fun MenuEntries(
-        snackbarHostState: SnackbarHostState
-    )
-
-
-    @Composable
-    fun AccountsDrawer(
-        snackbarHostState: SnackbarHostState,
-        onCloseDrawer: () -> Unit
-    ) {
+    fun AccountsDrawer() {
         Column(modifier = Modifier
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
         ) {
             BrandingHeader()
-
-            val closeDrawerHandler = object : CloseDrawerHandler() {
-                override fun closeDrawer() {
-                    onCloseDrawer()
-                }
-            }
-            CompositionLocalProvider(LocalCloseDrawerHandler provides closeDrawerHandler) {
-                MenuEntries(snackbarHostState)
-            }
         }
     }
 

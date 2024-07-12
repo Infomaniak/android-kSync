@@ -3,21 +3,28 @@
 [versions]
 android-agp = "8.5.0"
 android-desugaring = "2.0.4"
+android-flexbox = "3.0.0"
+android-material = "1.12.0"
 androidx-activityCompose = "1.9.0"
 androidx-appcompat = "1.7.0"
 androidx-arch = "2.2.0"
+androidx-fragment = "1.6.2"
 androidx-browser = "1.8.0"
+androidx-cardView = "1.0.0"
+androidx-constraintLayout = "2.1.4"
 androidx-core = "1.13.1"
 androidx-hilt = "1.2.0"
 androidx-lifecycle = "2.8.3"
 androidx-paging = "3.3.0"
 androidx-preference = "1.2.1"
 androidx-security = "1.1.0-alpha06"
+androidx-swiperefreshlayout = "1.1.0"
 androidx-test-core = "1.6.1"
 androidx-test-runner = "1.6.1"
 androidx-test-rules = "1.6.1"
 androidx-test-junit = "1.2.1"
 androidx-work = "2.9.0"
+appIntro = "7.0.0-beta02"
 bitfire-cert4android = "f1cc9b9ca3"
 bitfire-dav4jvm = "b8be778202"
 bitfire-ical4android = "83cda23ceb"
@@ -33,6 +40,7 @@ compose-accompanist = "0.34.0"
 compose-bom = "2024.06.00"
 # don't update to dnsjava 3.x until API level 26 (Android 8) is the minimum API [https://github.com/bitfireAT/davx5/issues/453]
 dnsjava = "2.1.9"
+jaredrummler-colorpicker = "1.1.0"
 glance = "1.1.0"
 hilt = "2.51.1"
 #  keep in sync with * app/build.gradle.kts composeOptions.kotlinCompilerExtensionVersion
@@ -50,14 +58,20 @@ room = "2.6.1"
 # kSync
 login-infomaniak = "2.7.0"
 gson = "2.10.1"
+databindingRuntime = "8.5.0"
 
 [libraries]
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
+android-flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "android-flexbox" }
+android-material = { module = "com.google.android.material:material", version.ref = "android-material" }
 androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
+androidx-cardView = { module = "androidx.cardview:cardview", version.ref = "androidx-cardView" }
+androidx-constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintLayout" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-hilt" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
@@ -68,12 +82,14 @@ androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref =
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 androidx-security = { module = "androidx.security:security-crypto", version.ref = "androidx-security" }
+androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "androidx-swiperefreshlayout" }
 androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx-test-core" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx-test-rules" }
 androidx-test-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-test-junit" }
 androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = "androidx-work" }
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
+appintro = { module = "com.github.AppIntro:AppIntro", version.ref = "appIntro" }
 bitfire-cert4android = { module = "com.github.bitfireAT:cert4android", version.ref = "bitfire-cert4android" }
 bitfire-dav4jvm = { module = "com.github.bitfireAT:dav4jvm", version.ref = "bitfire-dav4jvm" }
 bitfire-ical4android = { module = "com.github.bitfireAT:ical4android", version.ref = "bitfire-ical4android" }
@@ -95,6 +111,7 @@ glance-material = { module = "androidx.glance:glance-material", version.ref = "g
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
 hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
+jaredrummler-colorpicker = { module = "com.jaredrummler:colorpicker", version.ref = "jaredrummler-colorpicker" }
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -114,11 +131,14 @@ room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 # kSync
 login-infomaniak = { module = "com.github.Infomaniak:android-login", version.ref = "login-infomaniak" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+androidx-databinding-runtime = { group = "androidx.databinding", name = "databinding-runtime", version.ref = "databindingRuntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+# remove when ui.widget.BindingAdapters are not required anymore
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 mikepenz-aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "mikepenz-aboutLibraries" }
