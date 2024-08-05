@@ -67,8 +67,22 @@ class AccountsActivity: AppCompatActivity(), NavigationView.OnNavigationItemSele
             }
         }
 
+    private val introActivityLauncher = registerForActivityResult(IntroActivity.Contract) { cancelled ->
+        if (cancelled) {
+            finish()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            // use a separate thread to check whether IntroActivity should be shown
+            CoroutineScope(Dispatchers.Default).launch {
+                if (IntroActivity.shouldShowIntroActivity(this@AccountsActivity))
+                    introActivityLauncher.launch(null)
+            }
+        }
 
         // handle "Sync all" intent from launcher shortcut
         val syncAccounts = intent.action == Intent.ACTION_SYNC

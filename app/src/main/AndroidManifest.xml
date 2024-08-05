@@ -65,7 +65,10 @@
         <activity android:name="net.openid.appauth.RedirectUriReceiverActivity"
             tools:node="remove" tools:selector="net.openid.appauth"/>
 
-        <activity android:name=".ui.intro.IntroActivity" />
+        <activity
+            android:name=".ui.intro.IntroActivity"
+            android:theme="@style/AppTheme.ActionBar" />
+
         <activity
             android:name="com.infomaniak.lib.login.WebViewLoginActivity"
             android:theme="@style/WebViewTheme" />
