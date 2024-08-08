@@ -33,14 +33,14 @@ import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.servicedetection.DavResourceFinder
 import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.AccountUtils
+import at.bitfire.davdroid.sync.account.AccountUtils
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -73,7 +73,7 @@ class AccountDetailsFragment : Fragment() {
         model.name.value =
             config.calDAV?.emails?.firstOrNull()
                 ?: loginModel.suggestedAccountName
-                        ?: loginModel.credentials?.userName
+                        ?: loginModel.credentials?.username
                         ?: loginModel.credentials?.certificateAlias
                         ?: loginModel.baseURI?.host
 

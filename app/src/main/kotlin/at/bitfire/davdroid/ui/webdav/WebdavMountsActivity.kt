@@ -26,6 +26,7 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -46,6 +47,7 @@ import at.bitfire.davdroid.webdav.DavDocumentsProvider
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import org.apache.commons.io.FileUtils
 import java.util.logging.Level
@@ -212,7 +214,10 @@ class WebdavMountsActivity: AppCompatActivity() {
             var mounts: List<WebDavMount>? = null
             var roots: List<WebDavDocument>? = null
             init {
-                addSource(db.webDavMountDao().getAllLive()) { newMounts ->
+                addSource(
+                    db.webDavMountDao().getAllFlow().flowOn(Dispatchers.Default).asLiveData()
+                ) { newMounts ->
+
                     mounts = newMounts
 
                     viewModelScope.launch(Dispatchers.IO) {
@@ -249,7 +254,7 @@ class WebdavMountsActivity: AppCompatActivity() {
         fun remove(mount: WebDavMount) {
             viewModelScope.launch(Dispatchers.IO) {
                 // remove mount from database
-                db.webDavMountDao().delete(mount)
+                db.webDavMountDao().deleteAsync(mount)
 
                 // remove credentials, too
                 CredentialsStore(context).setCredentials(mount.id, null)

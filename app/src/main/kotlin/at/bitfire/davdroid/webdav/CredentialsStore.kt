@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.webdav
 
@@ -9,8 +9,12 @@ import androidx.annotation.StringDef
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import at.bitfire.davdroid.db.Credentials
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class CredentialsStore(context: Context) {
+class CredentialsStore @Inject constructor(
+    @ApplicationContext context: Context
+) {
 
     @Retention(AnnotationRetention.SOURCE)
     @StringDef(
@@ -51,7 +55,7 @@ class CredentialsStore(context: Context) {
         val edit = prefs.edit()
         if (credentials != null)
             edit.putBoolean(keyName(mountId, HAS_CREDENTIALS), true)
-                .putString(keyName(mountId, USER_NAME), credentials.userName)
+                .putString(keyName(mountId, USER_NAME), credentials.username)
                 .putString(keyName(mountId, PASSWORD), credentials.password)
                 .putString(keyName(mountId, CERTIFICATE_ALIAS), credentials.certificateAlias)
         else

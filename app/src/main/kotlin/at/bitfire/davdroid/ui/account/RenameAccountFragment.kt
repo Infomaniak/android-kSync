@@ -22,10 +22,13 @@ import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,11 +51,11 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTaskList
 import at.bitfire.davdroid.settings.AccountSettings
-import at.bitfire.davdroid.syncadapter.AccountsCleanupWorker
-import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.ical4android.TaskProvider
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -97,9 +100,11 @@ class RenameAccountFragment: DialogFragment() {
             // Dispose of the Composition when the view's LifecycleOwner is destroyed
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MdcTheme {
+                AppTheme {
                     var accountName by remember { mutableStateOf(oldAccount.name) }
                     AlertDialog(
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                        shape = ShapeDefaults.Small,
                         onDismissRequest = { dismiss() },
                         title = { Text(stringResource(R.string.account_rename)) },
                         text = { Column {

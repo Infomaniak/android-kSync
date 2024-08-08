@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.webdav
 
@@ -20,7 +20,10 @@ import android.os.Build
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.os.storage.StorageManager
-import android.provider.DocumentsContract.*
+import android.provider.DocumentsContract.Document
+import android.provider.DocumentsContract.Root
+import android.provider.DocumentsContract.buildChildDocumentsUri
+import android.provider.DocumentsContract.buildRootsUri
 import android.provider.DocumentsProvider
 import android.webkit.MimeTypeMap
 import androidx.annotation.WorkerThread
@@ -29,7 +32,6 @@ import at.bitfire.dav4jvm.DavCollection
 import at.bitfire.dav4jvm.DavResource
 import at.bitfire.dav4jvm.Response
 import at.bitfire.dav4jvm.exception.HttpException
-import at.bitfire.dav4jvm.property.*
 import at.bitfire.dav4jvm.property.webdav.CurrentUserPrivilegeSet
 import at.bitfire.dav4jvm.property.webdav.DisplayName
 import at.bitfire.dav4jvm.property.webdav.GetContentLength
@@ -47,9 +49,10 @@ import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.network.MemoryCookieStore
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
 import at.bitfire.davdroid.webdav.DavDocumentsProvider.DavDocumentsActor
-import at.bitfire.davdroid.webdav.cache.HeadResponseCacheBuilder
+import at.bitfire.davdroid.webdav.cache.HeadResponseCache
 import at.bitfire.davdroid.webdav.cache.ThumbnailCache
 import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
@@ -68,7 +71,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import java.io.ByteArrayOutputStream
 import java.io.FileNotFoundException
 import java.net.HttpURLConnection
-import java.util.concurrent.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.logging.Level
 
 /**
@@ -82,6 +85,15 @@ class DavDocumentsProvider: DocumentsProvider() {
     @InstallIn(SingletonComponent::class)
     interface DavDocumentsProviderEntryPoint {
         fun appDatabase(): AppDatabase
+        fun webdavComponentBuilder(): WebdavComponentBuilder
+    }
+
+    @EntryPoint
+    @InstallIn(WebdavComponent::class)
+    interface DavDocumentsProviderWebdavEntryPoint {
+        fun credentialsStore(): CredentialsStore
+        fun headResponseCache(): HeadResponseCache
+        fun thumbnailCache(): ThumbnailCache
     }
 
     companion object {
@@ -107,15 +119,22 @@ class DavDocumentsProvider: DocumentsProvider() {
 
     private val ourContext by lazy { context!! }        // requireContext() requires API level 30
     private val authority by lazy { ourContext.getString(R.string.webdav_authority) }
+    private val globalEntryPoint by lazy { EntryPointAccessors.fromApplication<DavDocumentsProviderEntryPoint>(ourContext) }
+    private val webdavEntryPoint by lazy {
+        EntryPoints.get(
+            globalEntryPoint.webdavComponentBuilder().build(),
+            DavDocumentsProviderWebdavEntryPoint::class.java
+        )
+    }
 
-    private val db by lazy { EntryPointAccessors.fromApplication(ourContext, DavDocumentsProviderEntryPoint::class.java).appDatabase() }
+    private val db by lazy { globalEntryPoint.appDatabase() }
     private val mountDao by lazy { db.webDavMountDao() }
     private val documentDao by lazy { db.webDavDocumentDao() }
 
-    private val credentialsStore by lazy { CredentialsStore(ourContext) }
+    private val credentialsStore by lazy { webdavEntryPoint.credentialsStore() }
     private val cookieStore by lazy { mutableMapOf<Long, CookieJar>() }
-    private val headResponseCache by lazy { HeadResponseCacheBuilder.getInstance() }
-    private val thumbnailCache by lazy { ThumbnailCache.getInstance(ourContext) }
+    private val headResponseCache by lazy { webdavEntryPoint.headResponseCache() }
+    private val thumbnailCache by lazy { webdavEntryPoint.thumbnailCache() }
 
     private val connectivityManager by lazy { ourContext.getSystemService<ConnectivityManager>()!! }
     private val storageManager by lazy { ourContext.getSystemService<StorageManager>()!! }
@@ -654,7 +673,7 @@ class DavDocumentsProvider: DocumentsProvider() {
                             if (!getETag.weak)
                                 resource.eTag = resource.eTag
                         }
-                        resource.lastModified = response[GetLastModified::class.java]?.lastModified?.toInstant()?.toEpochMilli()
+                        resource.lastModified = response[GetLastModified::class.java]?.lastModified?.toEpochMilli()
                         resource.size = response[GetContentLength::class.java]?.contentLength
 
                         val privs = response[CurrentUserPrivilegeSet::class.java]

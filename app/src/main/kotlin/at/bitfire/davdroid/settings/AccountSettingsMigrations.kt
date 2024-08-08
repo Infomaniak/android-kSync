@@ -1,12 +1,16 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
 package at.bitfire.davdroid.settings
 
 import android.accounts.Account
 import android.accounts.AccountManager
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Parcel
 import android.os.RemoteException
@@ -22,8 +26,9 @@ import at.bitfire.davdroid.db.Service
 import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.resource.LocalTask
-import at.bitfire.davdroid.resource.TaskUtils
-import at.bitfire.davdroid.syncadapter.SyncUtils
+import at.bitfire.davdroid.sync.worker.BaseSyncWorker
+import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import at.bitfire.ical4android.AndroidCalendar
 import at.bitfire.ical4android.AndroidEvent
@@ -32,6 +37,9 @@ import at.bitfire.ical4android.UnknownProperty
 import at.bitfire.vcard4android.ContactsStorageException
 import at.bitfire.vcard4android.GroupMethod
 import at.techbee.jtx.JtxContract.asSyncAdapter
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import net.fortuna.ical4j.model.Property
 import net.fortuna.ical4j.model.property.Url
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -40,14 +48,36 @@ import java.io.ByteArrayInputStream
 import java.io.ObjectInputStream
 import java.util.logging.Level
 
-class AccountSettingsMigrations(
-    val context: Context,
+class AccountSettingsMigrations @AssistedInject constructor(
+    @Assisted val account: Account,
+    @Assisted val accountSettings: AccountSettings,
+    val context: Application,
     val db: AppDatabase,
-    val settings: SettingsManager,
-    val account: Account,
-    val accountManager: AccountManager,
-    val accountSettings: AccountSettings
+    val settings: SettingsManager
 ) {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(account: Account, accountSettings: AccountSettings): AccountSettingsMigrations
+    }
+
+
+    val accountManager: AccountManager = AccountManager.get(context)
+
+
+    /**
+     * Updates the periodic sync workers by re-setting the same sync interval.
+     *
+     * The goal is to add the [BaseSyncWorker.commonTag] to all existing periodic sync workers so that they can be detected by
+     * the new [BaseSyncWorker.exists] and [at.bitfire.davdroid.ui.AccountsActivity.Model].
+     */
+    @Suppress("unused","FunctionName")
+    fun update_14_15() {
+        for (authority in SyncUtils.syncAuthorities(context)) {
+            val interval = accountSettings.getSyncInterval(authority)
+            accountSettings.setSyncInterval(authority, interval ?: AccountSettings.SYNC_INTERVAL_MANUALLY)
+        }
+    }
 
     /**
      * Disables all sync adapter periodic syncs for every authority. Then enables
@@ -55,7 +85,6 @@ class AccountSettingsMigrations(
      */
     @Suppress("unused","FunctionName")
     fun update_13_14() {
-
         // Cancel any potentially running syncs for this account (sync framework)
         ContentResolver.cancelSync(account, null)
 
@@ -253,13 +282,11 @@ class AccountSettingsMigrations(
             provider.client.update(tasksUri, emptyETag, "${TaskContract.Tasks._DIRTY}=0 AND ${TaskContract.Tasks._DELETED}=0", null)
         }
 
-        @SuppressLint("Recycle")
         if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) == PackageManager.PERMISSION_GRANTED)
-            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.let { provider ->
+            context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
                 provider.update(
                     CalendarContract.Calendars.CONTENT_URI.asSyncAdapter(account),
                     AndroidCalendar.calendarBaseValues, null, null)
-                provider.close()
             }
     }
 
@@ -323,9 +350,9 @@ class AccountSettingsMigrations(
     }
 
     @Suppress("unused")
-    @SuppressLint("Recycle", "ParcelClassLoader")
+    @SuppressLint("ParcelClassLoader")
     private fun update_5_6() {
-        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.let { provider ->
+        context.contentResolver.acquireContentProviderClient(ContactsContract.AUTHORITY)?.use { provider ->
             val parcel = Parcel.obtain()
             try {
                 // don't run syncs during the migration
@@ -376,7 +403,6 @@ class AccountSettingsMigrations(
                 throw ContactsStorageException("Couldn't migrate contacts to new address book", e)
             } finally {
                 parcel.recycle()
-                provider.close()
             }
         }
 
@@ -392,7 +418,7 @@ class AccountSettingsMigrations(
     @Suppress("unused")
     private fun update_4_5() {
         // call PackageChangedReceiver which then enables/disables OpenTasks sync when it's (not) available
-        SyncUtils.updateTaskSync(context)
+        TaskUtils.selectProvider(context, TaskUtils.currentProvider(context))
     }
 
     @Suppress("unused")

@@ -8,6 +8,8 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.view.MenuItem
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
@@ -67,5 +69,4 @@ class OseAccountsDrawerHandler @Inject constructor(): BaseAccountsDrawerHandler(
                 super.onNavigationItemSelected(activity, item)
         }
     }
-
 }

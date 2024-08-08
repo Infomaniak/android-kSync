@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui
 import android.accounts.Account
@@ -32,21 +32,21 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarDuration
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -82,13 +82,12 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.syncadapter.PeriodicSyncWorker
+import at.bitfire.davdroid.sync.worker.PeriodicSyncWorker
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.ui.widget.CardWithImage
+import at.bitfire.davdroid.ui.composable.CardWithImage
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.ical4android.TaskProvider.ProviderName
 import at.techbee.jtx.JtxContract
-import com.google.accompanist.themeadapter.material.MdcTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -182,7 +181,7 @@ class DebugInfoActivity : AppCompatActivity() {
         }
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 val debugInfo by model.debugInfo.observeAsState()
                 val zipProgress by model.zipProgress.observeAsState(false)
 
@@ -321,7 +320,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     remoteResource?.let {
                         Text(
                             text = stringResource(R.string.debug_info_involved_remote),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
                             text = it,
@@ -332,7 +331,7 @@ class DebugInfoActivity : AppCompatActivity() {
                     localResource?.let {
                         Text(
                             text = stringResource(R.string.debug_info_involved_local),
-                            style = MaterialTheme.typography.body1
+                            style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
                             text = it,
@@ -778,7 +777,7 @@ class DebugInfoActivity : AppCompatActivity() {
 
                 val credentials = accountSettings.credentials()
                 val authStr = mutableListOf<String>()
-                if (credentials.userName != null)
+                if (credentials.username != null)
                     authStr += "user name"
                 if (credentials.password != null)
                     authStr += "password"

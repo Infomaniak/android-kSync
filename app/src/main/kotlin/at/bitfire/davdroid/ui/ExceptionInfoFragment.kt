@@ -10,12 +10,14 @@ import android.os.Bundle
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Error
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,7 +29,6 @@ import androidx.core.os.BundleCompat
 import androidx.fragment.app.DialogFragment
 import at.bitfire.dav4jvm.exception.HttpException
 import at.bitfire.davdroid.R
-import com.google.accompanist.themeadapter.material.MdcTheme
 import java.io.IOException
 
 class ExceptionInfoFragment: DialogFragment() {
@@ -55,7 +56,7 @@ class ExceptionInfoFragment: DialogFragment() {
             setContentView(
                 ComposeView(requireContext()).apply {
                     setContent {
-                        MdcTheme {
+                        AppTheme {
                             ExceptionInfoDialog(
                                 account, exception
                             ) { dismiss() }
@@ -86,6 +87,8 @@ fun ExceptionInfoDialog(
     }
 
     AlertDialog(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+        shape = ShapeDefaults.Small,
         onDismissRequest = onDismissRequest,
         title = {
             Row(

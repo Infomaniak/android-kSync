@@ -9,6 +9,7 @@
   <string name="field_required">Questo campo è necessario</string>
   <string name="help">Aiuto</string>
   <string name="manage_accounts">Gestione account</string>
+  <string name="no_internet_sync_scheduled">Senza connessione a Internet, sincronizzazione programmata</string>
   <string name="share">Condividi</string>
   <string name="database_destructive_migration_title">Database danneggiato</string>
   <string name="database_destructive_migration_text">Tutti gli account sono stati rimossi localmente.</string>
@@ -26,8 +27,6 @@
   <string name="intro_slogan1">Tuoi i dati. Tua la scelta.</string>
   <string name="intro_slogan2">Riprendi il controllo.</string>
   <string name="intro_battery_title">Intervalli di sincronizzazione regolari.</string>
-  <string name="intro_battery_not_whitelisted">Disabilitato (sconsigliato)</string>
-  <string name="intro_battery_whitelisted">Abilitato (scelta consigliata)</string>
   <string name="intro_battery_text">Per sincronizzare i dati a intervalli regolari, %s deve essere autorizzato a girare in background. Altrimenti Android può mettere in pausa gli aggiornamenti in qualunque momento.</string>
   <string name="intro_battery_dont_show">Non ho bisogno di sincronizzare a intervalli di tempo regolari.*</string>
   <string name="intro_autostart_title">%s compatibilità</string>
@@ -39,6 +38,7 @@
   <string name="intro_tasks_text1">Se le attività sono supportate dal tuo server, possono essere sincronizzate con una app per attività supportata:</string>
   <string name="intro_tasks_opentasks">OpenTasks</string>
   <string name="intro_tasks_opentasks_info">Non sembra essere più sviluppato - non raccomandato.</string>
+  <string name="intro_tasks_tasks_org">Tasks.org</string>
   <string name="intro_tasks_tasks_org_info"><![CDATA[Alcune funzionalità <a href="https://www.davx5.com/faq/tasks/advanced-task-features"> non sono (ancora) supportate </a>.]]></string>
   <string name="intro_tasks_no_app_store">Nessun app store disponibile</string>
   <string name="intro_tasks_dont_show">Non ho bisogno del supporto alle attività.*</string>
@@ -63,7 +63,6 @@
   <string name="permissions_notification_status_on">Notifiche attive</string>
   <string name="permissions_opentasks_title">Autorizzazioni di OpenTasks</string>
   <string name="permissions_tasksorg_title">Autorizzazioni delle attività</string>
-  <string name="permissions_tasks_status_not_installed">Attività non sincronizzate (app non installata)</string>
   <string name="permissions_tasks_status_on">Permette di sincronizzare le attività</string>
   <string name="permissions_autoreset_title">Mantieni autorizzazioni</string>
   <string name="permissions_autoreset_status_off">Le autorizzazioni possono essere reimpostate automaticamente (sconsigliato)</string>
@@ -79,8 +78,6 @@
   <string name="wifi_permissions_location_permission_off">Negare l\'autorizzazione della posizione</string>
   <string name="wifi_permissions_background_location_permission">Autorizzazione della posizione in background</string>
   <string name="wifi_permissions_background_location_permission_label">Permettere sempre</string>
-  <string name="wifi_permissions_background_location_permission_on"><![CDATA[Permesso della posizione impostato all\' <b>%s</b>]]></string>
-  <string name="wifi_permissions_background_location_permission_off"><![CDATA[Autorizzazione della posizione non impostato all\'<b> 1%s</b>]]></string>
   <string name="wifi_permissions_background_location_disclaimer">1%s utilizza l\'autorizzazione della posizione solo per determinare l\'SSID del WIFI attuale per gli account SSID-limitati. Questo accade anche quando l\'applicazione è in modalità background. Nessun dato sulla posizione è raccolto, salvato, processato o mandato da qualche parte.</string>
   <string name="wifi_permissions_location_enabled">Posizione sempre disabilitata</string>
   <string name="wifi_permissions_location_enabled_on">Servizio di posizione abiltato</string>
@@ -91,7 +88,6 @@
   <string name="about_version">Versione %1$s (%2$d)</string>
   <string name="about_build_date">Compilato su %s</string>
   <string name="about_copyright">© Ricki Hirner, Bernhard Stockmann (bitfire web engineering GmbH) e contibutori</string>
-  <string name="about_flavor_info">Questa versione è idonea solo per la distribuzione tramite Google Play</string>
   <string name="about_license_info_no_warranty">Il programma è distribuito SENZA ALCUNA GARANZIA. È software libero e può essere redistribuito sotto alcune condizioni.</string>
   <string name="about_translations_thanks"><![CDATA[<i>Grazie a: </i>%s]]></string>
   <!--global settings-->
@@ -115,7 +111,6 @@
   <string name="navigation_drawer_manual">Manuale</string>
   <string name="navigation_drawer_faq">Domande Frequenti</string>
   <string name="navigation_drawer_community">Comunità</string>
-  <string name="navigation_drawer_donate">Donazione</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="account_list_empty">Benvenuto a kSync!\n\nÈ ora possibile aggiungere account CalDAV/CardDAV.</string>
   <string name="accounts_global_sync_disabled">La sincronizzazione automatica dell\'intero sistema è disabilitata</string>
@@ -136,8 +131,6 @@
   <string name="app_settings_logging_on">Log attivo</string>
   <string name="app_settings_logging_off">Log disabilitato</string>
   <string name="app_settings_battery_optimization">Ottimizzazione batteria</string>
-  <string name="app_settings_battery_optimization_whitelisted">La app è in lista bianca (raccomandato)</string>
-  <string name="app_settings_battery_optimization_not_whitelisted">La app non è in lista bianca (non raccomandato)</string>
   <string name="app_settings_connection">Connessione</string>
   <string name="app_settings_proxy">Tipo di proxy</string>
   <string-array name="app_settings_proxy_types">
@@ -171,17 +164,11 @@
   <string name="app_settings_reset_hints_success">I suggerimenti verranno mostrati</string>
   <string name="app_settings_integration">Integrazione</string>
   <string name="app_settings_tasks_provider">Funzioni dell\'applicazione</string>
-  <string name="app_settings_tasks_provider_synchronizing_with">Sincronizzazione con %s</string>
   <string name="app_settings_tasks_provider_none">Nessuna applicazione compatibile con e funzionalità trovata</string>
-  <!--AccountActivity-->
+  <!--AccountScreen-->
   <string name="account_carddav">CardDAV</string>
   <string name="account_caldav">CalDAV</string>
   <string name="account_webcal">Webcal</string>
-  <string name="account_carddav_missing_permissions">I contatti non sono sincronizzati (autorizzazioni mancanti)</string>
-  <string name="account_caldav_missing_calendar_permissions">Il calendario non è sincronizzato (autorizzazioni mancanti)</string>
-  <string name="account_caldav_missing_tasks_permissions">Le attività non sono sincronizzate (autorizzazioni mancanti)</string>
-  <string name="account_caldav_missing_permissions">Il calendario e le attività non sono sincronizzati (autorizzazioni mancanti)</string>
-  <string name="account_webcal_missing_calendar_permissions">Impossibile leggere i calendari (autorizzazioni mancanti)</string>
   <string name="account_permissions_action">Autorizzazioni</string>
   <string name="account_no_address_books">Non ci sono rubriche indirizzi (ancora)</string>
   <string name="account_no_calendars">Non ci sono calendari (ancora)</string>
@@ -199,39 +186,29 @@
   <string name="account_synchronize_this_collection">Sincronizza questa raccolta</string>
   <string name="account_read_only">sola lettura</string>
   <string name="account_calendar">calendario</string>
-  <string name="account_task_list">elenco attività</string>
   <string name="account_only_personal">Mostra solo personale</string>
-  <string name="account_refresh_address_book_list">Aggiorna elenco degli indirizzari</string>
-  <string name="account_create_new_address_book">Crea un nuovo indirizzario</string>
-  <string name="account_refresh_calendar_list">Aggiorna lista calendari</string>
   <string name="account_create_new_calendar">Crea nuovo calendario</string>
   <string name="account_no_webcal_handler_found">Non ho trovato nessuna applicazione abilitata per Webcal</string>
+  <string name="account_create_new_address_book">Crea un nuovo indirizzario</string>
   <string name="account_install_icsx5">Installa ICSx⁵</string>
   <!--AddAccountActivity-->
   <string name="login_title">Aggiungi account</string>
+  <string name="login_login">Login</string>
   <string name="login_type_email">Accedi con indirizzo email</string>
   <string name="login_email_address">Indirizzo email</string>
   <string name="login_email_address_error">È necessario un indirizzo email valido</string>
   <string name="login_password">Password</string>
-  <string name="login_password_required">Password richiesta</string>
   <string name="login_type_url">Accedi con URL e nome utente</string>
-  <string name="login_url_must_be_http_or_https">L\'URL deve iniziare con http(s)://</string>
   <string name="login_user_name">Nome utente</string>
-  <string name="login_user_name_required">Nome utente richiesto</string>
   <string name="login_base_url">Base URL</string>
   <string name="login_select_certificate">Seleziona certificato</string>
-  <string name="login_login">Login</string>
   <string name="login_create_account">Crea account</string>
   <string name="login_account_name">Nome account</string>
-  <string name="login_account_avoid_apostrophe">L\'utilizzo di apostrofi (\') potrebbe causare problemi su alcuni dispositivi.</string>
   <string name="login_account_name_info">Inserisci il tuo indirizzo email come nome dell\'account in quanto Android userà il nome dell\'account nel campo ORGANIZER degli eventi creati. Non è possibile avere due account con nome uguale.</string>
   <string name="login_account_contact_group_method">Metodo del contact group:</string>
   <string name="login_account_name_required">Richiesto il nome dell\'account</string>
   <string name="login_account_name_already_taken">Nome account già usato</string>
   <string name="login_account_not_created">L\'account non può essere creato</string>
-  <string name="login_type_advanced">Login avanzato (utilizzo per casi speciali)</string>
-  <string name="login_use_username_password">Utilizza il nome utente/password</string>
-  <string name="login_use_client_certificate">Usa il certificato del client</string>
   <string name="login_no_certificate_found">Nessun certificato trovato</string>
   <string name="login_install_certificate">Installa il certificato</string>
   <string name="login_type_google">Contatti Google / Calendario</string>
@@ -241,9 +218,8 @@
   <string name="login_nextcloud_login_with_nextcloud">Accedi con Nextcloud</string>
   <string name="login_configuration_detection">Rilevazione configurazione</string>
   <string name="login_querying_server">Attendere, invio richiesta al server…</string>
-  <string name="login_no_caldav_carddav">Impossibile trovare servizi CalDAV o CardDAV.</string>
-  <string name="login_username_password_wrong">Nome utente (indirizzo email) / password sbagliata?</string>
-  <string name="login_view_logs">Visualizza dettagli</string>
+  <string name="login_no_service">Impossibile trovare servizi CalDAV o CardDAV.</string>
+  <string name="login_view_logs">Vedi i registri</string>
   <!--AccountSettingsActivity-->
   <string name="settings_title">Impostazioni: %s</string>
   <string name="settings_sync">Sincronizzazione</string>
@@ -276,12 +252,9 @@
   <string name="settings_ignore_vpns_off">La VPN senza una connessione internet validata è sufficiente per lanciare la sincronizzazione</string>
   <string name="settings_authentication">Autenticazione</string>
   <string name="settings_username">Nome utente</string>
-  <string name="settings_enter_username">Inserisci nome utente:</string>
   <string name="settings_password">Password</string>
   <string name="settings_password_summary">Aggiorna la password come sul tuo server.</string>
-  <string name="settings_enter_password">Inserisci la tua password:</string>
-  <string name="settings_certificate_alias">Alias certificato cliente</string>
-  <string name="settings_certificate_alias_empty">Nessun certificato selezionato</string>
+  <string name="settings_certificate_install">Installa il certificato</string>
   <string name="settings_caldav">CalDAV</string>
   <string name="settings_sync_time_range_past">Limite di tempo per gli eventi trascorsi</string>
   <string name="settings_sync_time_range_past_none">Verranno sincronizzati tutti gli eventi</string>
@@ -312,7 +285,7 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
     <item>I gruppi sono vCards separate</item>
     <item>I gruppi sono categorie per ogni contatto</item>
   </string-array>
-  <!--collection management-->
+  <!--CreateAddressBookScreen, CreateCalendarScreen-->
   <string name="create_addressbook">Crea rubrica</string>
   <string name="create_calendar">Crea calendario</string>
   <string name="create_calendar_time_zone">Fuso orario</string>
@@ -321,22 +294,25 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="create_calendar_type_vtodo">Attività</string>
   <string name="create_calendar_type_vjournal">Note / diario</string>
   <string name="create_collection_color">Colore</string>
-  <string name="create_collection_creating">Crea una raccolta</string>
   <string name="create_collection_display_name">Titolo</string>
   <string name="create_collection_display_name_required">Il titolo è richiesto</string>
-  <string name="create_collection_description">Descrizione</string>
-  <string name="create_collection_optional">opzionale</string>
   <string name="create_collection_home_set">Percorso di archiviazione</string>
   <string name="create_collection_home_set_required">É richiesta una memoria di stoccaggio</string>
   <string name="create_collection_create">Crea</string>
   <string name="delete_collection">Elimina raccolta</string>
   <string name="delete_collection_confirm_title">Sei sicuro?</string>
-  <string name="delete_collection_confirm_warning">Questa raccolta (%s) e tutti i suoi dati saranno rimossi permanentemente.</string>
+  <string name="collection_properties">Proprietà</string>
   <string name="delete_collection_data_shall_be_deleted">Questi dati saranno cancellati dal server.</string>
   <string name="collection_force_read_only">Forza sola lettura</string>
-  <string name="collection_properties">Proprietà</string>
+  <string name="collection_properties_sync_time">Dernièrement synchronisé :</string>
+  <string name="collection_properties_sync_time_never">Jamais synchronisé</string>
   <string name="collection_properties_url">Indirizzo (URL):</string>
   <string name="collection_properties_owner">Possessore:</string>
+  <!--CollectionScreen-->
+  <string name="collection_delete">Elimina raccolta</string>
+  <string name="collection_synchronization">Sincronizzazione</string>
+  <string name="collection_title">Titolo</string>
+  <string name="collection_description">Descrizione</string>
   <!--debugging and DebugInfoActivity-->
   <string name="debug_info_title">Informazioni di debug</string>
   <string name="debug_info_archive_caption">Archivio ZIP</string>
@@ -399,6 +375,8 @@ Lasciare vuoto per non creare un promemoria predefinito.</string>
   <string name="sync_invalid_event">Evento non valido ricevuto dal server</string>
   <string name="sync_invalid_task">Attività non valida ricevuta dal server</string>
   <string name="sync_invalid_resources_ignoring">Una o più risorse non valide ignorate</string>
+  <!--widgets-->
+  <string name="widget_sync_all_accounts">Sincronizzazione di tutti gli account</string>
   <!--cert4android-->
   <string name="certificate_notification_connection_security">kSync: sicurezza della connessione</string>
   <string name="trust_certificate_unknown_certificate_found">kSync ha trovato un certificato sconosciuto. Ritenerlo affidabile?</string>

@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.util
 
@@ -20,6 +20,8 @@ import org.xbill.DNS.SRVRecord
 import org.xbill.DNS.SimpleResolver
 import org.xbill.DNS.TXTRecord
 import java.net.InetAddress
+import java.net.URI
+import java.net.URISyntaxException
 import java.util.LinkedList
 import java.util.Locale
 import java.util.TreeMap
@@ -206,4 +208,9 @@ object DavUtils {
     fun MediaType.sameTypeAs(other: MediaType) =
         type == other.type && subtype == other.subtype
 
+    fun String.toURIorNull(): URI? = try {
+        URI(this)
+    } catch (_: URISyntaxException) {
+        null
+    }
 }

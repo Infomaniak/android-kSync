@@ -108,9 +108,9 @@ class DetectConfigurationFragment: Fragment() {
         val model by activityViewModels<LoginModel>()
 
         override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-            var message = getString(R.string.login_no_caldav_carddav)
+            var message = getString(R.string.login_no_service)
             if (model.configuration?.encountered401 == true)
-                message += "\n\n" + getString(R.string.login_username_password_wrong)
+                message += "\n\n" + getString(R.string.login_check_credentials)
 
             return MaterialAlertDialogBuilder(requireActivity())
                     .setTitle(R.string.login_configuration_detection)

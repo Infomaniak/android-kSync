@@ -16,8 +16,8 @@ import android.view.ViewGroup
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -31,17 +31,21 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
-import com.google.accompanist.themeadapter.material.MdcTheme
+import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.util.TaskUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -58,7 +62,6 @@ class CollectionInfoFragment: DialogFragment() {
             frag.arguments = args
             return frag
         }
-
     }
 
     @Inject lateinit var modelFactory: Model.Factory
@@ -73,7 +76,7 @@ class CollectionInfoFragment: DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return ComposeView(requireContext()).apply {
             setContent {
-                MdcTheme {
+                AppTheme {
                     CollectionInfoDialog()
                 }
             }
@@ -86,7 +89,7 @@ class CollectionInfoFragment: DialogFragment() {
             // URL
             val collectionState = model.collection.observeAsState()
             collectionState.value?.let { collection ->
-                Text(stringResource(R.string.collection_properties_url), style = MaterialTheme.typography.h5)
+                Text(stringResource(R.string.collection_properties_url), style = MaterialTheme.typography.headlineSmall)
                 SelectionContainer {
                     Text(collection.url.toString(), modifier = Modifier.padding(bottom = 16.dp), fontFamily = FontFamily.Monospace)
                 }
@@ -95,14 +98,14 @@ class CollectionInfoFragment: DialogFragment() {
             // Owner
             val owner = model.owner.observeAsState()
             owner.value?.let { principal ->
-                Text(stringResource(R.string.collection_properties_owner), style = MaterialTheme.typography.h5)
+                Text(stringResource(R.string.collection_properties_owner), style = MaterialTheme.typography.headlineSmall)
                 Text(principal.displayName ?: principal.url.toString(), Modifier.padding(bottom = 16.dp))
             }
 
             // Last synced (for all applicable authorities)
             val lastSyncedState = model.lastSynced.observeAsState()
             lastSyncedState.value?.let { lastSynced ->
-                Text(stringResource(R.string.collection_properties_sync_time), style = MaterialTheme.typography.h5)
+                Text(stringResource(R.string.collection_properties_sync_time), style = MaterialTheme.typography.headlineSmall)
                 if (lastSynced.isEmpty())
                     Text(stringResource(R.string.collection_properties_sync_time_never))
                 else
@@ -136,25 +139,28 @@ class CollectionInfoFragment: DialogFragment() {
         }
 
         val lastSynced: LiveData<Map<String, Long>> =   // map: app name -> last sync timestamp
-            db.syncStatsDao().getLiveByCollectionId(collectionId).map { syncStatsList ->
-                // map: authority -> syncStats
-                val syncStatsMap = syncStatsList.associateBy { it.authority }
+            db.syncStatsDao().getByCollectionIdFlow(collectionId)
+                .flowOn(Dispatchers.Default)
+                .asLiveData()
+                .map { syncStatsList ->
+                    // map: authority -> syncStats
+                    val syncStatsMap = syncStatsList.associateBy { it.authority }
 
-                val interestingAuthorities = listOfNotNull(
-                    ContactsContract.AUTHORITY,
-                    CalendarContract.AUTHORITY,
-                    TaskUtils.currentProvider(getApplication())?.authority
-                )
+                    val interestingAuthorities = listOfNotNull(
+                        ContactsContract.AUTHORITY,
+                        CalendarContract.AUTHORITY,
+                        TaskUtils.currentProvider(getApplication())?.authority
+                    )
 
-                val result = mutableMapOf<String, Long>()
-                // map (authority name) -> (app name, last sync timestamp)
-                for (authority in interestingAuthorities) {
-                    val lastSync = syncStatsMap[authority]?.lastSync
-                    if (lastSync != null)
-                        result[getAppNameFromAuthority(authority)] = lastSync
+                    val result = mutableMapOf<String, Long>()
+                    // map (authority name) -> (app name, last sync timestamp)
+                    for (authority in interestingAuthorities) {
+                        val lastSync = syncStatsMap[authority]?.lastSync
+                        if (lastSync != null)
+                            result[getAppNameFromAuthority(authority)] = lastSync
+                    }
+                    result
                 }
-                result
-           }
 
         /**
          * Tries to find the application name for given authority. Returns the authority if not

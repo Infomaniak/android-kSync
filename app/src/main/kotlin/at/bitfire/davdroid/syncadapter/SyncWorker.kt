@@ -41,6 +41,12 @@ import at.bitfire.davdroid.network.ConnectionUtils.internetAvailable
 import at.bitfire.davdroid.network.ConnectionUtils.wifiAvailable
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.AddressBookSyncer
+import at.bitfire.davdroid.sync.CalendarSyncer
+import at.bitfire.davdroid.sync.JtxSyncer
+import at.bitfire.davdroid.sync.SyncUtils
+import at.bitfire.davdroid.sync.Syncer
+import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
 import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
@@ -185,7 +191,7 @@ class SyncWorker @AssistedInject constructor(
                     // If this is a sub sync worker (address book sync), add the main account tag as well
                     if (account.type == context.getString(R.string.account_type_address_book)) {
                         val mainAccount = LocalAddressBook.mainAccount(context, account)
-                        addTag(workerName(mainAccount, authority))
+                        mainAccount?.let { workerName(it, authority) }?.let { addTag(it) }
                     }
                 }
 
@@ -332,7 +338,7 @@ class SyncWorker @AssistedInject constructor(
         // What are we going to sync? Select syncer based on authority
         val syncer: Syncer = when (authority) {
             applicationContext.getString(R.string.address_books_authority) ->
-                AddressBookSyncer(applicationContext, expedited)
+                AddressBookSyncer(applicationContext)
             CalendarContract.AUTHORITY ->
                 CalendarSyncer(applicationContext)
             ContactsContract.AUTHORITY ->

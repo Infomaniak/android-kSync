@@ -18,10 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Checkbox
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.Text
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -46,10 +46,9 @@ import androidx.lifecycle.ViewModel
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.settings.SettingsManager
-import at.bitfire.davdroid.ui.intro.OpenSourceFragment.Model.Companion.SETTING_NEXT_DONATION_POPUP
-import at.bitfire.davdroid.ui.widget.CardWithImage
-import at.bitfire.davdroid.ui.widget.SafeAndroidUriHandler
-import com.google.accompanist.themeadapter.material.MdcTheme
+import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.composable.CardWithImage
+import at.bitfire.davdroid.ui.composable.SafeAndroidUriHandler
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -64,7 +63,7 @@ class OpenSourceFragment: Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MdcTheme {
+                AppTheme {
                     var dontShow by remember { mutableStateOf(model.dontShow.get()) }
 
                     val uriHandler = SafeAndroidUriHandler(LocalContext.current)
@@ -131,7 +130,7 @@ class OpenSourceFragment: Fragment() {
                     )
                     Text(
                         text = stringResource(R.string.intro_open_source_dont_show),
-                        style = MaterialTheme.typography.body2,
+                        style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.clickable { onChangeDontShow(!dontShow) }
                     )
                 }

@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui
 
@@ -16,6 +16,7 @@ import android.view.*
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.text.HtmlCompat
@@ -32,14 +33,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import at.bitfire.davdroid.App
 import at.bitfire.davdroid.BuildConfig
+import at.bitfire.davdroid.Constants
+import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AboutBinding
 import at.bitfire.davdroid.databinding.AboutLanguagesBinding
 import at.bitfire.davdroid.databinding.AboutTranslationBinding
 import at.bitfire.davdroid.databinding.ActivityAboutBinding
 import at.bitfire.davdroid.log.Logger
-import com.google.accompanist.themeadapter.material.MdcTheme
-import com.mikepenz.aboutlibraries.ui.compose.LibrariesContainer
+import com.mikepenz.aboutlibraries.ui.compose.m3.LibrariesContainer
 import dagger.BindsOptionalOf
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -249,7 +251,7 @@ class AboutActivity: AppCompatActivity() {
         override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
             ComposeView(requireContext()).apply {
                 setContent {
-                    MdcTheme {
+                    AppTheme {
                         LibrariesContainer(
                             Modifier.fillMaxSize()
                         )

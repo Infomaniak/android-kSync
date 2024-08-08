@@ -29,7 +29,8 @@ class AddressBooksFragment: CollectionsFragment() {
 
         override fun onPrepareMenu(menu: Menu) {
             super.onPrepareMenu(menu)
-            menu.findItem(R.id.create_address_book).isVisible = model.hasWriteableCollections.value ?: false
+            menu.findItem(R.id.create_address_book).isVisible =
+                model.hasWriteableCollections.value?.isNotEmpty() ?: false
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -61,7 +62,7 @@ class AddressBooksFragment: CollectionsFragment() {
         if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CONTACT_PERMISSIONS))
             binding.permissionsCard.visibility = View.GONE
         else {
-            binding.permissionsText.setText(R.string.account_carddav_missing_permissions)
+            binding.permissionsText.setText(R.string.account_missing_permissions)
             binding.permissionsCard.visibility = View.VISIBLE
         }
     }

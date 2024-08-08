@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.webdav
 
@@ -38,7 +38,7 @@ data class HeadResponse(
                         eTag = getETag.eTag
                 }
                 response.header("Last-Modified", null)?.let {
-                    lastModified = HttpUtils.parseDate(it)?.toInstant()
+                    lastModified = HttpUtils.parseDate(it)
                 }
                 response.headers["Content-Length"]?.let {
                     size = it.toLong()

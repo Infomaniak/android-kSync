@@ -7,7 +7,7 @@
         android:checkable="true" />
 
     <item android:id="@+id/refresh"
-        android:title="@string/account_refresh_address_book_list"
+        android:title="@string/account_refresh_collections"
         app:showAsAction="never"/>
 
     <item android:id="@+id/create_address_book"

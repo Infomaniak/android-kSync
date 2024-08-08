@@ -6,7 +6,7 @@
         android:checkable="true" />
 
     <item android:id="@+id/refresh"
-          android:title="@string/account_refresh_calendar_list" />
+          android:title="@string/account_refresh_collections" />
 
     <item android:id="@+id/create_calendar"
           android:title="@string/account_create_new_calendar"/>

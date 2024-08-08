@@ -16,6 +16,9 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.Settings
 import at.bitfire.davdroid.settings.SettingsManager
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -23,7 +26,14 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.MutableStateFlow
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationService
-import okhttp3.*
+import okhttp3.Cache
+import okhttp3.ConnectionSpec
+import okhttp3.CookieJar
+import okhttp3.Interceptor
+import okhttp3.OkHttp
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
+import okhttp3.Response
 import okhttp3.brotli.BrotliInterceptor
 import okhttp3.internal.tls.OkHostnameVerifier
 import okhttp3.logging.HttpLoggingInterceptor
@@ -34,22 +44,21 @@ import java.net.Socket
 import java.security.KeyStore
 import java.security.Principal
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import java.util.logging.Level
-import javax.net.ssl.*
+import javax.net.ssl.KeyManager
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509ExtendedKeyManager
+import javax.net.ssl.X509TrustManager
 
-class HttpClient private constructor(
-    val okHttpClient: OkHttpClient,
-    private var authService: AuthorizationService? = null
+class HttpClient @AssistedInject constructor(
+    @Assisted val okHttpClient: OkHttpClient,
+    @Assisted private var authService: AuthorizationService? = null,
+    val settingsManager: SettingsManager
 ): AutoCloseable {
-
-    @EntryPoint
-    @InstallIn(SingletonComponent::class)
-    interface HttpClientEntryPoint {
-        fun authorizationService(): AuthorizationService
-        fun settingsManager(): SettingsManager
-    }
 
     companion object {
         /** max. size of disk cache (10 MB) */
@@ -84,6 +93,12 @@ class HttpClient private constructor(
                 .addInterceptor(UserAgentInterceptor)
     }
 
+    @AssistedFactory
+    interface Factory {
+        fun create(okHttpClient: OkHttpClient, authService: AuthorizationService?): HttpClient
+    }
+
+
     override fun close() {
         authService?.dispose()
         okHttpClient.cache?.close()
@@ -96,6 +111,16 @@ class HttpClient private constructor(
         val logger: java.util.logging.Logger? = Logger.log,
         val loggerLevel: HttpLoggingInterceptor.Level = HttpLoggingInterceptor.Level.BODY
     ) {
+
+        @EntryPoint
+        @InstallIn(SingletonComponent::class)
+        interface HttpClientBuilderEntryPoint {
+            fun authorizationService(): AuthorizationService
+            fun httpClientFactory(): HttpClient.Factory
+            fun settingsManager(): SettingsManager
+        }
+
+        private val entryPoint = EntryPointAccessors.fromApplication<HttpClientBuilderEntryPoint>(context)
 
         fun interface CertManagerProducer {
             fun certManager(): CustomCertManager
@@ -121,7 +146,7 @@ class HttpClient private constructor(
                 orig.addNetworkInterceptor(loggingInterceptor)
             }
 
-            val settings = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).settingsManager()
+            val settings = entryPoint.settingsManager()
 
             // custom proxy support
             try {
@@ -167,8 +192,8 @@ class HttpClient private constructor(
         }
 
         fun addAuthentication(host: String?, credentials: Credentials, insecurePreemptive: Boolean = false, authStateCallback: BearerAuthInterceptor.AuthStateUpdateCallback? = null): Builder {
-            if (credentials.userName != null && credentials.password != null) {
-                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.userName, credentials.password, insecurePreemptive)
+            if (credentials.username != null && credentials.password != null) {
+                val authHandler = BasicDigestAuthHandler(UrlUtils.hostToDomain(host), credentials.username, credentials.password, insecurePreemptive)
                 orig.addNetworkInterceptor(authHandler)
                     .authenticator(authHandler)
             }
@@ -177,7 +202,7 @@ class HttpClient private constructor(
                 certificateAlias = credentials.certificateAlias
 
             credentials.authState?.let { authState ->
-                val newAuthService = EntryPointAccessors.fromApplication(context, HttpClientEntryPoint::class.java).authorizationService()
+                val newAuthService = entryPoint.authorizationService()
                 authService = newAuthService
                 BearerAuthInterceptor.fromAuthState(newAuthService, authState, authStateCallback)?.let { bearerAuthInterceptor ->
                     orig.addNetworkInterceptor(bearerAuthInterceptor)
@@ -286,7 +311,7 @@ class HttpClient private constructor(
                 orig.hostnameVerifier(hostnameVerifier)
             }
 
-            return HttpClient(orig.build(), authService = authService)
+            return entryPoint.httpClientFactory().create(orig.build(), authService = authService)
         }
 
     }

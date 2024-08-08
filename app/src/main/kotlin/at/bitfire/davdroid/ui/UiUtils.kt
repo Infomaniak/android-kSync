@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui
 
@@ -21,7 +21,7 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.browser.customtabs.CustomTabsClient
-import androidx.compose.material.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.painter.BitmapPainter
@@ -86,7 +86,7 @@ object UiUtils {
      * @return true on success, false if the Intent could not be resolved (for instance, because
      * there is no user agent installed)
      */
-    @Deprecated("Use SafeAndroidUriHandler (Compose) instead")
+    @Deprecated("Use LocalUriHandler.open() instead (Compose)")
     fun launchUri(context: Context, uri: Uri, action: String = Intent.ACTION_VIEW, toastInstallBrowser: Boolean = true): Boolean {
         val intent = Intent(action, uri)
         try {
@@ -102,7 +102,7 @@ object UiUtils {
         return false
     }
 
-    fun setTheme(context: Context) {
+    fun updateTheme(context: Context) {
         val settings = EntryPointAccessors.fromApplication(context, UiUtilsEntryPoint::class.java).settingsManager()
         val mode = settings.getIntOrNull(Settings.PREFERRED_THEME) ?: Settings.PREFERRED_THEME_DEFAULT
         AppCompatDelegate.setDefaultNightMode(mode)
@@ -129,10 +129,9 @@ object UiUtils {
     @OptIn(ExperimentalTextApi::class)
     @Composable
     fun Spanned.toAnnotatedString() = buildAnnotatedString {
-        val style = LocalTextStyle.current.toSpanStyle()
-        pushStyle(style)
         val spanned = this@toAnnotatedString
         append(spanned.toString())
+
         for (span in getSpans<Any>(0, spanned.length)) {
             val start = getSpanStart(span)
             val end = getSpanEnd(span)
@@ -140,11 +139,11 @@ object UiUtils {
                 is StyleSpan ->
                     when (span.style) {
                         Typeface.BOLD -> addStyle(
-                            style.copy(fontWeight = FontWeight.Bold),
+                            SpanStyle(fontWeight = FontWeight.Bold),
                             start = start, end = end
                         )
                         Typeface.ITALIC -> addStyle(
-                            style.copy(fontStyle = FontStyle.Italic),
+                            SpanStyle(fontStyle = FontStyle.Italic),
                             start = start, end = end
                         )
                     }
@@ -154,7 +153,10 @@ object UiUtils {
                         start = start, end = end
                     )
                     addStyle(
-                        style.copy(textDecoration = TextDecoration.Underline),
+                        SpanStyle(
+                            textDecoration = TextDecoration.Underline,
+                            color = MaterialTheme.colorScheme.primary
+                        ),
                         start = start, end = end
                     )
                 }

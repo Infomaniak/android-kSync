@@ -27,12 +27,12 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.Composable
@@ -65,9 +65,9 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
-import com.google.accompanist.themeadapter.material.MdcTheme
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -228,20 +228,20 @@ fun GoogleLogin(
     onLogin: (accountEmail: String, clientId: String?) -> Unit
 ) {
     val context = LocalContext.current
-    MdcTheme {
+    AppTheme {
         Column(
             Modifier
                 .padding(8.dp)
                 .verticalScroll(rememberScrollState())) {
             Text(
                 stringResource(R.string.login_type_google),
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.padding(vertical = 16.dp))
 
             Card(Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(8.dp)) {
                     Row {
-                        Image(Icons.Default.Warning, colorFilter = ColorFilter.tint(MaterialTheme.colors.onSurface), contentDescription = "",
+                        Image(Icons.Default.Warning, colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSurface), contentDescription = "",
                             modifier = Modifier.padding(top = 8.dp, end = 8.dp, bottom = 8.dp))
                         Text(stringResource(R.string.login_google_see_tested_with))
                     }
@@ -323,7 +323,7 @@ fun GoogleLogin(
                     .padding(top = 8.dp)
                     .wrapContentSize(),
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = MaterialTheme.colors.surface
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             ) {
                 Image(
@@ -343,7 +343,7 @@ fun GoogleLogin(
                 stringResource(R.string.login_google_client_privacy_policy, context.getString(R.string.app_name), App.homepageUrl(context, App.HOMEPAGE_PRIVACY)), 0).toAnnotatedString()
             ClickableText(
                 privacyPolicyNote,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 onClick = { position ->
                     privacyPolicyNote.getUrlAnnotations(position, position).firstOrNull()?.let {
                         UiUtils.launchUri(context, it.item.url.toUri())
@@ -355,7 +355,7 @@ fun GoogleLogin(
                 stringResource(R.string.login_google_client_limited_use, context.getString(R.string.app_name), GoogleLoginFragment.GOOGLE_POLICY_URL), 0).toAnnotatedString()
             ClickableText(
                 limitedUseNote,
-                style = MaterialTheme.typography.body2,
+                style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(top = 12.dp),
                 onClick = { position ->
                     limitedUseNote.getUrlAnnotations(position, position).firstOrNull()?.let {

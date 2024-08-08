@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.account
 
@@ -29,14 +29,13 @@ import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.Credentials
 import at.bitfire.davdroid.log.Logger
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.syncadapter.Syncer
 import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.setup.GoogleLoginFragment
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
 import com.google.android.material.snackbar.Snackbar
@@ -260,23 +259,23 @@ class SettingsActivity: AppCompatActivity() {
                     // prefPassword.isVisible = true kSync
                     prefCertAlias.isVisible = false // kSync
 
-                    prefUserName.summary = credentials.userName
-                    prefUserName.text = credentials.userName
+                    prefUserName.summary = credentials.username
+                    prefUserName.text = credentials.username
                     prefUserName.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newUserName ->
                         val newUserNameOrNull = StringUtils.trimToNull(newUserName as String)
                         model.updateCredentials(Credentials(
-                            userName = newUserNameOrNull,
+                            username = newUserNameOrNull,
                             password = credentials.password,
                             certificateAlias = credentials.certificateAlias)
                         )
                         false
                     }
 
-                    if (credentials.userName != null) {
+                    if (credentials.username != null) {
                         prefPassword.isVisible = isWrongCredentials // kSync
                         prefCategory.isVisible = isWrongCredentials // kSync
                         prefPassword.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newPassword ->
-                            model.updateCredentials(Credentials(credentials.userName, newPassword as String, credentials.certificateAlias))
+                            model.updateCredentials(Credentials(credentials.username, newPassword as String, credentials.certificateAlias))
                             false
                         }
                     } else
@@ -285,7 +284,7 @@ class SettingsActivity: AppCompatActivity() {
                     prefCertAlias.summary = credentials.certificateAlias ?: getString(R.string.settings_certificate_alias_empty)
                     prefCertAlias.setOnPreferenceClickListener {
                         KeyChain.choosePrivateKeyAlias(requireActivity(), { newAlias ->
-                            model.updateCredentials(Credentials(credentials.userName, credentials.password, newAlias))
+                            model.updateCredentials(Credentials(credentials.username, credentials.password, newAlias))
                         }, null, null, null, -1, credentials.certificateAlias)
                         true
                     }

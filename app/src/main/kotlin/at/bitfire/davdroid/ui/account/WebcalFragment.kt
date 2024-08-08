@@ -102,7 +102,7 @@ class WebcalFragment: CollectionsFragment() {
         if (PermissionUtils.havePermissions(requireActivity(), PermissionUtils.CALENDAR_PERMISSIONS))
             binding.permissionsCard.visibility = View.GONE
         else {
-            binding.permissionsText.setText(R.string.account_webcal_missing_calendar_permissions)
+            binding.permissionsText.setText(R.string.account_missing_permissions)
             binding.permissionsCard.visibility = View.VISIBLE
         }
     }

@@ -1,57 +1,69 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Button
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.db.AppDatabase
 import at.bitfire.davdroid.db.Collection
 import at.bitfire.davdroid.db.HomeSet
 import at.bitfire.davdroid.db.Service
-import com.google.accompanist.themeadapter.material.MdcTheme
+import at.bitfire.davdroid.ui.AppTheme
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.apache.commons.lang3.StringUtils
@@ -82,7 +94,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         setContent {
-            MdcTheme {
+            AppTheme {
                 val displayName by model.displayName.observeAsState()
                 val description by model.description.observeAsState()
                 val homeSet by model.homeSet.observeAsState()
@@ -187,7 +199,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
 
             Text(
                 text = stringResource(R.string.create_collection_home_set),
-                style = MaterialTheme.typography.body1,
+                style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
@@ -204,7 +216,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
                         )
                         Text(
                             text = item.displayName ?: item.url.encodedPath,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -213,6 +225,7 @@ class CreateAddressBookActivity: AppCompatActivity() {
         }
     }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun TopBar(isCreateEnabled: Boolean) {
         TopAppBar(
@@ -224,10 +237,11 @@ class CreateAddressBookActivity: AppCompatActivity() {
             },
             actions = {
                 IconButton(
+                    modifier = Modifier.defaultMinSize(minWidth = 55.dp),
                     enabled = isCreateEnabled,
                     onClick = ::onCreateCollection
                 ) {
-                    Text(stringResource(R.string.create_collection_create).uppercase())
+                    Text(style = MaterialTheme.typography.bodyMedium, overflow = TextOverflow.Visible, maxLines = 1, text = stringResource(R.string.create_collection_create).uppercase())
                 }
             }
         )
@@ -288,15 +302,18 @@ class CreateAddressBookActivity: AppCompatActivity() {
         init {
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
-                db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
-                    val homesets = db.homeSetDao().getBindableByService(service.id)
-                    homeSets.postValue(homesets)
+                db.serviceDao()
+                    .getByAccountAndType(account.name, Service.TYPE_CARDDAV)?.let { service ->
+                        db.homeSetDao()
+                            .getBindableByAccountAndServiceTypeFlow(account.name, service.type)
+                            .collect { homesets ->
+                                homeSets.postValue(homesets)
 
-                    if (homeSet.value == null)
-                        homeSet.postValue(homesets.firstOrNull())
+                                if (homeSet.value == null)
+                                    homeSet.postValue(homesets.firstOrNull())
+                            }
                 }
             }
         }
     }
-
 }

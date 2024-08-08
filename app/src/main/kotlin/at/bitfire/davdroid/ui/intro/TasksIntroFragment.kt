@@ -10,12 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import at.bitfire.davdroid.App
-import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.ui.TasksFragment
+import at.bitfire.davdroid.util.TaskUtils
 import javax.inject.Inject
 
 class TasksIntroFragment : Fragment() {

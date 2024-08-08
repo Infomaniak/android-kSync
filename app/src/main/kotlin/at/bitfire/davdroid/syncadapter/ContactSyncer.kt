@@ -13,6 +13,8 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.network.HttpClient
 import at.bitfire.davdroid.resource.LocalAddressBook
 import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.sync.ContactsSyncManager
+import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.util.setAndVerifyUserData
 import java.util.logging.Level
 
@@ -56,7 +58,7 @@ class ContactSyncer(context: Context): Syncer(context) {
             Logger.log.info("Synchronizing address book: ${addressBook.url}")
             Logger.log.info("Taking settings from: ${addressBook.mainAccount}")
 
-            ContactsSyncManager(context, account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook).performSync()
+            ContactsSyncManager(account, accountSettings, httpClient.value, extras, authority, syncResult, provider, addressBook, context, db).performSync()
         } catch(e: Exception) {
             Logger.log.log(Level.SEVERE, "Couldn't sync contacts", e)
         }

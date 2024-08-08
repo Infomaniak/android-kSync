@@ -18,7 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 /**
  * Default menu items control
  */
-abstract class BaseAccountsDrawerHandler: AccountsDrawerHandler {
+abstract class BaseAccountsDrawerHandler: AccountsDrawerHandler() {
 
     companion object {
         private const val BETA_FEEDBACK_URI = "mailto:play@bitfire.at?subject=${BuildConfig.APPLICATION_ID}/${BuildConfig.VERSION_NAME} feedback (${BuildConfig.VERSION_CODE})"

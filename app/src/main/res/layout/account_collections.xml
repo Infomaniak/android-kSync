@@ -42,7 +42,7 @@
                     app:layout_constraintEnd_toStartOf="@id/permissionsBtn"
                     app:layout_constraintBottom_toBottomOf="parent"
                     style="@style/TextAppearance.MaterialComponents.Body1"
-                    android:text="@string/account_caldav_missing_permissions" />
+                    android:text="@string/account_missing_permissions" />
                 <Button
                     android:id="@+id/permissionsBtn"
                     android:layout_height="wrap_content"

@@ -9,6 +9,7 @@ import android.accounts.AccountManager
 import android.accounts.OnAccountsUpdateListener
 import android.content.Context
 import androidx.annotation.AnyThread
+import at.bitfire.davdroid.sync.account.AccountsCleanupWorker
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

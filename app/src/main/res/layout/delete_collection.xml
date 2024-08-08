@@ -27,7 +27,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="@{@string/delete_collection_confirm_warning(model.collectionInfo.title())}" />
+                android:text="@{@string/collection_delete_warning(model.collectionInfo.title())}" />
 
             <ProgressBar
                 android:id="@+id/progress"

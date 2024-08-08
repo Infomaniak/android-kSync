@@ -16,8 +16,8 @@ import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.databinding.AccountCaldavItemBinding
 import at.bitfire.davdroid.db.Collection
-import at.bitfire.davdroid.resource.TaskUtils
 import at.bitfire.davdroid.util.PermissionUtils
+import at.bitfire.davdroid.util.TaskUtils
 
 class CalendarsFragment: CollectionsFragment() {
 
@@ -30,7 +30,8 @@ class CalendarsFragment: CollectionsFragment() {
 
         override fun onPrepareMenu(menu: Menu) {
             super.onPrepareMenu(menu)
-            menu.findItem(R.id.create_calendar).isVisible = model.hasWriteableCollections.value ?: false
+            menu.findItem(R.id.create_calendar).isVisible =
+                model.hasWriteableCollections.value?.isNotEmpty() ?: false
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -68,11 +69,7 @@ class CalendarsFragment: CollectionsFragment() {
         if (calendarPermissions && tasksPermissions)
             binding.permissionsCard.visibility = View.GONE
         else {
-            binding.permissionsText.setText(when {
-                !calendarPermissions && tasksPermissions -> R.string.account_caldav_missing_calendar_permissions
-                calendarPermissions && !tasksPermissions -> R.string.account_caldav_missing_tasks_permissions
-                else -> R.string.account_caldav_missing_permissions
-            })
+            binding.permissionsText.setText(R.string.account_missing_permissions)
             binding.permissionsCard.visibility = View.VISIBLE
         }
     }

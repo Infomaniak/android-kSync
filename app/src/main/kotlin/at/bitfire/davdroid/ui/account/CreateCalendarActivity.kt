@@ -1,6 +1,6 @@
-/***************************************************************************************************
+/*
  * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
- **************************************************************************************************/
+ */
 
 package at.bitfire.davdroid.ui.account
 
@@ -23,6 +23,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.R
@@ -40,6 +41,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import net.fortuna.ical4j.model.Calendar
 import org.apache.commons.lang3.StringUtils
@@ -260,11 +262,14 @@ class CreateCalendarActivity: AppCompatActivity(), ColorPickerDialogListener {
             viewModelScope.launch(Dispatchers.IO) {
                 // load account info
                 db.serviceDao().getByAccountAndType(account.name, Service.TYPE_CALDAV)?.let { service ->
-                    homeSets.postValue(db.homeSetDao().getBindableByService(service.id))
+                    db.homeSetDao()
+                        .getBindableByAccountAndServiceTypeFlow(account.name, service.type)
+                        .collect { homesets ->
+                            homeSets.postValue(homesets)
+                        }
                 }
             }
         }
 
     }
-
 }

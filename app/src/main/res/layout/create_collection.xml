@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/TextAppearance.AppCompat.Medium"
-        android:text="@string/create_collection_creating"/>
+        android:text="@string/create_collection_create"/>
 
     <ProgressBar
         android:layout_width="match_parent"

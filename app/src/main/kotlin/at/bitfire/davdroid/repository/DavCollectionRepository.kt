@@ -1,0 +1,398 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.repository
+
+import android.accounts.Account
+import android.content.Context
+import at.bitfire.dav4jvm.DavResource
+import at.bitfire.dav4jvm.XmlUtils
+import at.bitfire.dav4jvm.XmlUtils.insertTag
+import at.bitfire.dav4jvm.property.caldav.CalendarColor
+import at.bitfire.dav4jvm.property.caldav.CalendarDescription
+import at.bitfire.dav4jvm.property.caldav.CalendarTimezone
+import at.bitfire.dav4jvm.property.caldav.NS_CALDAV
+import at.bitfire.dav4jvm.property.caldav.SupportedCalendarComponentSet
+import at.bitfire.dav4jvm.property.carddav.AddressbookDescription
+import at.bitfire.dav4jvm.property.carddav.NS_CARDDAV
+import at.bitfire.dav4jvm.property.webdav.DisplayName
+import at.bitfire.dav4jvm.property.webdav.NS_WEBDAV
+import at.bitfire.dav4jvm.property.webdav.ResourceType
+import at.bitfire.davdroid.R
+import at.bitfire.davdroid.db.AppDatabase
+import at.bitfire.davdroid.db.Collection
+import at.bitfire.davdroid.db.HomeSet
+import at.bitfire.davdroid.network.HttpClient
+import at.bitfire.davdroid.servicedetection.RefreshCollectionsWorker
+import at.bitfire.davdroid.settings.AccountSettings
+import at.bitfire.davdroid.util.DavUtils
+import at.bitfire.ical4android.util.DateUtils
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.Multibinds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runInterruptible
+import kotlinx.coroutines.withContext
+import net.fortuna.ical4j.model.Component
+import okhttp3.HttpUrl
+import java.io.StringWriter
+import java.util.Collections
+import java.util.UUID
+import javax.inject.Inject
+
+/**
+ * Repository for managing collections.
+ *
+ * Implements an observer pattern that can be used to listen for changes of collections.
+ */
+class DavCollectionRepository @Inject constructor(
+    @ApplicationContext val context: Context,
+    defaultListeners: Set<@JvmSuppressWildcards OnChangeListener>,
+    val serviceRepository: DavServiceRepository,
+    db: AppDatabase
+) {
+
+    private val listeners = Collections.synchronizedSet(defaultListeners.toMutableSet())
+
+    private val dao = db.collectionDao()
+
+    /**
+     * Creates address book collection on server and locally
+     */
+    suspend fun createAddressBook(
+        account: Account,
+        homeSet: HomeSet,
+        displayName: String,
+        description: String?
+    ) {
+        val folderName = UUID.randomUUID().toString()
+        val url = homeSet.url.newBuilder()
+            .addPathSegment(folderName)
+            .addPathSegment("")     // trailing slash
+            .build()
+
+        // create collection on server
+        createOnServer(
+            account = account,
+            url = url,
+            method = "MKCOL",
+            xmlBody = generateMkColXml(
+                addressBook = true,
+                displayName = displayName,
+                description = description
+            )
+        )
+
+        // no HTTP error -> create collection locally
+        val collection = Collection(
+            serviceId = homeSet.serviceId,
+            homeSetId = homeSet.id,
+            url = url,
+            type = Collection.TYPE_ADDRESSBOOK,
+            displayName = displayName,
+            description = description
+        )
+        dao.insertAsync(collection)
+
+        notifyOnChangeListeners()
+    }
+
+    /**
+     * Create calendar collection on server and locally
+     */
+    suspend fun createCalendar(
+        account: Account,
+        homeSet: HomeSet,
+        color: Int?,
+        displayName: String,
+        description: String?,
+        timeZoneId: String?,
+        supportVEVENT: Boolean,
+        supportVTODO: Boolean,
+        supportVJOURNAL: Boolean
+    ) {
+        val folderName = UUID.randomUUID().toString()
+        val url = homeSet.url.newBuilder()
+            .addPathSegment(folderName)
+            .addPathSegment("")     // trailing slash
+            .build()
+
+        // create collection on server
+        createOnServer(
+            account = account,
+            url = url,
+            method = "MKCALENDAR",
+            xmlBody = generateMkColXml(
+                addressBook = false,
+                displayName = displayName,
+                description = description,
+                color = color,
+                timezoneDef = timeZoneId,
+                supportsVEVENT = supportVEVENT,
+                supportsVTODO = supportVTODO,
+                supportsVJOURNAL = supportVJOURNAL
+            )
+        )
+
+        // no HTTP error -> create collection locally
+        val collection = Collection(
+            serviceId = homeSet.serviceId,
+            homeSetId = homeSet.id,
+            url = url,
+            type = Collection.TYPE_CALENDAR,
+            displayName = displayName,
+            description = description,
+            color = color,
+            timezone = timeZoneId?.let { getVTimeZone(it) },
+            supportsVEVENT = supportVEVENT,
+            supportsVTODO = supportVTODO,
+            supportsVJOURNAL = supportVJOURNAL
+        )
+        dao.insertAsync(collection)
+
+        // Trigger service detection (because the collection may actually have other properties than the ones we have inserted).
+        // Some servers are known to change the supported components (VEVENT, …) after creation.
+        RefreshCollectionsWorker.enqueue(context, homeSet.serviceId)
+
+        notifyOnChangeListeners()
+    }
+
+    /** Deletes the given collection from the server and the database. */
+    suspend fun deleteRemote(collection: Collection) {
+        val service = serviceRepository.get(collection.serviceId) ?: throw IllegalArgumentException("Service not found")
+        val account = Account(service.accountName, context.getString(R.string.account_type))
+
+        HttpClient.Builder(context, AccountSettings(context, account))
+            .setForeground(true)
+            .build().use { httpClient ->
+                withContext(Dispatchers.IO) {
+                    runInterruptible {
+                        DavResource(httpClient.okHttpClient, collection.url).delete() {
+                            // success, otherwise an exception would have been thrown → delete locally, too
+                            delete(collection)
+                        }
+                    }
+                }
+            }
+    }
+
+    fun getSyncableByTopic(topic: String) = dao.getSyncableByPushTopic(topic)
+
+    fun getFlow(id: Long) = dao.getLive(id)
+
+    /** Returns all collections that are both selected for synchronization and push-capable. */
+    suspend fun getSyncableAndPushCapable(): List<Collection> =
+        dao.getPushCapableSyncCollections()
+
+    /**
+     * Inserts or updates the collection. On update it will not update flag values ([Collection.sync],
+     * [Collection.forceReadOnly]), but use the values of the already existing collection.
+     *
+     * @param newCollection Collection to be inserted or updated
+     */
+    fun insertOrUpdateByUrlAndRememberFlags(newCollection: Collection) {
+        // remember locally set flags
+        dao.getByServiceAndUrl(newCollection.serviceId, newCollection.url.toString())?.let { oldCollection ->
+            newCollection.sync = oldCollection.sync
+            newCollection.forceReadOnly = oldCollection.forceReadOnly
+        }
+
+        // commit to database
+        insertOrUpdateByUrl(newCollection)
+    }
+
+    /**
+     * Creates or updates the existing collection if it exists (URL)
+     */
+    fun insertOrUpdateByUrl(collection: Collection) {
+        dao.insertOrUpdateByUrl(collection)
+        notifyOnChangeListeners()
+    }
+
+    fun pageByServiceAndType(serviceId: Long, type: String) =
+        dao.pageByServiceAndType(serviceId, type)
+
+    fun pagePersonalByServiceAndType(serviceId: Long, type: String) =
+        dao.pagePersonalByServiceAndType(serviceId, type)
+
+    /**
+     * Sets the flag for whether read-only should be enforced on the local collection
+     */
+    suspend fun setForceReadOnly(id: Long, forceReadOnly: Boolean) {
+        dao.updateForceReadOnly(id, forceReadOnly)
+        notifyOnChangeListeners()
+    }
+
+    /**
+     * Whether or not the local collection should be synced with the server
+     */
+    suspend fun setSync(id: Long, forceReadOnly: Boolean) {
+        dao.updateSync(id, forceReadOnly)
+        notifyOnChangeListeners()
+    }
+
+    suspend fun updatePushSubscription(id: Long, subscriptionUrl: String) {
+        dao.updatePushSubscription(id, subscriptionUrl)
+    }
+
+    /**
+     * Deletes the collection locally
+     */
+    fun delete(collection: Collection) {
+        dao.delete(collection)
+        notifyOnChangeListeners()
+    }
+
+
+    // helpers
+
+    private suspend fun createOnServer(account: Account, url: HttpUrl, method: String, xmlBody: String) {
+        HttpClient.Builder(context, AccountSettings(context, account))
+            .setForeground(true)
+            .build().use { httpClient ->
+                withContext(Dispatchers.IO) {
+                    runInterruptible {
+                        DavResource(httpClient.okHttpClient, url).mkCol(
+                            xmlBody = xmlBody,
+                            method = method
+                        ) {
+                            // success, otherwise an exception would have been thrown
+                        }
+                    }
+                }
+            }
+    }
+
+    private fun generateMkColXml(
+        addressBook: Boolean,
+        displayName: String?,
+        description: String?,
+        color: Int? = null,
+        timezoneDef: String? = null,
+        supportsVEVENT: Boolean = true,
+        supportsVTODO: Boolean = true,
+        supportsVJOURNAL: Boolean = true
+    ): String {
+        val writer = StringWriter()
+        val serializer = XmlUtils.newSerializer()
+        serializer.apply {
+            setOutput(writer)
+
+            startDocument("UTF-8", null)
+            setPrefix("", NS_WEBDAV)
+            setPrefix("CAL", NS_CALDAV)
+            setPrefix("CARD", NS_CARDDAV)
+
+            if (addressBook)
+                startTag(NS_WEBDAV, "mkcol")
+            else
+                startTag(NS_CALDAV, "mkcalendar")
+
+            insertTag(DavResource.SET) {
+                insertTag(DavResource.PROP) {
+                    insertTag(ResourceType.NAME) {
+                        insertTag(ResourceType.COLLECTION)
+                        if (addressBook)
+                            insertTag(ResourceType.ADDRESSBOOK)
+                        else
+                            insertTag(ResourceType.CALENDAR)
+                    }
+
+                    displayName?.let {
+                        insertTag(DisplayName.NAME) {
+                            text(it)
+                        }
+                    }
+
+                    if (addressBook) {
+                        // addressbook-specific properties
+                        description?.let {
+                            insertTag(AddressbookDescription.NAME) {
+                                text(it)
+                            }
+                        }
+
+                    } else {
+                        // calendar-specific properties
+                        description?.let {
+                            insertTag(CalendarDescription.NAME) {
+                                text(it)
+                            }
+                        }
+                        color?.let {
+                            insertTag(CalendarColor.NAME) {
+                                text(DavUtils.ARGBtoCalDAVColor(it))
+                            }
+                        }
+                        timezoneDef?.let {
+                            insertTag(CalendarTimezone.NAME) {
+                                cdsect(it)
+                            }
+                        }
+
+                        if (!supportsVEVENT || !supportsVTODO || !supportsVJOURNAL) {
+                            insertTag(SupportedCalendarComponentSet.NAME) {
+                                // Only if there's at least one not explicitly supported calendar component set,
+                                // otherwise don't include the property, which means "supports everything".
+                                if (supportsVEVENT)
+                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                        attribute(null, "name", Component.VEVENT)
+                                    }
+                                if (supportsVTODO)
+                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                        attribute(null, "name", Component.VTODO)
+                                    }
+                                if (supportsVJOURNAL)
+                                    insertTag(SupportedCalendarComponentSet.COMP) {
+                                        attribute(null, "name", Component.VJOURNAL)
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+            if (addressBook)
+                endTag(NS_WEBDAV, "mkcol")
+            else
+                endTag(NS_CALDAV, "mkcalendar")
+            endDocument()
+        }
+        return writer.toString()
+    }
+
+    private fun getVTimeZone(tzId: String): String? =
+        DateUtils.ical4jTimeZone(tzId)?.toString()
+
+
+    /*** OBSERVERS ***/
+
+    /**
+     * Notifies registered listeners about changes in the collections.
+     */
+    private fun notifyOnChangeListeners() = synchronized(listeners) {
+        listeners.forEach { listener ->
+            listener.onCollectionsChanged()
+        }
+    }
+
+
+    fun interface OnChangeListener {
+        /**
+         * Will be called when collections have changed. Will run in the coroutine context/thread
+         * of the data-modifying method. For instance, if [delete] is called, [onCollectionsChanged]
+         * will be called in the context/thread that called [delete].
+         */
+        fun onCollectionsChanged()
+    }
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    abstract class DavCollectionRepositoryModule {
+        // Provides empty set of listeners
+        @Multibinds abstract fun defaultOnChangeListeners(): Set<OnChangeListener>
+    }
+
+}
