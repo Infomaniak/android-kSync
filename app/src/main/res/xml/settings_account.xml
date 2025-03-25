@@ -38,12 +38,6 @@
             android:summaryOn="@string/settings_sync_wifi_only_on"
             android:summaryOff="@string/settings_sync_wifi_only_off" />
 
-        <EditTextPreference
-            android:key="@string/settings_sync_wifi_only_ssids_key"
-            android:persistent="false"
-            android:title="@string/settings_sync_wifi_only_ssids"
-            android:dialogMessage="@string/settings_sync_wifi_only_ssids_message"/>
-
         <SwitchPreferenceCompat
             android:key="@string/settings_ignore_vpns_key"
             android:persistent="false"

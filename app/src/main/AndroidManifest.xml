@@ -27,21 +27,7 @@
     <uses-permission android:name="android.permission.READ_CALENDAR"/>
     <uses-permission android:name="android.permission.WRITE_CALENDAR"/>
 
-    <!-- android.permission-group.LOCATION -->
-    <!-- getting the WiFi name (for "sync in Wifi only") requires
-      - coarse location (Android 8.1)
-      - fine location (Android 10) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <!-- required since Android 10 to get the WiFi name while in background (= while syncing) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
-
     <!-- ical4android declares task access permissions -->
-
-    <!-- Disable GPS capability requirement, which is implicitly derived from ACCESS_FINE_LOCATION
-    permission and makes app unusable on some devices without GPS. We need location permissions only
-    to get the current WiFi SSID, and we don't need GPS for that. -->
-    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 
     <application
         android:name=".App"
@@ -168,9 +154,6 @@
             android:name=".ui.account.SettingsActivity"
             android:theme="@style/AppTheme.ActionBar"
             android:parentActivityName=".ui.account.AccountActivity" />
-        <activity
-            android:name=".ui.account.WifiPermissionsActivity"
-            android:parentActivityName=".ui.account.SettingsActivity" />
 
         <activity
             android:name=".ui.webdav.WebdavMountsActivity"

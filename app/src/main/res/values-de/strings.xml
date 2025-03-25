@@ -79,20 +79,6 @@
   <string name="permissions_autoreset_instruction">Berechtigungen &gt; \"Berechtigungen entfernen, wenn die App nicht verwendet wird\" abwählen</string>
   <string name="permissions_app_settings_hint">Wenn ein Schalter nicht funktioniert, App-Einstellungen / Berechtigungen verwenden.</string>
   <string name="permissions_app_settings">App-Einstellungen</string>
-  <!--WifiPermissionsActivity-->
-  <string name="wifi_permissions_label">WLAN-SSID-Berechtigungen</string>
-  <string name="wifi_permissions_intro">Um auf den aktuellen WLAN-Namen (SSID) zugreifen zu können, müssen folgende Bedingungen erfüllt werden:</string>
-  <string name="wifi_permissions_location_permission">Exakter Standort-Berechtigung</string>
-  <string name="wifi_permissions_location_permission_on">Standort-Zugriff erlaubt</string>
-  <string name="wifi_permissions_location_permission_off">Standort-Zugriff verweigert</string>
-  <string name="wifi_permissions_background_location_permission">Hintergrund-Standort-Berechtigung</string>
-  <string name="wifi_permissions_background_location_permission_label">Immer zulassen</string>
-  <string name="wifi_permissions_background_location_permission_on">Standort-Zugriff eingestellt auf: %s</string>
-  <string name="wifi_permissions_background_location_permission_off">Standort-Zugriff nicht eingestellt auf: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s verwendet die Standort-Berechtigung ausschließlich zum Bestimmen der aktuellen WLAN-SSID für SSID-beschränkte Accounts. Dies findet auch statt, wenn die App geschlossen ist bzw. im Hintergrund läuft. Standortdaten werden weder gesammelt, gespeichert, verarbeitet noch irgendwohin gesendet.</string>
-  <string name="wifi_permissions_location_enabled">Standort-Dienst immer aktiviert</string>
-  <string name="wifi_permissions_location_enabled_on">Standort-Dienst aktiv</string>
-  <string name="wifi_permissions_location_enabled_off">Standort-Dienst inaktiv</string>
   <!--AboutActivity-->
   <string name="about_translations">Übersetzungen</string>
   <string name="about_libraries">Bibliotheken</string>
@@ -299,13 +285,6 @@
   <string name="settings_sync_wifi_only">Nur über WLAN synchronisieren</string>
   <string name="settings_sync_wifi_only_on">Synchronisierung nur bei aktiver WLAN-Verbindung</string>
   <string name="settings_sync_wifi_only_off">Verbindungstyp wird nicht beachtet</string>
-  <string name="settings_sync_wifi_only_ssids">WLAN-SSID-Beschränkung</string>
-  <string name="settings_sync_wifi_only_ssids_on">Synchronisierung nur über %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Synchronisierung nur über %s (benötigt aktive Standortdienste)</string>
-  <string name="settings_sync_wifi_only_ssids_off">Alle WLAN-Verbindungen werden verwendet</string>
-  <string name="settings_sync_wifi_only_ssids_message">Erlaubte WLAN-Namen (SSIDs, mit Komma getrennt, leer lassen für alle)</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_required">WLAN-SSID-Einschränkung benötigt weitere Einstellungen</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_action">Verwalten</string>
   <string name="settings_ignore_vpns">VPN erfordert zugrundeliegendes Internet</string>
   <string name="settings_ignore_vpns_on">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung nicht aus (empfohlen)</string>
   <string name="settings_ignore_vpns_off">VPN ohne zugrundeliegende überprüfte Internetverbindung reicht für Synchronisierung aus</string>

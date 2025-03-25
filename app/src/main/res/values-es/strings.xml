@@ -79,20 +79,6 @@
   <string name="permissions_autoreset_instruction">Haga clic en Permisos &gt; desmaque \"Quitar permisos si la aplicación no se utiliza\"</string>
   <string name="permissions_app_settings_hint">Si un interruptor no funciona usa Configuraciones de la app / Permisos.</string>
   <string name="permissions_app_settings">Configuraciones de la app</string>
-  <!--WifiPermissionsActivity-->
-  <string name="wifi_permissions_label">Permisos del SSID WiFi</string>
-  <string name="wifi_permissions_intro">Para poder acceder al nombre del WiFi actual (SSID), deben cumplirse estas condiciones:</string>
-  <string name="wifi_permissions_location_permission">Permiso de ubicación precisa</string>
-  <string name="wifi_permissions_location_permission_on">Permiso de ubicación concedido</string>
-  <string name="wifi_permissions_location_permission_off">Permiso de ubicación denegado</string>
-  <string name="wifi_permissions_background_location_permission">Permiso de ubicación en segundo plano</string>
-  <string name="wifi_permissions_background_location_permission_label">Permitir todo el tiemp</string>
-  <string name="wifi_permissions_background_location_permission_on">Acceso a la ubicación concedido para: %s</string>
-  <string name="wifi_permissions_background_location_permission_off">Acceso a la ubicación no concedido para: %s</string>
-  <string name="wifi_permissions_background_location_disclaimer">%s usa el permiso de ubicación solo para determinar el SSID del WiFi actual para las cuentas con restricción de SSID. Esto ocurrirá incluso cuando la aplicación esté en segundo plano. No se recogen, almacenan, procesan o envían datos de ubicación a ninguna parte.</string>
-  <string name="wifi_permissions_location_enabled">Ubicación siempre activada</string>
-  <string name="wifi_permissions_location_enabled_on">El servicio de ubicación está activado</string>
-  <string name="wifi_permissions_location_enabled_off">El servicio de ubicación está desactivado</string>
   <!--AboutActivity-->
   <string name="about_translations">Traducciones</string>
   <string name="about_libraries">Bibliotecas</string>
@@ -301,13 +287,6 @@
   <string name="settings_sync_wifi_only">Sincronizar sólo sobre WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronización está restringida a conexiones WiFi</string>
   <string name="settings_sync_wifi_only_off">Tipo de conexión no tenido en cuenta</string>
-  <string name="settings_sync_wifi_only_ssids">Restricción WiFi SSID</string>
-  <string name="settings_sync_wifi_only_ssids_on">Solo se sincronizará a través de %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Solo sincronizará sobre %s (requiere servicios de ubicación activos)</string>
-  <string name="settings_sync_wifi_only_ssids_off">Todas las conexiones WiFi serán usadas</string>
-  <string name="settings_sync_wifi_only_ssids_message">Nombres separados por comas (SSIDs) de redes WiFi permitidas (deje vacío para todas)</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_required">La restricción del SSID WiFi requiere más ajustes</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_action">Administrar</string>
   <string name="settings_ignore_vpns">VPN requiere una conexión a Internet.</string>
   <string name="settings_ignore_vpns_on">VPN sin una conexión a Internet válida no es suficiente para ejecutar la sincronización (recomendado)</string>
   <string name="settings_ignore_vpns_off">VPN sin una conexión a Internet válida es suficiente para ejecutar la sincronización.</string>

@@ -70,18 +70,6 @@
   <string name="permissions_autoreset_instruction">Fai click su Autorizzazioni &gt; deseleziona \"Rimuovi autorizzazioni se l\'app non è in uso\"</string>
   <string name="permissions_app_settings_hint">Se uno slider non funziona, vai a impostazioni app/ autorizzazioni.</string>
   <string name="permissions_app_settings">Impostazioni app</string>
-  <!--WifiPermissionsActivity-->
-  <string name="wifi_permissions_label">Autorizzazioni per WiFi SSID</string>
-  <string name="wifi_permissions_intro">Per poter accedere al nome dell\'attuale nome del WIFI (SSID), devono essere soddfsfatte queste condizioni:</string>
-  <string name="wifi_permissions_location_permission">Autorizzazione precisa della localizzazione</string>
-  <string name="wifi_permissions_location_permission_on">Garantire l\'autorizzazione della posizione</string>
-  <string name="wifi_permissions_location_permission_off">Negare l\'autorizzazione della posizione</string>
-  <string name="wifi_permissions_background_location_permission">Autorizzazione della posizione in background</string>
-  <string name="wifi_permissions_background_location_permission_label">Permettere sempre</string>
-  <string name="wifi_permissions_background_location_disclaimer">1%s utilizza l\'autorizzazione della posizione solo per determinare l\'SSID del WIFI attuale per gli account SSID-limitati. Questo accade anche quando l\'applicazione è in modalità background. Nessun dato sulla posizione è raccolto, salvato, processato o mandato da qualche parte.</string>
-  <string name="wifi_permissions_location_enabled">Posizione sempre disabilitata</string>
-  <string name="wifi_permissions_location_enabled_on">Servizio di posizione abiltato</string>
-  <string name="wifi_permissions_location_enabled_off">Servizio di posizione disabilitato</string>
   <!--AboutActivity-->
   <string name="about_translations">Traduzioni</string>
   <string name="about_libraries">Librerie</string>
@@ -240,13 +228,6 @@
   <string name="settings_sync_wifi_only">Sincr. solo tramite WiFi</string>
   <string name="settings_sync_wifi_only_on">La sincronizzazione è limitata alle connessioni WiFi</string>
   <string name="settings_sync_wifi_only_off">Il tipo di connessione non è preso in considerazione</string>
-  <string name="settings_sync_wifi_only_ssids">Restrizione SSID WiFi</string>
-  <string name="settings_sync_wifi_only_ssids_on">Sincronizzeremo solo oltre %s</string>
-  <string name="settings_sync_wifi_only_ssids_on_location_services">Sincronizzeremo solo oltre  %s (richiede che i servizi di localizzazione siano attivi)</string>
-  <string name="settings_sync_wifi_only_ssids_off">Verranno utilizzate tutte le connessioni WIFI </string>
-  <string name="settings_sync_wifi_only_ssids_message">Nomi (SSID) delle reti WiFi autorizzate separati da virgola (lascia vuoto per autorizzarle tutte)</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_required">Le restrizioni del SSID WIFI richiedono ulteriori impostazioni</string>
-  <string name="settings_sync_wifi_only_ssids_permissions_action">Riuscire</string>
   <string name="settings_ignore_vpns">La VPN richiede connessione internet</string>
   <string name="settings_ignore_vpns_on">La VPN senza una connessione internet validata non è sufficiente per lanciare la sincronizzazione (raccomandato)</string>
   <string name="settings_ignore_vpns_off">La VPN senza una connessione internet validata è sufficiente per lanciare la sincronizzazione</string>

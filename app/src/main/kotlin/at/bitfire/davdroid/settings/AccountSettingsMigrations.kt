@@ -342,11 +342,6 @@ class AccountSettingsMigrations @AssistedInject constructor(
         context.contentResolver.acquireContentProviderClient(CalendarContract.AUTHORITY)?.use { provider ->
             AndroidCalendar.insertColors(provider, account)
         }
-
-        // update allowed WiFi settings key
-        val onlySSID = accountManager.getUserData(account, "wifi_only_ssid")
-        accountManager.setAndVerifyUserData(account, AccountSettings.KEY_WIFI_ONLY_SSIDS, onlySSID)
-        accountManager.setAndVerifyUserData(account, "wifi_only_ssid", null)
     }
 
     @Suppress("unused")

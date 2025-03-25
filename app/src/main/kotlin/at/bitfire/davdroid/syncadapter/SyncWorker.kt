@@ -8,10 +8,8 @@ import android.accounts.Account
 import android.content.ContentProviderClient
 import android.content.ContentResolver
 import android.content.Context
-import android.content.Intent
 import android.content.SyncResult
 import android.net.ConnectivityManager
-import android.net.wifi.WifiManager
 import android.provider.CalendarContract
 import android.provider.ContactsContract
 import androidx.annotation.IntDef
@@ -49,8 +47,6 @@ import at.bitfire.davdroid.sync.Syncer
 import at.bitfire.davdroid.sync.TaskSyncer
 import at.bitfire.davdroid.ui.NotificationUtils
 import at.bitfire.davdroid.ui.NotificationUtils.notifyIfPossible
-import at.bitfire.davdroid.ui.account.WifiPermissionsActivity
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -251,44 +247,8 @@ class SyncWorker @AssistedInject constructor(
         // connection checks
 
         /**
-         * Checks whether we are connected to the correct wifi (SSID) defined by user in the
-         * account settings.
-         *
-         * Note: Should be connected to some wifi before calling.
-         *
-         * @param accountSettings Settings of account to check
-         * @return *true* if connected to the correct wifi OR no wifi names were specified in
-         * account settings; *false* otherwise
-         */
-        internal fun correctWifiSsid(context: Context, accountSettings: AccountSettings): Boolean {
-            accountSettings.getSyncWifiOnlySSIDs()?.let { onlySSIDs ->
-                // check required permissions and location status
-                if (!PermissionUtils.canAccessWifiSsid(context)) {
-                    // not all permissions granted; show notification
-                    val intent = Intent(context, WifiPermissionsActivity::class.java)
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, accountSettings.account)
-                    PermissionUtils.notifyPermissions(context, intent)
-
-                    Logger.log.warning("Can't access WiFi SSID, aborting sync")
-                    return false
-                }
-
-                val wifi = context.getSystemService<WifiManager>()!!
-                val info = wifi.connectionInfo
-                if (info == null || !onlySSIDs.contains(info.ssid.trim('"'))) {
-                    Logger.log.info("Connected to wrong WiFi network (${info.ssid}), aborting sync")
-                    return false
-                }
-                Logger.log.fine("Connected to WiFi network ${info.ssid}")
-            }
-            return true
-        }
-
-        /**
          * Checks whether user imposed sync conditions from settings are met:
          * - Sync only on WiFi?
-         * - Sync only on specific WiFi (SSID)?
          *
          * @param accountSettings Account settings of the account to check (and is to be synced)
          * @return *true* if conditions are met; *false* if not
@@ -306,8 +266,7 @@ class SyncWorker @AssistedInject constructor(
             }
             // If execution reaches this point, we're on a connected WiFi
 
-            // Check whether we are connected to the correct WiFi (in case SSID was provided)
-            return correctWifiSsid(context, accountSettings)
+            return true
         }
 
     }
