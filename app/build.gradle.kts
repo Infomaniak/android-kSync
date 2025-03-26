@@ -43,15 +43,16 @@ android {
         testInstrumentationRunner = "com.infomaniak.sync.CustomTestRunner"
     }
 
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-        }
-    }
+    val javaVersion = JavaVersion.VERSION_17
+
+    kotlinOptions { jvmTarget = javaVersion.toString() }
 
     compileOptions {
         // enable because ical4android requires desugaring
         isCoreLibraryDesugaringEnabled = true
+
+        sourceCompatibility = javaVersion
+        targetCompatibility = javaVersion
     }
 
     buildFeatures {
