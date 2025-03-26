@@ -792,9 +792,6 @@ class DebugInfoActivity : AppCompatActivity() {
                             .append("\n")
 
                 writer.append("  WiFi only: ${accountSettings.getSyncWifiOnly()}")
-                accountSettings.getSyncWifiOnlySSIDs()?.let { ssids ->
-                    writer.append(", SSIDs: ${ssids.joinToString(", ")}")
-                }
                 writer.append(
                     "\n  Contact group method: ${accountSettings.getGroupMethod()}\n" +
                             "  Time range (past days): ${accountSettings.getTimeRangePastDays()}\n" +

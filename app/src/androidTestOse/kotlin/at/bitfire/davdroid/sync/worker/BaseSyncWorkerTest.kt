@@ -93,7 +93,6 @@ class BaseSyncWorkerTest {
         mockkObject(ConnectionUtils)
         every { ConnectionUtils.wifiAvailable(any()) } returns true
         mockkObject(BaseSyncWorker.Companion)
-        every { BaseSyncWorker.correctWifiSsid(any(), any()) } returns true
 
         assertTrue(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
     }
@@ -106,46 +105,7 @@ class BaseSyncWorkerTest {
         mockkObject(ConnectionUtils)
         every { ConnectionUtils.wifiAvailable(any()) } returns false
         mockkObject(BaseSyncWorker.Companion)
-        every { BaseSyncWorker.correctWifiSsid(any(), any()) } returns true
 
         assertFalse(BaseSyncWorker.wifiConditionsMet(context, accountSettings))
     }
-
-
-    @Test
-    fun testCorrectWifiSsid_CorrectWiFiSsid() {
-        val accountSettings = AccountSettings(context, account)
-        mockkObject(accountSettings)
-        every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","ConnectedWiFi")
-
-        mockkObject(PermissionUtils)
-        every { PermissionUtils.canAccessWifiSsid(any()) } returns true
-
-        val wifiManager = context.getSystemService<WifiManager>()!!
-        mockkObject(wifiManager)
-        every { wifiManager.connectionInfo } returns spyk<WifiInfo>().apply {
-            every { ssid } returns "ConnectedWiFi"
-        }
-
-        assertTrue(BaseSyncWorker.correctWifiSsid(context, accountSettings))
-    }
-
-    @Test
-    fun testCorrectWifiSsid_WrongWiFiSsid() {
-        val accountSettings = AccountSettings(context, account)
-        mockkObject(accountSettings)
-        every { accountSettings.getSyncWifiOnlySSIDs() } returns listOf("SampleWiFi1","SampleWiFi2")
-
-        mockkObject(PermissionUtils)
-        every { PermissionUtils.canAccessWifiSsid(any()) } returns true
-
-        val wifiManager = context.getSystemService<WifiManager>()!!
-        mockkObject(wifiManager)
-        every { wifiManager.connectionInfo } returns spyk<WifiInfo>().apply {
-            every { ssid } returns "ConnectedWiFi"
-        }
-
-        assertFalse(BaseSyncWorker.correctWifiSsid(context, accountSettings))
-    }
-
 }

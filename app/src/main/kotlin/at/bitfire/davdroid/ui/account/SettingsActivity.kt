@@ -5,10 +5,8 @@
 package at.bitfire.davdroid.ui.account
 
 import android.accounts.Account
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.security.KeyChain
@@ -32,13 +30,10 @@ import at.bitfire.davdroid.log.Logger
 import at.bitfire.davdroid.settings.AccountSettings
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.syncadapter.SyncWorker
-import at.bitfire.davdroid.ui.UiUtils
 import at.bitfire.davdroid.ui.setup.GoogleLoginFragment
-import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.TaskUtils
 import at.bitfire.ical4android.TaskProvider
 import at.bitfire.vcard4android.GroupMethod
-import com.google.android.material.snackbar.Snackbar
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -115,11 +110,6 @@ class SettingsActivity: AppCompatActivity() {
             }
         }
 
-        override fun onResume() {
-            super.onResume()
-            checkWifiPermissions()
-        }
-
         private fun initSettings() {
             // preference group: sync
             findPreference<ListPreference>(getString(R.string.settings_sync_interval_contacts_key))!!.let {
@@ -187,33 +177,6 @@ class SettingsActivity: AppCompatActivity() {
                     it.isChecked = wifiOnly
                     it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, wifiOnly ->
                         model.updateSyncWifiOnly(wifiOnly as Boolean)
-                        false
-                    }
-                }
-            }
-
-            findPreference<EditTextPreference>(getString(R.string.settings_sync_wifi_only_ssids_key))!!.let {
-                model.syncWifiOnly.observe(viewLifecycleOwner) { wifiOnly ->
-                    it.isEnabled = wifiOnly && settings.isWritable(AccountSettings.KEY_WIFI_ONLY_SSIDS)
-                }
-                model.syncWifiOnlySSIDs.observe(viewLifecycleOwner) { onlySSIDs ->
-                    checkWifiPermissions()
-
-                    if (onlySSIDs != null) {
-                        it.text = onlySSIDs.joinToString(", ")
-                        it.summary = getString(if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-                                R.string.settings_sync_wifi_only_ssids_on_location_services
-                                else R.string.settings_sync_wifi_only_ssids_on, onlySSIDs.joinToString(", "))
-                    } else {
-                        it.text = ""
-                        it.setSummary(R.string.settings_sync_wifi_only_ssids_off)
-                    }
-                    it.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                        val newOnlySSIDs = (newValue as String)
-                                .split(',')
-                                .mapNotNull { StringUtils.trimToNull(it) }
-                                .distinct()
-                        model.updateSyncWifiOnlySSIDs(newOnlySSIDs)
                         false
                     }
                 }
@@ -412,19 +375,6 @@ class SettingsActivity: AppCompatActivity() {
                 }
             }
         }
-
-        @SuppressLint("WrongConstant")
-        private fun checkWifiPermissions() {
-            if (model.syncWifiOnlySSIDs.value != null && !PermissionUtils.canAccessWifiSsid(requireActivity()))
-                Snackbar.make(requireView(), R.string.settings_sync_wifi_only_ssids_permissions_required, UiUtils.SNACKBAR_LENGTH_VERY_LONG)
-                        .setAction(R.string.settings_sync_wifi_only_ssids_permissions_action) {
-                            val intent = Intent(requireActivity(), WifiPermissionsActivity::class.java)
-                            intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
-                            startActivity(intent)
-                        }
-                    .show()
-        }
-
     }
 
 
@@ -457,7 +407,6 @@ class SettingsActivity: AppCompatActivity() {
         }
 
         val syncWifiOnly = MutableLiveData<Boolean>()
-        val syncWifiOnlySSIDs = MutableLiveData<List<String>>()
         val ignoreVpns = MutableLiveData<Boolean>()
 
         val credentials = MutableLiveData<Credentials>()
@@ -498,7 +447,6 @@ class SettingsActivity: AppCompatActivity() {
             syncIntervalTasks.postValue(tasksProvider?.let { accountSettings.getSyncInterval(it.authority) })
 
             syncWifiOnly.postValue(accountSettings.getSyncWifiOnly())
-            syncWifiOnlySSIDs.postValue(accountSettings.getSyncWifiOnlySSIDs())
             ignoreVpns.postValue(accountSettings.getIgnoreVpns())
 
             credentials.postValue(accountSettings.credentials())
@@ -521,11 +469,6 @@ class SettingsActivity: AppCompatActivity() {
 
         fun updateSyncWifiOnly(wifiOnly: Boolean) {
             accountSettings?.setSyncWiFiOnly(wifiOnly)
-            reload()
-        }
-
-        fun updateSyncWifiOnlySSIDs(ssids: List<String>?) {
-            accountSettings?.setSyncWifiOnlySSIDs(ssids)
             reload()
         }
 

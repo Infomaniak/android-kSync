@@ -9,7 +9,6 @@ import android.content.ContentResolver
 import android.content.Context
 import android.os.Bundle
 import android.provider.CalendarContract
-import android.util.Log
 import androidx.annotation.WorkerThread
 import at.bitfire.davdroid.InvalidAccountException
 import at.bitfire.davdroid.R
@@ -26,7 +25,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
 import dagger.hilt.components.SingletonComponent
 import net.openid.appauth.AuthState
-import org.apache.commons.lang3.StringUtils
 import java.util.logging.Level
 
 /**
@@ -69,7 +67,6 @@ class AccountSettings(
         const val KEY_AUTH_STATE = "auth_state"
 
         const val KEY_WIFI_ONLY = "wifi_only"               // sync on WiFi only (default: false)
-        const val KEY_WIFI_ONLY_SSIDS = "wifi_only_ssids"   // restrict sync to specific WiFi SSIDs
         const val KEY_IGNORE_VPNS = "ignore_vpns"           // ignore vpns at connection detection
 
         /** Time range limitation to the past [in days]. Values:
@@ -333,18 +330,6 @@ class AccountSettings(
         for (authority in SyncUtils.syncAuthorities(context))
             updatePeriodicSyncWorker(authority, getSyncInterval(authority), wiFiOnly)
     }
-
-    fun getSyncWifiOnlySSIDs(): List<String>? =
-        if (getSyncWifiOnly()) {
-            val strSsids = if (settings.containsKey(KEY_WIFI_ONLY_SSIDS))
-                settings.getString(KEY_WIFI_ONLY_SSIDS)
-            else
-                accountManager.getUserData(account, KEY_WIFI_ONLY_SSIDS)
-            strSsids?.split(',')
-        } else
-            null
-    fun setSyncWifiOnlySSIDs(ssids: List<String>?) =
-        accountManager.setAndVerifyUserData(account, KEY_WIFI_ONLY_SSIDS, StringUtils.trimToNull(ssids?.joinToString(",")))
 
     fun getIgnoreVpns(): Boolean =
         when (accountManager.getUserData(account, KEY_IGNORE_VPNS)) {
