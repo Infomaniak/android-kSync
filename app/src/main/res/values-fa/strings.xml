@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">حساب کاربری موجود نیست (بیشتر از این)</string>
-  <string name="account_title_address_book">کتاب آدرس DAVx⁵</string>
+  <string name="account_title_address_book">کتاب آدرس kSync</string>
   <string name="dialog_remove">حذف</string>
   <string name="dialog_deny">لغو</string>
   <string name="dialog_enable">فعال</string>
@@ -315,7 +315,7 @@
   <string name="webdav_notification_download">بارگیری فایل WebDAV</string>
   <string name="webdav_notification_upload">بارگذاری فایل WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">مجوزهای همگام‌ساز DAVx⁵</string>
+  <string name="sync_error_permissions">مجوزهای همگام‌ساز kSync</string>
   <string name="sync_error_permissions_text">مجوزهای اضافی لازم است</string>
   <string name="sync_error_tasks_too_old">%s خیلی قدیمی است</string>
   <string name="sync_error_tasks_required_version">حداقل نسخه مورد نیاز: %1$s</string>

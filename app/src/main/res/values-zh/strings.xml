@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">账户（已）不存在</string>
-  <string name="account_title_address_book">DAVx⁵ 通讯录</string>
+  <string name="account_title_address_book">kSync 通讯录</string>
   <string name="account_prefs_use_app">别在这里更改账户！请直接使用应用管理账户。</string>
   <string name="dialog_delete">删除</string>
   <string name="dialog_remove">删除</string>
@@ -124,7 +124,7 @@
   <string name="navigation_drawer_support_project">支持项目</string>
   <string name="navigation_drawer_contribute">如何作贡献</string>
   <string name="navigation_drawer_privacy_policy">隐私政策</string>
-  <string name="account_list_welcome">欢迎来到 DAVx⁵！</string>
+  <string name="account_list_welcome">欢迎来到 kSync！</string>
   <string name="account_list_empty">连接到你的服务器，保持日历和联系人同步</string>
   <string name="accounts_sync_all">同步所有账户</string>
   <!--Sync warnings-->
@@ -436,7 +436,7 @@
   <string name="webdav_notification_upload">正在上传 WebDAV 文件</string>
   <string name="webdav_provider_root_title">WebDAV 文件系统</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ 权限</string>
+  <string name="sync_error_permissions">kSync 权限</string>
   <string name="sync_error_permissions_text">需要额外权限</string>
   <string name="sync_error_tasks_too_old">%s太旧</string>
   <string name="sync_error_tasks_required_version">最低要求版本: %1$s</string>

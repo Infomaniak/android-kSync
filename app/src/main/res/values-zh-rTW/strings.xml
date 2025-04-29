@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">帳號（已）不存在</string>
-  <string name="account_title_address_book">DAVx⁵ 通訊錄</string>
+  <string name="account_title_address_book">kSync 通訊錄</string>
   <string name="dialog_enable">啟用</string>
   <string name="field_required">此為必填欄位</string>
   <string name="help">幫助</string>
@@ -220,7 +220,7 @@
   <string name="webdav_notification_upload">正在上傳檔案至 WebDAV</string>
   <string name="webdav_provider_root_title">WebDAV 掛載</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ 權限</string>
+  <string name="sync_error_permissions">kSync 權限</string>
   <string name="sync_error_permissions_text">需要額外的權限</string>
   <string name="sync_error_authentication_failed">鑒權失敗（你需要檢查登錄憑證）</string>
   <string name="sync_error_io">網際網絡或者輸入輸出錯誤——%s</string>

@@ -106,7 +106,7 @@
   <string name="webdav_add_mount_username">Kullanıcı adı</string>
   <string name="webdav_add_mount_password">Parola</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ izinleri</string>
+  <string name="sync_error_permissions">kSync izinleri</string>
   <string name="sync_error_permissions_text">Ek izinler zorunludur</string>
   <!--widgets-->
   <!--cert4android-->

@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Обліківки не існує (більше)</string>
-  <string name="account_title_address_book">Адресна книга DAVx⁵</string>
+  <string name="account_title_address_book">Адресна книга kSync</string>
   <string name="dialog_remove">Видалити</string>
   <string name="dialog_deny">Скасувати</string>
   <string name="dialog_enable">Увімкнути</string>
@@ -234,7 +234,7 @@
   <string name="webdav_add_mount_username">Ім\'я користувача</string>
   <string name="webdav_add_mount_password">Пароль</string>
   <!--sync-->
-  <string name="sync_error_permissions">Дозволи DAVx⁵</string>
+  <string name="sync_error_permissions">Дозволи kSync</string>
   <string name="sync_error_permissions_text">Потребує додаткові дозволи</string>
   <string name="sync_error_authentication_failed">Помилка аутентифікації (перевірте обліковий запис)</string>
   <string name="sync_error_io">Помилка мережі та вводу/виводу — %s</string>

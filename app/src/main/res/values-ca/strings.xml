@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">El compte no existeix (eliminat)</string>
-  <string name="account_title_address_book">Llibreta d’adreces del DAVx⁵</string>
+  <string name="account_title_address_book">Llibreta d’adreces del kSync</string>
   <string name="account_prefs_use_app">No canvieu aquí el compte! Utilitzeu directament l\'aplicació per a gestionar els comptes.</string>
   <string name="dialog_delete">Eliminar</string>
   <string name="dialog_remove">Elimina</string>
@@ -125,7 +125,7 @@
   <string name="navigation_drawer_support_project">Doneu suport al projecte</string>
   <string name="navigation_drawer_contribute">Com col·laborar</string>
   <string name="navigation_drawer_privacy_policy">Política de privacitat</string>
-  <string name="account_list_welcome">Us donem la benvinguda al DAVx⁵!</string>
+  <string name="account_list_welcome">Us donem la benvinguda al kSync!</string>
   <string name="account_list_empty">Connecteu-vos al vostre servidor i mantingueu els calendaris i contactes sincronitzats.</string>
   <string name="accounts_sync_all">Sincronitza tots els comptes</string>
   <!--Sync warnings-->
@@ -439,7 +439,7 @@
   <string name="webdav_notification_upload">S\'està pujant el fitxer WebDAV</string>
   <string name="webdav_provider_root_title">Muntatge WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Permisos del DAVx⁵</string>
+  <string name="sync_error_permissions">Permisos del kSync</string>
   <string name="sync_error_permissions_text">Es requereixen permisos addicionals</string>
   <string name="sync_error_tasks_too_old">%s és massa antiga</string>
   <string name="sync_error_tasks_required_version">Versió mínima requerida: %1$s</string>

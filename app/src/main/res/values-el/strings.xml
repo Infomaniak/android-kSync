@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Ο λογαριασμός δεν υπάρχει (πια)</string>
-  <string name="account_title_address_book">Βιβλίο διευθύνσεων DAVx⁵</string>
+  <string name="account_title_address_book">Βιβλίο διευθύνσεων kSync</string>
   <string name="dialog_delete">Διαγραφή</string>
   <string name="dialog_remove">Αφαίρεση</string>
   <string name="dialog_deny">Ακύρωση</string>
@@ -406,7 +406,7 @@
   <string name="webdav_notification_upload">Ανέβασμα αρχείου WebDAV</string>
   <string name="webdav_provider_root_title">Bάση WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Δικαιώματα DAVx⁵</string>
+  <string name="sync_error_permissions">Δικαιώματα kSync</string>
   <string name="sync_error_permissions_text">Απαιτούνται πρόσθετα δικαιώματα</string>
   <string name="sync_error_tasks_too_old">Παλιά έκδοση %s</string>
   <string name="sync_error_tasks_required_version">Ελάχιστη απαιτούμενη έκδοση: %1$s</string>

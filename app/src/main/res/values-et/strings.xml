@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Kasutajakontot ei leidu (enam)</string>
-  <string name="account_title_address_book">DAVx⁵ aadressiraamat</string>
+  <string name="account_title_address_book">kSync aadressiraamat</string>
   <string name="account_prefs_use_app">Palun ära muuda kasutajakontot siin! Selle asemel pruugi kasutajakontode halduseks otseselt rakendust.</string>
   <string name="dialog_delete">Kustuta</string>
   <string name="dialog_remove">Eemalda</string>
@@ -125,7 +125,7 @@
   <string name="navigation_drawer_support_project">Toeta projekti</string>
   <string name="navigation_drawer_contribute">Osalemise viisid</string>
   <string name="navigation_drawer_privacy_policy">Privaatsuspoliitika</string>
-  <string name="account_list_welcome">Tere tulemast kasutama rakendust DAVx⁵!</string>
+  <string name="account_list_welcome">Tere tulemast kasutama rakendust kSync!</string>
   <string name="account_list_empty">Loo ühendus oma serveriga ja hoia kalendrid ning kontaktid sünkroniseerituna.</string>
   <string name="accounts_sync_all">Sünkroniseeri kõik kasutajakontod</string>
   <!--Sync warnings-->
@@ -439,7 +439,7 @@
   <string name="webdav_notification_upload">Laadime WebDAVi faili üles</string>
   <string name="webdav_provider_root_title">WebDAVi haakepunkt</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ õigused</string>
+  <string name="sync_error_permissions">kSync õigused</string>
   <string name="sync_error_permissions_text">Vajalikud on täiendavad õigused</string>
   <string name="sync_error_tasks_too_old">%s on liiga vana</string>
   <string name="sync_error_tasks_required_version">Väikseim nõutav versioon: %1$s</string>

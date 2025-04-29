@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Račun ne obstaja (več)</string>
-  <string name="account_title_address_book">DAVx⁵ imenik</string>
+  <string name="account_title_address_book">kSync imenik</string>
   <string name="dialog_remove">Odstrani</string>
   <string name="dialog_deny">Preklic</string>
   <string name="dialog_enable">Omogoči</string>
@@ -195,7 +195,7 @@
   <string name="webdav_add_mount_username">Uporabniško ime</string>
   <string name="webdav_add_mount_password">Geslo</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ dovoljenja</string>
+  <string name="sync_error_permissions">kSync dovoljenja</string>
   <string name="sync_error_permissions_text">Dodatna dovoljenja so zahtevana</string>
   <string name="sync_error_authentication_failed">Avtentikacija ni uspela (preverite podatke prijave)</string>
   <string name="sync_error_io">Omrežna ali I/O napaka -- %s</string>

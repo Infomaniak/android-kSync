@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">ანგარიში (აღარ) არსებობს</string>
-  <string name="account_title_address_book">DAVx⁵ მისამართთა წიგნაკი</string>
+  <string name="account_title_address_book">kSync მისამართთა წიგნაკი</string>
   <string name="dialog_delete">წაშლა</string>
   <string name="dialog_remove">ამოშლა</string>
   <string name="dialog_deny">გაუქმება</string>
@@ -405,7 +405,7 @@
   <string name="webdav_notification_upload">მიმდინარეობს WebDAV ფაილის ატვირთვა</string>
   <string name="webdav_provider_root_title">WebDAV-iს მიბმა</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵-ის უფლებები</string>
+  <string name="sync_error_permissions">kSync-ის უფლებები</string>
   <string name="sync_error_permissions_text">საჭიროა დამატებითი უფლებები</string>
   <string name="sync_error_tasks_too_old">%s ნამეტანი ძველია</string>
   <string name="sync_error_tasks_required_version">მინიმალური საჭირო ვერსია: %1$s</string>

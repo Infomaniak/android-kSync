@@ -1,4 +1,4 @@
-DAVx⁵ on CalDAV/CardDAV- hallinta- ja synkronointisovellus Android-laitteille, jonka avulla kalenterit/yhteystiedot liitetään CalDAV/CardDAV-järjestelmästä Androidin omaan kalenterien ja yhteystietojen sovellukseen.
+kSync on CalDAV/CardDAV- hallinta- ja synkronointisovellus Android-laitteille, jonka avulla kalenterit/yhteystiedot liitetään CalDAV/CardDAV-järjestelmästä Androidin omaan kalenterien ja yhteystietojen sovellukseen.
 
 Käytä sovellusta omalla palvelimellasi tai luotetun palveluntarjoajan kanssa pitääksesi yhteystietosi, tapahtumasi ja tehtäväsi omassa hallinnassasi.
 

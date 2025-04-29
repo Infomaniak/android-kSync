@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="account_title_address_book">Ksiōnżka adresowo DAVx⁵</string>
+  <string name="account_title_address_book">Ksiōnżka adresowo kSync</string>
   <string name="dialog_enable">Włōncz</string>
   <string name="help">Pōmoc</string>
   <string name="notification_channel_debugging">Debugowanie</string>
@@ -41,7 +41,7 @@
   <string name="logging_couldnt_create_file">Niy szło stworzić zbioru dziynnika</string>
   <!--AccountsScreen-->
   <string name="navigation_drawer_subtitle">Adapter synchrōnizacyje CalDAV/CardDAV</string>
-  <string name="navigation_drawer_about">Ô DAVx⁵ / Licyncyjo</string>
+  <string name="navigation_drawer_about">Ô kSync / Licyncyjo</string>
   <string name="navigation_drawer_beta_feedback">Przekoż ôpinijo</string>
   <string name="install_browser">Zainstaluj przeglōndarka internetowo</string>
   <string name="navigation_drawer_settings">Sztelōnki</string>
@@ -192,7 +192,7 @@
   <string name="webdav_add_mount_username">Miano używocza</string>
   <string name="webdav_add_mount_password">Hasło</string>
   <!--sync-->
-  <string name="sync_error_permissions">Uprawniynia DAVx⁵</string>
+  <string name="sync_error_permissions">Uprawniynia kSync</string>
   <string name="sync_error_permissions_text">Wymogane ekstra uprawniynia</string>
   <string name="sync_error_authentication_failed">Autoryzacyjo sie niy podarziła (dej pozōr na dane logowanio)</string>
   <string name="sync_error_io">Feler necu abo I/O – %s</string>

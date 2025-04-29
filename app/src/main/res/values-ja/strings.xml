@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">アカウントがありません</string>
-  <string name="account_title_address_book">DAVx⁵ アドレス帳</string>
+  <string name="account_title_address_book">kSync アドレス帳</string>
   <string name="account_prefs_use_app">ここでアカウントを変更しないでください！ アカウントの管理は、アプリから直接行ってください。</string>
   <string name="dialog_delete">削除</string>
   <string name="dialog_remove">削除</string>
@@ -124,7 +124,7 @@
   <string name="navigation_drawer_support_project">プロジェクトを支援</string>
   <string name="navigation_drawer_contribute">貢献する方法</string>
   <string name="navigation_drawer_privacy_policy">プライバシーポリシー</string>
-  <string name="account_list_welcome">DAVx⁵ にようこそ！</string>
+  <string name="account_list_welcome">kSync にようこそ！</string>
   <string name="account_list_empty">サーバーに接続して、カレンダーと連絡先を同期しましょう。</string>
   <string name="accounts_sync_all">すべてのアカウントを同期</string>
   <!--Sync warnings-->
@@ -436,7 +436,7 @@
   <string name="webdav_notification_upload">WebDAV ファイルをアップロードしています</string>
   <string name="webdav_provider_root_title">WebDAV マウント</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ の権限</string>
+  <string name="sync_error_permissions">kSync の権限</string>
   <string name="sync_error_permissions_text">アクセス権限の許可が必要です</string>
   <string name="sync_error_tasks_too_old">%s が古すぎます</string>
   <string name="sync_error_tasks_required_version">最小要求バージョン: %1$s</string>

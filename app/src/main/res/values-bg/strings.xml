@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Регистрацията (вече) не съществува</string>
-  <string name="account_title_address_book">Адресник на DAVx⁵</string>
+  <string name="account_title_address_book">Адресник на kSync</string>
   <string name="account_prefs_use_app">Не променяйте профила оттук! Вместо това използвайте приложението, за да управлявате профили.</string>
   <string name="dialog_delete">Премахване</string>
   <string name="dialog_remove">Премахване</string>
@@ -125,7 +125,7 @@
   <string name="navigation_drawer_support_project">Подкрепа за проекта</string>
   <string name="navigation_drawer_contribute">Как да допринеса</string>
   <string name="navigation_drawer_privacy_policy">Лични данни</string>
-  <string name="account_list_welcome">Добре дошли при DAVx⁵!</string>
+  <string name="account_list_welcome">Добре дошли при kSync!</string>
   <string name="account_list_empty">Свържете се със сървър и поддържайте календарите и контактите си синхронизирани.</string>
   <string name="accounts_sync_all">Синхронизиране на всички профили</string>
   <!--Sync warnings-->
@@ -439,7 +439,7 @@
   <string name="webdav_notification_upload">Изпраща се файл на WebDAV</string>
   <string name="webdav_provider_root_title">Дял на WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Разрешения на DAVx⁵</string>
+  <string name="sync_error_permissions">Разрешения на kSync</string>
   <string name="sync_error_permissions_text">Необходими са допълнителни разрешения</string>
   <string name="sync_error_tasks_too_old">Приложението %s е твърде старо</string>
   <string name="sync_error_tasks_required_version">Минимално необходимо издание: %1$s</string>

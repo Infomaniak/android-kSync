@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">A felhasználói fiók (már) nem létezik</string>
-  <string name="account_title_address_book">DAVx⁵ címjegyzék</string>
+  <string name="account_title_address_book">kSync címjegyzék</string>
   <string name="account_prefs_use_app">Itt ne változtassa meg a fiókot! Használja közvetlenül az alkalmazást a fiókok kezeléséhez.</string>
   <string name="dialog_delete">Törlés</string>
   <string name="dialog_remove">Eltávolítás</string>
@@ -125,7 +125,7 @@
   <string name="navigation_drawer_support_project">A projekt támogatása</string>
   <string name="navigation_drawer_contribute">A közreműködés lehetőségei</string>
   <string name="navigation_drawer_privacy_policy">Adatvédelmi irányelvek</string>
-  <string name="account_list_welcome">Üdvzöli a DAVx⁵!</string>
+  <string name="account_list_welcome">Üdvzöli a kSync!</string>
   <string name="account_list_empty">Kapcsolódjon a kiszolgálójához, és tartsa szinkronban a naptárait és névjegyeit.</string>
   <string name="accounts_sync_all">Az összes fiók szinkronizálása</string>
   <!--Sync warnings-->
@@ -439,7 +439,7 @@
   <string name="webdav_notification_upload">WebDAV fájl feltöltése</string>
   <string name="webdav_provider_root_title">WebDAV kötetek</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ engedélyek </string>
+  <string name="sync_error_permissions">kSync engedélyek </string>
   <string name="sync_error_permissions_text">További engedélyek szükségesek</string>
   <string name="sync_error_tasks_too_old">%s túl régi</string>
   <string name="sync_error_tasks_required_version">Legalacsonyabb szükséges verzió: %1$s</string>

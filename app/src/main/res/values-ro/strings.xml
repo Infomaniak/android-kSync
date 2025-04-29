@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Contul nu (mai) există</string>
-  <string name="account_title_address_book">Agenda DAVx⁵</string>
+  <string name="account_title_address_book">Agenda kSync</string>
   <string name="account_prefs_use_app">Nu schimba contul aici! Utilizează direct aplicația pentru a gestiona conturile în schimb.</string>
   <string name="dialog_delete">Șterge</string>
   <string name="dialog_remove">Elimină</string>
@@ -126,7 +126,7 @@
   <string name="navigation_drawer_support_project">Susține proiectul</string>
   <string name="navigation_drawer_contribute">Cum să contribui</string>
   <string name="navigation_drawer_privacy_policy">Politica de confidențialitate</string>
-  <string name="account_list_welcome">Bun venit la DAVx⁵!</string>
+  <string name="account_list_welcome">Bun venit la kSync!</string>
   <string name="account_list_empty">Conectează-te la server și păstrează calendarele și contactele sincronizate.</string>
   <string name="accounts_sync_all">Sincronizează toate conturile</string>
   <!--Sync warnings-->
@@ -442,7 +442,7 @@
   <string name="webdav_notification_upload">Se actualizează fișierul WebDAV</string>
   <string name="webdav_provider_root_title">Montare WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Permisiuni DAVx⁵</string>
+  <string name="sync_error_permissions">Permisiuni kSync</string>
   <string name="sync_error_permissions_text">Sunt necesare permisiuni suplimentare</string>
   <string name="sync_error_tasks_too_old">%s prea vechi</string>
   <string name="sync_error_tasks_required_version">Versiunea minimă necesară: %1$s</string>

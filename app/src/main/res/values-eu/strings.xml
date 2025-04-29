@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Kontua ez da existitzen (dagoeneko)</string>
-  <string name="account_title_address_book">DAVx⁵ Helbide-liburua</string>
+  <string name="account_title_address_book">kSync Helbide-liburua</string>
   <string name="account_prefs_use_app">Ez aldatu kontua hemen! Erabili aplikazioa zuzenean kontuak kudeatzeko.</string>
   <string name="dialog_delete">Ezabatu</string>
   <string name="dialog_remove">Kendu</string>
@@ -126,7 +126,7 @@
   <string name="navigation_drawer_support_project">Lagundu proiektuari</string>
   <string name="navigation_drawer_contribute">Nola lagundu</string>
   <string name="navigation_drawer_privacy_policy">Pribatutasun gidalerroak</string>
-  <string name="account_list_welcome">Ongi etorri DAVx⁵-ra!</string>
+  <string name="account_list_welcome">Ongi etorri kSync-ra!</string>
   <string name="account_list_empty">Konektatu zure zerbitzarira eta mantendu zure egutegi eta kontaktuak sinkronizatuta.</string>
   <string name="accounts_sync_all">Sinkronizatu kontu guztiak</string>
   <!--Sync warnings-->
@@ -434,7 +434,7 @@
   <string name="webdav_notification_upload">WebDAV fitxategia kargatzen</string>
   <string name="webdav_provider_root_title">WebDAV muntaia</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ baimenak</string>
+  <string name="sync_error_permissions">kSync baimenak</string>
   <string name="sync_error_permissions_text">Baimen gehigarriak beharrezkoak</string>
   <string name="sync_error_tasks_too_old">%s zaharregia</string>
   <string name="sync_error_tasks_required_version">Beharrezko bertsio minimoa: %1$s</string>

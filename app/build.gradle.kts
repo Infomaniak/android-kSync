@@ -16,17 +16,17 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "at.bitfire.davdroid"
+        applicationId = "com.infomaniak.sync"
 
         versionCode = 404090001
         versionName = "4.4.9"
 
-        setProperty("archivesBaseName", "davx5-ose-$versionName")
+        setProperty("archivesBaseName", "kSync-$versionName")
 
         minSdk = 24        // Android 7.0
         targetSdk = 35     // Android 15
 
-        testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
+        testInstrumentationRunner = "com.infomaniak.sync.HiltTestRunner"
     }
 
     java {
@@ -48,7 +48,7 @@ android {
     }
 
     // Java namespace for our classes (not to be confused with Android package ID)
-    namespace = "at.bitfire.davdroid"
+    namespace = "com.infomaniak.sync"
 
     flavorDimensions += "distribution"
     productFlavors {
@@ -65,7 +65,7 @@ android {
     }
 
     signingConfigs {
-        create("bitfire") {
+        create("infomaniak") {
             storeFile = file(System.getenv("ANDROID_KEYSTORE") ?: "/dev/null")
             storePassword = System.getenv("ANDROID_KEYSTORE_PASSWORD")
             keyAlias = System.getenv("ANDROID_KEY_ALIAS")
@@ -80,7 +80,7 @@ android {
 
             isShrinkResources = true
 
-            signingConfig = signingConfigs.findByName("bitfire")
+            signingConfig = signingConfigs.findByName("infomaniak")
         }
     }
 

@@ -1,4 +1,4 @@
-DAVx⁵ Androiderako CalDAV/CardDAV kudeatze eta sinkronizazio aplikazio bat da, Android egutegi/kontaktu aplikazio integrazioarekin.
+kSync Androiderako CalDAV/CardDAV kudeatze eta sinkronizazio aplikazio bat da, Android egutegi/kontaktu aplikazio integrazioarekin.
 
 Erabili ezazu zure zerbitzarian edo ostalari fidagarri batekin kontaktuak, ekitaldiak eta zereginak zure kontrolpean edukitzeko.
 

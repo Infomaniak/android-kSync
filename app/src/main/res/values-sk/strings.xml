@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="account_title_address_book">DAVx⁵ adresár</string>
+  <string name="account_title_address_book">kSync adresár</string>
   <string name="dialog_enable">Povoliť</string>
   <string name="help">Pomoc</string>
   <string name="notification_channel_debugging">Ladenie</string>
@@ -178,7 +178,7 @@
   <string name="webdav_add_mount_username">Meno používateľa</string>
   <string name="webdav_add_mount_password">Heslo</string>
   <!--sync-->
-  <string name="sync_error_permissions">Oprávnenia DAVx⁵ </string>
+  <string name="sync_error_permissions">Oprávnenia kSync </string>
   <string name="sync_error_permissions_text">Vyžadujú sa dodatočné oprávnenia</string>
   <string name="sync_error_authentication_failed">Overenie zlyhalo  (skontroluje prihlasovacie údaje)</string>
   <string name="sync_error_io">Sieťová alebo V/V chyba – %s</string>

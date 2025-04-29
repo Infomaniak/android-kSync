@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">هذا الحساب ليس مسجلاً (لم يعد مسجلاً)</string>
-  <string name="account_title_address_book">DAVx⁵ دفتر عناوين</string>
+  <string name="account_title_address_book">kSync دفتر عناوين</string>
   <string name="dialog_remove">أزل</string>
   <string name="dialog_deny">ألغِ</string>
   <string name="dialog_enable">تفعيل</string>
@@ -197,7 +197,7 @@
   <string name="webdav_add_mount_username">اسم المستخدم</string>
   <string name="webdav_add_mount_password">كلمة المرور</string>
   <!--sync-->
-  <string name="sync_error_permissions">أذونات DAVx⁵</string>
+  <string name="sync_error_permissions">أذونات kSync</string>
   <string name="sync_error_permissions_text">مطلوب أذونات إضافية</string>
   <string name="sync_error_authentication_failed">فشلت المصادقة (تحقق من بيانات تسجيل الدخول)</string>
   <string name="sync_error_io">خطأ شبكة أو الإدخال/الإخراج - %s</string>

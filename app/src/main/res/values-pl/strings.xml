@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Konto (już) nie istnieje</string>
-  <string name="account_title_address_book">Książka adresowa DAVx⁵</string>
+  <string name="account_title_address_book">Książka adresowa kSync</string>
   <string name="dialog_remove">Usuń</string>
   <string name="dialog_deny">Anuluj</string>
   <string name="dialog_enable">Włącz</string>
@@ -352,7 +352,7 @@
   <string name="webdav_notification_upload">Wgrywanie pliku WebDAV</string>
   <string name="webdav_provider_root_title">Punkt linkowania WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Uprawnienia DAVx⁵</string>
+  <string name="sync_error_permissions">Uprawnienia kSync</string>
   <string name="sync_error_permissions_text">Wymagane dodatkowe uprawnienia</string>
   <string name="sync_error_tasks_too_old">%s zbyt stary/a</string>
   <string name="sync_error_tasks_required_version">Minimalna wymagana wersja: %1$s</string>

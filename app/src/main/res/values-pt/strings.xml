@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">A conta não existe (mais)</string>
-  <string name="account_title_address_book">Livro de endereços do DAVx⁵</string>
+  <string name="account_title_address_book">Livro de endereços do kSync</string>
   <string name="account_prefs_use_app">Não mude a conta por aqui! Em vez disso, use o app diretamente para gerenciar as contas.</string>
   <string name="dialog_delete">Excluir</string>
   <string name="dialog_remove">Remover</string>
@@ -126,7 +126,7 @@
   <string name="navigation_drawer_support_project">Apoie o projeto</string>
   <string name="navigation_drawer_contribute">Como contribuir</string>
   <string name="navigation_drawer_privacy_policy">Política de privacidade</string>
-  <string name="account_list_welcome">Bem-vindo ao DAVx⁵!</string>
+  <string name="account_list_welcome">Bem-vindo ao kSync!</string>
   <string name="account_list_empty">Conecte-se ao seu servidor e mantenha seus calendários e contatos sincronizados.</string>
   <string name="accounts_sync_all">Sincronizar todas as contas</string>
   <!--Sync warnings-->
@@ -441,7 +441,7 @@
   <string name="webdav_notification_upload">Enviando arquivo do WebDAV</string>
   <string name="webdav_provider_root_title">Pasta WebDAV</string>
   <!--sync-->
-  <string name="sync_error_permissions">Permissões do DAVx⁵</string>
+  <string name="sync_error_permissions">Permissões do kSync</string>
   <string name="sync_error_permissions_text">É necessário permissões adicionais</string>
   <string name="sync_error_tasks_too_old">%s muito antigo</string>
   <string name="sync_error_tasks_required_version">Versão mínima exigida: %1$s</string>

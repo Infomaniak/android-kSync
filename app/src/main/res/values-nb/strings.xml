@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
-  <string name="account_title_address_book">DAVx⁵-adressebok</string>
+  <string name="account_title_address_book">kSync-adressebok</string>
   <string name="dialog_enable">Skru på</string>
   <string name="help">Hjelp</string>
   <string name="notification_channel_debugging">Feilsøking</string>
@@ -159,7 +159,7 @@
   <string name="webdav_add_mount_username">Brukernavn</string>
   <string name="webdav_add_mount_password">Passord</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵-tilganger</string>
+  <string name="sync_error_permissions">kSync-tilganger</string>
   <string name="sync_error_permissions_text">Ytterligere tilganger kreves</string>
   <string name="sync_error_io">Nettverk- og I/O-feil - %s</string>
   <string name="sync_error_http_dav">HTTP-tjenerfeil - %s</string>

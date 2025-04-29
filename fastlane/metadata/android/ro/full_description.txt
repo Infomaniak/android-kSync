@@ -1,4 +1,4 @@
-DAVx⁵ este o aplicație de gestionare și sincronizare CalDAV/CardDAV pentru Android care se integrează în mod nativ cu aplicațiile de calendar/contacte Android.
+kSync este o aplicație de gestionare și sincronizare CalDAV/CardDAV pentru Android care se integrează în mod nativ cu aplicațiile de calendar/contacte Android.
 
 Utilizează-l cu propriul server sau cu o gazdă de încredere pentru a păstra contactele, evenimentele și sarcinile sub control.
 

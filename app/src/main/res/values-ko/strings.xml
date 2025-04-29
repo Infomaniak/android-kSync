@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">계정이 존재하지 않음 (anymore)</string>
-  <string name="account_title_address_book">DAVx⁵ 주소록</string>
+  <string name="account_title_address_book">kSync 주소록</string>
   <string name="dialog_enable">활성</string>
   <string name="field_required">이 field는 필수입니다.</string>
   <string name="help">도움말</string>
@@ -310,7 +310,7 @@
   <string name="webdav_notification_upload">Uploading WebDAV file</string>
   <string name="webdav_provider_root_title">WebDAV mount</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵ 권한</string>
+  <string name="sync_error_permissions">kSync 권한</string>
   <string name="sync_error_permissions_text">추가 권한 필요</string>
   <string name="sync_error_tasks_too_old">%s는 너무 오래되었습니다.</string>
   <string name="sync_error_tasks_required_version">최소 필요 버전: %1$s</string>

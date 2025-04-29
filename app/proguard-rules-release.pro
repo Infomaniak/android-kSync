@@ -1,5 +1,5 @@
 
-# R8 usage for DAVx⁵:
+# R8 usage for kSync:
 #    shrinking        yes (only in release builds)
 #    optimization     yes (on by R8 defaults)
 #      full-mode      no (see gradle.properties)
@@ -19,8 +19,8 @@
 # XmlPullParser
 -keep class org.xmlpull.** { *; }
 
-# DAVx⁵ + libs
--keep class at.bitfire.** { *; }       # all DAVx⁵ code is required
+# kSync + libs
+-keep class at.bitfire.** { *; }       # all kSync code is required
 
 # AGP 8.2 and 8.3 seem to remove this class, but ezvcard.io uses it. See https://github.com/bitfireAT/davx5/issues/499
 -keep class javax.xml.namespace.QName { *; }

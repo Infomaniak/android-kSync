@@ -2,7 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
   <!--common strings-->
   <string name="account_invalid">Kontot finns inte (längre)</string>
-  <string name="account_title_address_book">DAVx⁵ Adressbok</string>
+  <string name="account_title_address_book">kSync Adressbok</string>
   <string name="account_prefs_use_app">Ändra inte kontot här!  Använd appen direkt för att hantera konton istället</string>
   <string name="dialog_delete">Radera</string>
   <string name="dialog_remove">Ta bort</string>
@@ -125,7 +125,7 @@
   <string name="navigation_drawer_support_project">Stöd projektet</string>
   <string name="navigation_drawer_contribute">Hur man kan bidra</string>
   <string name="navigation_drawer_privacy_policy">Integritetspolicy</string>
-  <string name="account_list_welcome">Välkommen till DAVx⁵!</string>
+  <string name="account_list_welcome">Välkommen till kSync!</string>
   <string name="account_list_empty">Anslut till din server och håll dina kalendrar och kontakter synkroniserade</string>
   <string name="accounts_sync_all">Synkronisera alla konton</string>
   <!--Sync warnings-->
@@ -438,7 +438,7 @@
   <string name="webdav_notification_upload">Laddar upp WebDAV-fil</string>
   <string name="webdav_provider_root_title">WebDAV-fäste</string>
   <!--sync-->
-  <string name="sync_error_permissions">DAVx⁵-behörigheter</string>
+  <string name="sync_error_permissions">kSync-behörigheter</string>
   <string name="sync_error_permissions_text">Ytterligare behörigheter krävs</string>
   <string name="sync_error_tasks_too_old">%s för gammal</string>
   <string name="sync_error_tasks_required_version">Lägsta obligatoriska version: %1$s</string>
