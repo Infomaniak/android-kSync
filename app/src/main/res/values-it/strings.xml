@@ -112,6 +112,7 @@
   <string name="navigation_drawer_contribute">Come contribuire</string>
   <string name="navigation_drawer_privacy_policy">Politica sulla riservatezza</string>
   <string name="accounts_sync_all">Sincronizzazione di tutti gli account</string>
+  <string name="account_already_exists">L\'account esiste già</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Notifiche non attive. Non sarai avvisato di eventuali errori di sincronizzazione</string>
   <string name="sync_warning_manage_connections">Gestione connessioni</string>

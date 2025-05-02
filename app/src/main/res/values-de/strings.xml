@@ -229,6 +229,7 @@
   <string name="account_webcal_external_app">Webcal-Abonnements können mit externen Apps synchronisiert werden.</string>
   <string name="account_no_webcal_handler_found">Keine Webcal-App gefunden</string>
   <string name="account_install_icsx5">ICSx⁵ installieren</string>
+  <string name="account_already_exists">Das Konto existiert bereits</string>
   <!--AddAccountActivity-->
   <string name="login_title">Konto hinzufügen</string>
   <string name="login_privacy_hint"><![CDATA[Alle Daten werden nur zwischen ihrem Server und ihrem Gerät übertragen. %1$s wird sie nirgendwohin sonst schicken. Siehe die <a href="%2$s">Datenschutzbestimmungen</a>.]]></string>

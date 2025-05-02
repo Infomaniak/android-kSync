@@ -45,11 +45,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
 import at.bitfire.vcard4android.GroupMethod
+import at.bitfire.davdroid.ui.composable.ProgressBar
 
 @Composable
 fun AccountDetailsPage(
     snackbarHostState: SnackbarHostState,
     onAccountCreated: (Account) -> Unit,
+    onAccountAlreadyExist: () -> Unit,
     model: LoginScreenModel = viewModel()
 ) {
     val uiState by model.accountDetailsUiState.collectAsStateWithLifecycle()
@@ -63,6 +65,26 @@ fun AccountDetailsPage(
         }
     }
 
+    // The AccountDetailsPage is useless for kSync, so we just skip the view and put a progress bar in place.
+    if (uiState.accountName.isNotBlank() && uiState.suggestedAccountNames.isNotEmpty()) {
+        LaunchedEffect(Unit) {
+            model.updateAccountNameAndEmails(accountName = uiState.accountName, emails = uiState.suggestedAccountNames)
+
+            if (uiState.accountNameExists) {
+                onAccountAlreadyExist()
+            } else {
+                model.createAccount()
+            }
+        }
+    }
+
+    ProgressBar(
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp))
+
+
+    /* Useless for kSync
     AccountDetailsPageContent(
         accountName = uiState.accountName,
         suggestedAccountNames = uiState.suggestedAccountNames,
@@ -75,6 +97,7 @@ fun AccountDetailsPage(
         onCreateAccount = { model.createAccount() },
         creatingAccount = uiState.creatingAccount
     )
+    */
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

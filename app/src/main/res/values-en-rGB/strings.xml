@@ -107,6 +107,7 @@
   <string name="navigation_drawer_community">Community</string>
   <string name="navigation_drawer_privacy_policy">Privacy policy</string>
   <string name="accounts_sync_all">Sync all accounts</string>
+  <string name="account_already_exists">Account already exists</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Notifications disabled. You won\'t be notified about sync errors.</string>
   <string name="sync_warning_manage_connections">Manage connections</string>

@@ -6,6 +6,7 @@ package at.bitfire.davdroid.ui.setup
 
 import android.accounts.Account
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +25,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -72,6 +74,7 @@ fun LoginScreenContent(
     onNavUp: () -> Unit = {},
     onFinish: (newAccount: Account?) -> Unit = {}
 ) {
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
     AppTheme {
         Scaffold(
@@ -127,7 +130,16 @@ fun LoginScreenContent(
                             snackbarHostState = snackbarHostState,
                             onAccountCreated = { account ->
                                 onFinish(account)
-                            }
+                            },
+                            // kSync: When the account being logged in already exists, we need to inform the user about this
+                            // situation.
+                            // Typically, this would be handled through the UI, preventing the user from proceeding until they
+                            // acknowledge the existing account. However, since we are bypassing all UI views in this flow, we
+                            // need to implement an alternative method to communicate this information effectively to the user.
+                            onAccountAlreadyExist = {
+                                Toast.makeText(context, R.string.account_already_exists, Toast.LENGTH_LONG).show()
+                                onFinish(null)
+                            },
                         )
                 }
 
