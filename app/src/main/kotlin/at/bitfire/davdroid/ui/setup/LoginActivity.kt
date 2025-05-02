@@ -8,11 +8,35 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.produceState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.db.Credentials
+import at.bitfire.davdroid.kSyncConstants.PASSWORD_API_URL
+import at.bitfire.davdroid.kSyncConstants.PROFILE_API_URL
+import at.bitfire.davdroid.kSyncConstants.SYNC_INFOMANIAK
+import at.bitfire.davdroid.model.InfomaniakPassword
+import at.bitfire.davdroid.model.InfomaniakUser
+import at.bitfire.davdroid.ui.AppTheme
 import at.bitfire.davdroid.ui.account.AccountActivity
+import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.davdroid.util.getInfomaniakLogin
+import com.google.gson.Gson
+import com.google.gson.JsonParser
+import com.infomaniak.lib.login.ApiToken
+import com.infomaniak.lib.login.InfomaniakLogin
+import com.infomaniak.lib.login.InfomaniakLogin.TokenResult.Success
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.MultipartBody
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.net.URI
 import java.net.URISyntaxException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.logging.Logger
 import javax.inject.Inject
 
@@ -21,9 +45,10 @@ import javax.inject.Inject
  * Fields for server/user data can be pre-filled with extras in the Intent.
  */
 @AndroidEntryPoint
-class LoginActivity @Inject constructor(): AppCompatActivity() {
+class LoginActivity @Inject constructor() : AppCompatActivity() {
 
-    @Inject lateinit var loginTypesProvider: LoginTypesProvider
+    @Inject
+    lateinit var loginTypesProvider: LoginTypesProvider
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +56,23 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
         val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
 
         setContent {
-            LoginScreen(
+            val loginInfoState = produceState<LoginInfo?>(initialValue = null) {
+                value = loginInfoFromIntent(intent, getInfomaniakLogin())
+            }
+            val loginInfo = loginInfoState.value
+
+            if (loginInfo == null) {
+                AppTheme {
+                    ProgressBar(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
+                }
+            } else LoginScreen(
                 initialLoginType = initialLoginType,
                 skipLoginTypePage = skipLoginTypePage,
-                initialLoginInfo = loginInfoFromIntent(intent),
+                initialLoginInfo = loginInfo,
                 onNavUp = { onSupportNavigateUp() },
                 onFinish = { newAccount ->
                     finish()
@@ -78,9 +116,10 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
          * Extracts login information from given intent, validates it and returns it in [LoginInfo].
          *
          * @param intent Contains base url, username and password.
+         * @param infomaniakLogin Contains all the necessary information and functions to connect to Infomaniak servers.
          * @return Extracted login info. Contains null values if given info is invalid.
          */
-        fun loginInfoFromIntent(intent: Intent): LoginInfo {
+        suspend fun loginInfoFromIntent(intent: Intent, infomaniakLogin: InfomaniakLogin): LoginInfo {
             var givenUri: String? = null
             var givenUsername: String? = null
             var givenPassword: String? = null
@@ -132,18 +171,89 @@ class LoginActivity @Inject constructor(): AppCompatActivity() {
                 givenPassword = intent.getStringExtra(EXTRA_PASSWORD)
 
             return LoginInfo(
-                baseUri = try {
-                    URI(givenUri)
-                } catch (_: Exception) {
-                    null
-                },
-                credentials = Credentials(
-                    username = givenUsername,
-                    password = givenPassword
-                )
+                baseUri = URI(SYNC_INFOMANIAK),
+                credentials = intent.getStringExtra("code")?.let { code ->
+                    getCredentials(code, infomaniakLogin)
+                }
             )
         }
 
-    }
+        private suspend fun getCredentials(code: String, infomaniakLogin: InfomaniakLogin): Credentials? {
+            try {
 
+                val okHttpClient = OkHttpClient.Builder().build()
+                val gson = Gson()
+
+                val apiToken = getApiToken(code, infomaniakLogin, okHttpClient) ?: return null
+                val infomaniakUser = getInfomaniakUser(apiToken, okHttpClient, gson) ?: return null
+                val infomaniakPassword = getInfomaniakPassword(apiToken, okHttpClient, gson) ?: return null
+
+                val credentials = Credentials(infomaniakUser.login, infomaniakPassword.password)
+
+                infomaniakLogin.deleteToken(
+                    okHttpClient,
+                    apiToken,
+                )
+
+                return credentials
+
+            } catch (exception: Exception) {
+                exception.printStackTrace()
+                return null
+            }
+        }
+
+        private suspend fun getApiToken(code: String, infomaniakLogin: InfomaniakLogin, okHttpClient: OkHttpClient): ApiToken? {
+            val tokenResult = infomaniakLogin.getToken(okHttpClient, code)
+            return when (tokenResult) {
+                is Success -> tokenResult.apiToken
+                else -> null
+            }
+        }
+
+        private fun getInfomaniakUser(apiToken: ApiToken, okHttpClient: OkHttpClient, gson: Gson): InfomaniakUser? {
+
+            val request = Request.Builder()
+                .url(PROFILE_API_URL)
+                .header("Authorization", "Bearer ${apiToken.accessToken}")
+                .get()
+                .build()
+
+
+            val response = okHttpClient.newCall(request).execute()
+
+            return if (response.isSuccessful) {
+                val body = response.body?.string() ?: return null
+                val jsonObject = JsonParser.parseString(body).asJsonObject.getAsJsonObject("data")
+                gson.fromJson(jsonObject, InfomaniakUser::class.java)
+            } else {
+                null
+            }
+        }
+
+        private fun getInfomaniakPassword(apiToken: ApiToken, okHttpClient: OkHttpClient, gson: Gson): InfomaniakPassword? {
+
+            val formatter = SimpleDateFormat("EEEE MMM d yyyy HH:mm:ss", Locale.getDefault())
+
+            val formBuilder = MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("name", "Infomaniak Sync - ${formatter.format(Date())}")
+
+            val request = Request.Builder()
+                .url(PASSWORD_API_URL)
+                .header("Authorization", "Bearer ${apiToken.accessToken}")
+                .post(formBuilder.build())
+                .build()
+
+            val response = okHttpClient.newCall(request).execute()
+
+            return if (response.isSuccessful) {
+                val body = response.body?.string() ?: return null
+                val jsonObject = JsonParser.parseString(body).asJsonObject.getAsJsonObject("data")
+                gson.fromJson(jsonObject, InfomaniakPassword::class.java)
+            } else {
+                null
+            }
+        }
+    }
 }

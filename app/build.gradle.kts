@@ -26,6 +26,8 @@ android {
         minSdk = 24        // Android 7.0
         targetSdk = 35     // Android 15
 
+        buildConfigField("String", "CLIENT_ID", "\"CE011334-F75A-4263-9F9F-45FC5A142F59\"") // kSync
+
         testInstrumentationRunner = "at.bitfire.davdroid.HiltTestRunner"
     }
 
@@ -196,6 +198,9 @@ dependencies {
     implementation(libs.okhttp.logging)
     implementation(libs.openid.appauth)
     implementation(libs.unifiedpush)
+
+    implementation(libs.login.infomaniak) // kSync
+    implementation(libs.gson) // kSync
 
     // force some versions for compatibility with our minSdk level (see version catalog for details)
     implementation(libs.commons.codec)
