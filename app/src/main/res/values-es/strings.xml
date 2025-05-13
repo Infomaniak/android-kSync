@@ -117,6 +117,7 @@
   <string name="navigation_drawer_contribute">Cómo contribuir o donar</string>
   <string name="navigation_drawer_privacy_policy">Reglamento de privacidad</string>
   <string name="accounts_sync_all">Sincronizar todas las cuentas</string>
+  <string name="account_already_exists">La cuenta ya existe</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Notificaciones deshabilitadas. No serás notificado de errores de sincronización.</string>
   <string name="sync_warning_manage_connections">Administrar conexiones</string>

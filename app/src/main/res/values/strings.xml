@@ -259,6 +259,7 @@
     <string name="account_webcal_external_app">Webcal subscriptions can be synchronized with external apps.</string>
     <string name="account_no_webcal_handler_found">No Webcal-capable app found</string>
     <string name="account_install_icsx5">Install ICSx⁵</string>
+    <string name="account_already_exists">Account already exists</string>
 
     <!-- AddAccountActivity -->
     <string name="login_title">Add account</string>

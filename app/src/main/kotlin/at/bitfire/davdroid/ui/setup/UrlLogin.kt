@@ -59,6 +59,14 @@ object UrlLogin : LoginType {
         )
 
         val uiState = model.uiState
+
+        // The LoginScreen is useless for kSync, so we just skip the view.
+        LaunchedEffect(Unit) {
+            if (uiState.canContinue)
+                onLogin(uiState.asLoginInfo())
+        }
+
+        /* Useless for kSync
         UrlLoginScreen(
             url = uiState.url,
             onSetUrl = model::setUrl,
@@ -72,6 +80,7 @@ object UrlLogin : LoginType {
                     onLogin(uiState.asLoginInfo())
             }
         )
+        */
     }
 
 }

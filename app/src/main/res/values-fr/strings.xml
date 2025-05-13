@@ -122,6 +122,7 @@
   <string name="account_list_welcome">Bienvenue sur kSync!</string>
   <string name="account_list_empty">Connectez-vous à votre serveur pour garder vos calendriers et contacts synchronisés.</string>
   <string name="accounts_sync_all">Synchroniser tous les comptes</string>
+  <string name="account_already_exists">Le compte existe déjà</string>
   <!--Sync warnings-->
   <string name="sync_warning_no_notification_permission">Notifications désactivées. Vous ne serez pas averti des erreurs de synchronisation.</string>
   <string name="sync_warning_manage_connections">Gérer les connexions</string>

@@ -25,6 +25,7 @@ bitfire-vcard4android = "ae5d609f92"
 compose-accompanist = "0.37.2"
 compose-bom = "2025.04.00"
 dnsjava = "3.6.2"
+gson = "2.13.0" # kSync
 glance = "1.1.1"
 guava = "33.4.8-android"
 hilt = "2.56.2"
@@ -33,6 +34,7 @@ kotlin = "2.1.20"
 kotlinx-coroutines = "1.10.2"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.1.20-2.0.0"
+login-infomaniak = "3.1.2" # kSync
 mikepenz-aboutLibraries = "11.6.3"
 nsk90-kstatemachine = "0.33.0"
 mockk = "1.14.0"
@@ -83,6 +85,7 @@ compose-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata
 compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" } # kSync
 glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
 glance-material = { module = "androidx.glance:glance-material", version.ref = "glance" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
@@ -92,6 +95,7 @@ hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", vers
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+login-infomaniak = { module = "com.github.Infomaniak:android-login", version.ref = "login-infomaniak" } # kSync
 mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }

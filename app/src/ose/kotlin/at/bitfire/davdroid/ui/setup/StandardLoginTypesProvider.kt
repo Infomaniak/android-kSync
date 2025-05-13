@@ -41,7 +41,7 @@ class StandardLoginTypesProvider @Inject constructor(
                     LoginAction(UrlLogin, true)
                 else -> {
                     logger.warning("Did not understand login intent: $intent")
-                    LoginAction(defaultLoginType, false) // Don't skip login type page if intent is unclear
+                    LoginAction(defaultLoginType, true) // Skip login type page if intent is unclear (kSync)
                 }
             }
         }
