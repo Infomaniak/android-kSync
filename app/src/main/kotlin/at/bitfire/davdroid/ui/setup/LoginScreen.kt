@@ -131,15 +131,15 @@ fun LoginScreenContent(
                             onAccountCreated = { account ->
                                 onFinish(account)
                             },
-                            // kSync: When the account being logged in already exists, we need to inform the user about this
-                            // situation.
+                            // kSync: When the account being logged in already exists,
+                            // we need to inform the user about this situation.
                             // Typically, this would be handled through the UI, preventing the user from proceeding until they
                             // acknowledge the existing account. However, since we are bypassing all UI views in this flow, we
                             // need to implement an alternative method to communicate this information effectively to the user.
                             onAccountAlreadyExist = {
                                 Toast.makeText(context, R.string.account_already_exists, Toast.LENGTH_LONG).show()
                                 onFinish(null)
-                            },
+                            }
                         )
                 }
 

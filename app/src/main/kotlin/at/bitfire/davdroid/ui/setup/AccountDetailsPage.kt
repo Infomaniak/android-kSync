@@ -44,8 +44,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.composable.Assistant
-import at.bitfire.vcard4android.GroupMethod
 import at.bitfire.davdroid.ui.composable.ProgressBar
+import at.bitfire.vcard4android.GroupMethod
 
 @Composable
 fun AccountDetailsPage(
@@ -69,7 +69,6 @@ fun AccountDetailsPage(
     if (uiState.accountName.isNotBlank() && uiState.suggestedAccountNames.isNotEmpty()) {
         LaunchedEffect(Unit) {
             model.updateAccountNameAndEmails(accountName = uiState.accountName, emails = uiState.suggestedAccountNames)
-
             if (uiState.accountNameExists) {
                 onAccountAlreadyExist()
             } else {
@@ -78,11 +77,7 @@ fun AccountDetailsPage(
         }
     }
 
-    ProgressBar(
-        Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp))
-
+    ProgressBar(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
 
     /* Useless for kSync
     AccountDetailsPageContent(

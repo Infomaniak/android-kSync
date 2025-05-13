@@ -63,27 +63,25 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
 
             if (loginInfo == null) {
                 AppTheme {
-                    ProgressBar(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 8.dp)
-                    )
+                    ProgressBar(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
                 }
-            } else LoginScreen(
-                initialLoginType = initialLoginType,
-                skipLoginTypePage = skipLoginTypePage,
-                initialLoginInfo = loginInfo,
-                onNavUp = { onSupportNavigateUp() },
-                onFinish = { newAccount ->
-                    finish()
+            } else {
+                LoginScreen(
+                    initialLoginType = initialLoginType,
+                    skipLoginTypePage = skipLoginTypePage,
+                    initialLoginInfo = loginInfo,
+                    onNavUp = { onSupportNavigateUp() },
+                    onFinish = { newAccount ->
+                        finish()
 
-                    if (newAccount != null) {
-                        val intent = Intent(this, AccountActivity::class.java)
-                        intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
-                        startActivity(intent)
+                        if (newAccount != null) {
+                            val intent = Intent(this, AccountActivity::class.java)
+                            intent.putExtra(AccountActivity.EXTRA_ACCOUNT, newAccount)
+                            startActivity(intent)
+                        }
                     }
-                }
-            )
+                )
+            }
         }
     }
 
@@ -172,31 +170,22 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
 
             return LoginInfo(
                 baseUri = URI(SYNC_INFOMANIAK),
-                credentials = intent.getStringExtra("code")?.let { code ->
-                    getCredentials(code, infomaniakLogin)
-                }
+                credentials = intent.getStringExtra("code")?.let { code -> getCredentials(code, infomaniakLogin) },
             )
         }
 
         private suspend fun getCredentials(code: String, infomaniakLogin: InfomaniakLogin): Credentials? {
             try {
-
                 val okHttpClient = OkHttpClient.Builder().build()
                 val gson = Gson()
-
                 val apiToken = getApiToken(code, infomaniakLogin, okHttpClient) ?: return null
                 val infomaniakUser = getInfomaniakUser(apiToken, okHttpClient, gson) ?: return null
                 val infomaniakPassword = getInfomaniakPassword(apiToken, okHttpClient, gson) ?: return null
 
                 val credentials = Credentials(infomaniakUser.login, infomaniakPassword.password)
-
-                infomaniakLogin.deleteToken(
-                    okHttpClient,
-                    apiToken,
-                )
+                infomaniakLogin.deleteToken(okHttpClient, apiToken)
 
                 return credentials
-
             } catch (exception: Exception) {
                 exception.printStackTrace()
                 return null
@@ -218,7 +207,6 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
                 .header("Authorization", "Bearer ${apiToken.accessToken}")
                 .get()
                 .build()
-
 
             val response = okHttpClient.newCall(request).execute()
 
