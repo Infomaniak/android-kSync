@@ -14,7 +14,7 @@ import java.util.logging.Logger
 
 object UserAgentInterceptor: Interceptor {
 
-    val userAgent = "DAVx5/${BuildConfig.VERSION_NAME} (dav4jvm; " +
+    val userAgent = "kSync/${BuildConfig.VERSION_NAME} (dav4jvm; " +
             "okhttp/${OkHttp.VERSION}) Android/${Build.VERSION.RELEASE}"
 
     init {

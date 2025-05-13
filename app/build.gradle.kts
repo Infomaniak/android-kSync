@@ -16,12 +16,12 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "at.bitfire.davdroid"
+        applicationId = "com.infomaniak.sync"
 
         versionCode = 404090001
         versionName = "4.4.9"
 
-        setProperty("archivesBaseName", "davx5-ose-$versionName")
+        setProperty("archivesBaseName", "kSync-$versionName")
 
         minSdk = 24        // Android 7.0
         targetSdk = 35     // Android 15

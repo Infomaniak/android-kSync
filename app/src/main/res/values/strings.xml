@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?><resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- common strings -->
-    <string name="app_name" translatable="false">DAVx⁵</string>
+    <string name="app_name" translatable="false">kSync</string>
 
     <string name="account_invalid">Account does not exist (anymore)</string>
-    <string name="account_type" translatable="false">bitfire.at.davdroid</string>
+    <string name="account_type" translatable="false">infomaniak.com.sync</string>
     <string name="account_type_address_book" translatable="false">at.bitfire.davdroid.address_book</string>
-    <string name="account_title_address_book">DAVx⁵ Address book</string>
+    <string name="account_title_address_book">kSync Address book</string>
     <string name="account_prefs_use_app">Don\'t change the account here! Directly use the app to manage accounts instead.</string>
     <string name="dialog_delete">Delete</string>
     <string name="dialog_remove">Remove</string>
@@ -137,7 +137,7 @@
     <string name="navigation_drawer_support_project">Support the project</string>
     <string name="navigation_drawer_contribute">How to contribute</string>
     <string name="navigation_drawer_privacy_policy">Privacy policy</string>
-    <string name="account_list_welcome">Welcome to DAVx⁵!</string>
+    <string name="account_list_welcome">Welcome to kSync!</string>
     <string name="account_list_empty">Connect to your server and keep your calendars and contacts synchronized.</string>
     <string name="accounts_sync_all">Sync all accounts</string>
 
@@ -437,7 +437,7 @@
     <string name="collection_url">Address (URL)</string>
 
     <!-- debugging and DebugInfoActivity -->
-    <string name="authority_debug_provider" translatable="false">at.bitfire.davdroid.debug</string>
+    <string name="authority_debug_provider" translatable="false">com.infomaniak.sync.debug</string>
     <string name="debug_info_title">Debug info</string>
     <string name="debug_info_archive_caption">ZIP archive</string>
     <string name="debug_info_archive_subtitle">Contains debug info and logs</string>
@@ -469,7 +469,7 @@
     <string name="exception_show_details">Show details</string>
 
     <!-- WebDAV accounts -->
-    <string name="webdav_authority" translatable="false">at.bitfire.davdroid.webdav</string>
+    <string name="webdav_authority" translatable="false">com.infomaniak.sync.webdav</string>
     <string name="webdav_mounts_title">WebDAV mounts</string>
     <string name="webdav_mounts_quota_used_available">Quota used: %1$s / available: %2$s</string>
     <string name="webdav_mounts_share_content">Share content</string>
@@ -493,7 +493,7 @@
     <string name="webdav_provider_root_title">WebDAV mount</string>
 
     <!-- sync -->
-    <string name="sync_error_permissions">DAVx⁵ permissions</string>
+    <string name="sync_error_permissions">kSync permissions</string>
     <string name="sync_error_permissions_text">Additional permissions required</string>
     <string name="sync_error_tasks_too_old">%s too old</string>
     <string name="sync_error_tasks_required_version">Minimum required version: %1$s</string>
