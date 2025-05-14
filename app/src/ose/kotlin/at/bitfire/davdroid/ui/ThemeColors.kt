@@ -13,13 +13,13 @@ object M3ColorScheme {
 
     // All colors hand-crafted because Material Theme Builder generates unbelievably ugly colors
 
-    val primaryLight = Color(0xFF7cb342)
+    val primaryLight = Color(0xFF0098ff) // kSync
     val onPrimaryLight = Color(0xFFffffff)
     val primaryContainerLight = Color(0xFFb4e47d)
     val onPrimaryContainerLight = Color(0xFF232d18)
-    val secondaryLight = Color(0xFFff7f2a)
+    val secondaryLight = Color(0xFF0098ff) // kSync
     val onSecondaryLight = Color(0xFFFFFFFF)
-    val secondaryContainerLight = Color(0xFFffa565)
+    val secondaryContainerLight = Color(0xFF80deea) // ksync
     val onSecondaryContainerLight = Color(0xFF3a271b)
     val tertiaryLight = Color(0xFF658a24)
     val onTertiaryLight = Color(0xFFFFFFFF)
@@ -49,13 +49,13 @@ object M3ColorScheme {
     val surfaceContainerHighLight = Color(0xFFf0f0ef)
     val surfaceContainerHighestLight = Color(0xFFebebea)
 
-    val primaryDark = Color(0xFFc4e3a4)
-    val onPrimaryDark = Color(0xFF2b4310)
-    val primaryContainerDark = Color(0xFF7cb342)
+    val primaryDark = Color(0xFF0098ff) // kSync
+    val onPrimaryDark = Color(0xFFFFFFFF) // kSync
+    val primaryContainerDark = Color(0xFF80deea)
     val onPrimaryContainerDark = Color(0xFFedf5e4)
-    val secondaryDark = Color(0xFFe5c3ac)
-    val onSecondaryDark = Color(0xFF3e332e)
-    val secondaryContainerDark = Color(0xFFff7f2a)
+    val secondaryDark = Color(0xFF0098ff) // kSync
+    val onSecondaryDark = Color(0xFFFFFFFF) // kSync
+    val secondaryContainerDark = Color(0xFF80deea) // kSync
     val onSecondaryContainerDark = Color(0xFFffeadb)
     val tertiaryDark = Color(0xFFc6e597)
     val onTertiaryDark = Color(0xFF4b661b)
@@ -72,7 +72,7 @@ object M3ColorScheme {
     val surfaceVariantDark = Color(0xFF363636)
     val onSurfaceVariantDark = Color(0xFFededed)
     val outlineDark = Color(0xFFa3a3a3)
-    val outlineVariantDark = Color(0xFF7cb342)
+    val outlineVariantDark = Color(0xFF9E9E9E) // kSync
     val scrimDark = Color(0xFF000000)
     val inverseSurfaceDark = Color(0xFFdbdbdb)
     val inverseOnSurfaceDark = Color(0xFF292929)
