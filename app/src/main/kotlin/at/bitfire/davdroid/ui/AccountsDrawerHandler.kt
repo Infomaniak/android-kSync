@@ -118,6 +118,7 @@ abstract class AccountsDrawerHandler {
             }
         )
 
+        /* Useless for kSync
         if (isBeta)
             MenuEntry(
                 icon = Icons.Default.Feedback,
@@ -134,6 +135,7 @@ abstract class AccountsDrawerHandler {
                     )
                 }
             )
+        */
 
         MenuEntry(
             icon = Icons.Default.Settings,
