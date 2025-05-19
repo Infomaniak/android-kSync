@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.rememberCoroutineScope
 import at.bitfire.davdroid.ui.AppTheme
+import at.bitfire.davdroid.ui.intro.IntroScreenInfomaniak
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -44,7 +45,7 @@ class IntroActivity : AppCompatActivity() {
                     }
                 }
 
-                IntroScreen(
+                IntroScreenInfomaniak( // kSync
                     pages = pages,
                     pagerState = pagerState,
                     onDonePressed = {
