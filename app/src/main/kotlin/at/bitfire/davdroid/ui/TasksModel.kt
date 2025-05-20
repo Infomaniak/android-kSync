@@ -18,6 +18,8 @@ import at.bitfire.ical4android.TaskProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -52,6 +54,11 @@ class TasksModel @Inject constructor(
     val jtxSelected = currentProvider.map { it == TaskProvider.ProviderName.JtxBoard }
     val tasksOrgSelected = currentProvider.map { it == TaskProvider.ProviderName.TasksOrg }
     val openTasksSelected = currentProvider.map { it == TaskProvider.ProviderName.OpenTasks }
+
+    val wantToSynchronise = MutableStateFlow(false)
+    fun setWantToSynchronise(value: Boolean) {
+        wantToSynchronise.value = value
+    }
 
     var jtxInstalled by mutableStateOf(false)
     var tasksOrgInstalled by mutableStateOf(false)
