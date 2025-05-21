@@ -16,7 +16,7 @@ class PermissionsActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            PermissionsScreen(
+            PermissionsScreenInfomaniak( // kSync
                 onNavigateUp = ::onSupportNavigateUp
             )
         }

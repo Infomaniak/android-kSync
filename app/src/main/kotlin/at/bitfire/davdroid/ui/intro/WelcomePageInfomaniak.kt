@@ -59,7 +59,7 @@ class WelcomePageInfomaniak : IntroPage() {
                 .safeContentPadding(),
         ) {
             Image(
-                painter = painterResource(R.drawable.ic_launcher_round), // TODO: Too blurry.
+                painter = painterResource(R.drawable.ic_launcher_round),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()

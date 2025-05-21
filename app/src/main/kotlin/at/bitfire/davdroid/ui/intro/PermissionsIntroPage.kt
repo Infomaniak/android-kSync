@@ -8,6 +8,7 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.ui.PermissionsModel
 import at.bitfire.davdroid.ui.PermissionsScreen
+import at.bitfire.davdroid.ui.PermissionsScreenInfomaniak
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.davdroid.util.PermissionUtils.CALENDAR_PERMISSIONS
 import at.bitfire.davdroid.util.PermissionUtils.CONTACT_PERMISSIONS
@@ -24,9 +25,9 @@ class PermissionsIntroPage @Inject constructor(
     override fun getShowPolicy(): ShowPolicy {
         // show PermissionsFragment as intro fragment when no permissions are granted
         val permissions = CONTACT_PERMISSIONS + CALENDAR_PERMISSIONS +
-                TaskProvider.PERMISSIONS_JTX +
-                TaskProvider.PERMISSIONS_OPENTASKS +
-                TaskProvider.PERMISSIONS_TASKS_ORG
+                TaskProvider.PERMISSIONS_JTX // + // kSync
+                // TaskProvider.PERMISSIONS_OPENTASKS + // kSync
+                // TaskProvider.PERMISSIONS_TASKS_ORG // kSync
         return if (PermissionUtils.haveAnyPermission(context, permissions))
             ShowPolicy.DONT_SHOW
         else
@@ -35,7 +36,7 @@ class PermissionsIntroPage @Inject constructor(
 
     @Composable
     override fun ComposePage() {
-        PermissionsScreen()
+        PermissionsScreenInfomaniak()
     }
 
 }
