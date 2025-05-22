@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +22,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Storage
@@ -30,19 +30,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
@@ -53,7 +54,6 @@ import androidx.core.net.toUri
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.webdav.WebdavMountsActivity
-import kotlinx.coroutines.launch
 import java.net.URI
 
 val LocalCloseDrawerHandler = compositionLocalOf {
@@ -79,10 +79,10 @@ abstract class AccountsDrawerHandler {
         onCloseDrawer: () -> Unit
     ) {
         Column(modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
-            BrandingHeader()
+            BrandingHeaderInfomaniak()
 
             val closeDrawerHandler = object : CloseDrawerHandler() {
                 override fun closeDrawer() {
@@ -105,9 +105,9 @@ abstract class AccountsDrawerHandler {
         val context = LocalContext.current
         val isBeta =
             LocalInspectionMode.current ||
-            BuildConfig.VERSION_NAME.contains("-alpha") ||
-            BuildConfig.VERSION_NAME.contains("-beta") ||
-            BuildConfig.VERSION_NAME.contains("-rc")
+                    BuildConfig.VERSION_NAME.contains("-alpha") ||
+                    BuildConfig.VERSION_NAME.contains("-beta") ||
+                    BuildConfig.VERSION_NAME.contains("-rc")
         val scope = rememberCoroutineScope()
 
         MenuEntry(
@@ -290,10 +290,49 @@ fun BrandingHeader() {
 }
 
 @Composable
+fun BrandingHeaderInfomaniak() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .paint(
+                painter = painterResource(id = R.drawable.nav_background),
+                contentScale = ContentScale.Crop,
+            ),
+    ) {
+        Column(
+            modifier = Modifier
+                .statusBarsPadding()
+                .fillMaxWidth()
+                .padding(16.dp),
+        ) {
+            Spacer(Modifier.height(16.dp))
+            Icon(
+                painter = painterResource(R.drawable.ic_launcher_round),
+                contentDescription = stringResource(R.string.app_name),
+                tint = Color.Unspecified,
+                modifier = Modifier.size(48.dp),
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.app_name),
+                color = Color.White,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = stringResource(R.string.navigation_drawer_subtitle),
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+    Spacer(Modifier.height(8.dp))
+}
+
+@Composable
 @Preview
 fun BrandingHeader_Preview_Light() {
     AppTheme(darkTheme = false) {
-        BrandingHeader()
+        BrandingHeaderInfomaniak()
     }
 }
 
@@ -301,6 +340,6 @@ fun BrandingHeader_Preview_Light() {
 @Preview
 fun BrandingHeader_Preview_Dark() {
     AppTheme(darkTheme = true) {
-        BrandingHeader()
+        BrandingHeaderInfomaniak()
     }
 }
