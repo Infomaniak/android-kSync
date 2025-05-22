@@ -36,7 +36,7 @@ class PermissionsIntroPage @Inject constructor(
 
     @Composable
     override fun ComposePage() {
-        PermissionsScreenInfomaniak()
+        PermissionsScreenInfomaniak() // kSync
     }
 
 }

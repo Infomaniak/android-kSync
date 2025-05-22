@@ -82,7 +82,7 @@ abstract class AccountsDrawerHandler {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            BrandingHeaderInfomaniak()
+            BrandingHeaderInfomaniak() // kSync
 
             val closeDrawerHandler = object : CloseDrawerHandler() {
                 override fun closeDrawer() {
@@ -332,7 +332,7 @@ fun BrandingHeaderInfomaniak() {
 @Preview
 fun BrandingHeader_Preview_Light() {
     AppTheme(darkTheme = false) {
-        BrandingHeaderInfomaniak()
+        BrandingHeaderInfomaniak() // kSync
     }
 }
 
@@ -340,6 +340,6 @@ fun BrandingHeader_Preview_Light() {
 @Preview
 fun BrandingHeader_Preview_Dark() {
     AppTheme(darkTheme = true) {
-        BrandingHeaderInfomaniak()
+        BrandingHeaderInfomaniak() // kSync
     }
 }
