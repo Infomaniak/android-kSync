@@ -37,7 +37,7 @@ class BatteryOptimizationsPage @Inject constructor(
 
     @Composable
     override fun ComposePage() {
-        BatteryOptimizationsPageContent()
+        BatteryOptimizationsPageContentInfomaniak() // kSync
     }
 
 
