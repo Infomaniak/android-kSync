@@ -50,7 +50,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.h6
 import at.bitfire.davdroid.subtitle
-import at.bitfire.davdroid.ui.composable.PermissionSwitchRowInfomaniak
+import at.bitfire.davdroid.ui.composable.PermissionSwitchRow
 import at.bitfire.davdroid.util.PermissionUtils
 import at.bitfire.ical4android.TaskProvider
 import java.util.logging.Level
@@ -175,7 +175,7 @@ fun PermissionsScreenInfomaniak(
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             ) {
                 if (keepPermissions != null) {
-                    PermissionSwitchRowInfomaniak(
+                    PermissionSwitchRow(
                         text = stringResource(R.string.permissions_autoreset_title),
                         summaryWhenGranted = stringResource(R.string.permissions_autoreset_status_on),
                         summaryWhenNotGranted = stringResource(R.string.permissions_autoreset_status_off),
@@ -192,7 +192,7 @@ fun PermissionsScreenInfomaniak(
                     allPermissions += Manifest.permission.POST_NOTIFICATIONS
                 if (jtxAvailable == true)
                     allPermissions.addAll(TaskProvider.PERMISSIONS_JTX)
-                PermissionSwitchRowInfomaniak(
+                PermissionSwitchRow(
                     text = stringResource(R.string.permissions_all_title),
                     permissions = allPermissions,
                     fontWeight = FontWeight.Bold,
@@ -200,7 +200,7 @@ fun PermissionsScreenInfomaniak(
                 )
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                    PermissionSwitchRowInfomaniak(
+                    PermissionSwitchRow(
                         iconRes = R.drawable.ic_ksync_notifications,
                         text = stringResource(R.string.permissions_notification_title),
 
@@ -208,13 +208,13 @@ fun PermissionsScreenInfomaniak(
                         modifier = Modifier.padding(vertical = 4.dp)
                     )
 
-                PermissionSwitchRowInfomaniak(
+                PermissionSwitchRow(
                     iconRes = R.drawable.ic_ksync_calendar,
                     text = stringResource(R.string.permissions_calendar_title),
                     permissions = PermissionUtils.CALENDAR_PERMISSIONS.toList(),
                     modifier = Modifier.padding(vertical = 4.dp)
                 )
-                PermissionSwitchRowInfomaniak(
+                PermissionSwitchRow(
                     iconRes = R.drawable.ic_ksync_contacts,
                     text = stringResource(R.string.permissions_contacts_title),
                     permissions = PermissionUtils.CONTACT_PERMISSIONS.toList(),
@@ -222,7 +222,7 @@ fun PermissionsScreenInfomaniak(
                 )
 
                 if (jtxAvailable == true)
-                    PermissionSwitchRowInfomaniak(
+                    PermissionSwitchRow(
                         iconRes = R.drawable.ic_ksync_task,
                         text = stringResource(R.string.permissions_jtx_title),
                         permissions = TaskProvider.PERMISSIONS_JTX.toList(),

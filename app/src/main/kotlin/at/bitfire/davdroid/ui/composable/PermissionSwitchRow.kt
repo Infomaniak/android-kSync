@@ -7,8 +7,10 @@ package at.bitfire.davdroid.ui.composable
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
@@ -20,19 +22,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.AppTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 
 @Composable
 fun PermissionSwitchRow(
+    iconRes: Int? = null, // kSync
     text: String,
     allPermissionsGranted: Boolean,
-    summaryWhenGranted: String,
-    summaryWhenNotGranted: String,
+    summaryWhenGranted: String? = null, // kSync
+    summaryWhenNotGranted: String? = null, // kSync
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal,
     onLaunchRequest: () -> Unit
@@ -41,6 +46,13 @@ fun PermissionSwitchRow(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        //region kSync
+        iconRes?.let { resId ->
+            Icon(painter = painterResource(resId), contentDescription = null)
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        //endregion kSync
+
         Column(
             modifier = Modifier.weight(1f)
         ) {
@@ -50,11 +62,13 @@ fun PermissionSwitchRow(
                 fontWeight = fontWeight,
                 style = MaterialTheme.typography.bodyLarge
             )
+            if (summaryWhenGranted != null && summaryWhenNotGranted != null) { // kSync
             Text(
                 text = if (allPermissionsGranted) summaryWhenGranted else summaryWhenNotGranted,
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodyMedium
             )
+            } // kSync
         }
         Switch(
             checked = allPermissionsGranted,
@@ -79,16 +93,18 @@ fun PermissionSwitchRow(
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
 fun PermissionSwitchRow(
+    iconRes: Int? = null, // kSync
     text: String,
     permissions: List<String>,
-    summaryWhenGranted: String,
-    summaryWhenNotGranted: String,
+    summaryWhenGranted: String? = null, // kSync
+    summaryWhenNotGranted: String? = null, // kSync
     modifier: Modifier = Modifier,
     fontWeight: FontWeight = FontWeight.Normal
 ) {
     if (LocalInspectionMode.current) {
         // preview
         PermissionSwitchRow(
+            iconRes = iconRes, // kSync
             text = text,
             fontWeight = fontWeight,
             summaryWhenGranted = summaryWhenGranted,
@@ -102,6 +118,7 @@ fun PermissionSwitchRow(
 
     val state = rememberMultiplePermissionsState(permissions = permissions.toList())
     PermissionSwitchRow(
+        iconRes = iconRes, // kSync
         text = text,
         fontWeight = fontWeight,
         summaryWhenGranted = summaryWhenGranted,
@@ -117,6 +134,7 @@ fun PermissionSwitchRow(
 fun PermissionSwitchRow_Preview_NotGranted() {
     AppTheme {
         PermissionSwitchRow(
+            iconRes = R.drawable.ic_ksync_contacts, // kSync
             text = "Contacts",
             allPermissionsGranted = false,
             summaryWhenGranted = "Granted",
@@ -133,6 +151,7 @@ fun PermissionSwitchRow_Preview_Granted() {
     AppTheme {
         Surface {
             PermissionSwitchRow(
+                iconRes = R.drawable.ic_ksync_contacts, // kSync
                 text = "Contacts",
                 allPermissionsGranted = true,
                 summaryWhenGranted = "Granted",
