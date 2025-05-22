@@ -312,6 +312,7 @@ fun AccountSettings_FromModel(
             onUpdateIgnoreVpns = onUpdateIgnoreVpns
         )
 
+        /* Useless for kSync
         credentials?.let {
             AuthenticationSettings(
                 snackbarHostState = snackbarHostState,
@@ -320,6 +321,7 @@ fun AccountSettings_FromModel(
                 onUpdateCredentials = onUpdateCredentials
             )
         }
+        */
 
         CalDavSettings(
             timeRangePastDays = timeRangePastDays,
@@ -395,6 +397,7 @@ fun SyncSettings(
             onCheckedChange = onUpdateSyncOnlyOnWifi
         )
 
+        /* Useless for kSync
         var showWifiOnlySsidsDialog by remember { mutableStateOf(false) }
         Setting(
             icon = null,
@@ -441,6 +444,7 @@ fun SyncSettings(
                     )
                 }
             }
+        */
 
         SwitchSetting(
             icon = null,

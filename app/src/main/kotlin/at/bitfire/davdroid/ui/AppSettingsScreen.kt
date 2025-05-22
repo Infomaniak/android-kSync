@@ -208,6 +208,7 @@ fun AppSettingsScreen(
                     onBatterySavingSettings = onBatterySavingSettings
                 )
 
+                /* Useless for kSync
                 AppSettings_Connection(
                     proxyType = proxyType,
                     onProxyTypeUpdated = onProxyTypeUpdated,
@@ -229,6 +230,7 @@ fun AppSettingsScreen(
                     },
                     onNavPermissionsScreen = onNavPermissionsScreen
                 )
+                */
 
                 val resetHintsSuccessMessage = stringResource(R.string.app_settings_reset_hints_success)
                 AppSettings_UserInterface(
@@ -699,6 +701,7 @@ fun AppSettings_Integration(
         onClick = onNavTasksScreen
     )
 
+    /* Useless for kSync
     var showingDistributorDialog by remember { mutableStateOf(false) }
     if (showingDistributorDialog) {
         PushDistributorSelectionDialog(
@@ -719,4 +722,5 @@ fun AppSettings_Integration(
             stringResource(R.string.app_settings_unifiedpush_no_endpoint),
         onClick = { showingDistributorDialog = true }
     )
+    */
 }
