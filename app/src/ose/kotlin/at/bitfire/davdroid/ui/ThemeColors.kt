@@ -51,7 +51,7 @@ object M3ColorScheme {
 
     val primaryDark = Color(0xFF0098ff) // kSync
     val onPrimaryDark = Color(0xFFFFFFFF) // kSync
-    val primaryContainerDark = Color(0xFF80deea)
+    val primaryContainerDark = Color(0xFF80deea) // kSync
     val onPrimaryContainerDark = Color(0xFFedf5e4)
     val secondaryDark = Color(0xFF0098ff) // kSync
     val onSecondaryDark = Color(0xFFFFFFFF) // kSync
