@@ -252,7 +252,7 @@ fun AccountsScreen(
                             .verticalScroll(rememberScrollState())
                     ) {
                     */
-                        Column(Modifier.fillMaxSize()) {
+                        Column(Modifier.fillMaxSize()) { // kSync
                             val notificationsPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
                                     rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
@@ -311,9 +311,9 @@ fun AccountsScreen(
                                     .padding(8.dp)
                             )
 
-                            Spacer(Modifier.weight(1f))
+                            Spacer(Modifier.weight(1.0f)) // kSync
                         }
-//                    }
+                    // } // kSync
                 }
             }
         }
@@ -438,11 +438,12 @@ fun AccountList(
     }
 }
 
+//region kSync
 @Composable
 fun AccountListInfomaniak(
     accounts: List<AccountsModel.AccountInfo>,
     modifier: Modifier = Modifier,
-    onClickAccount: (Account) -> Unit = {}
+    onClickAccount: (Account) -> Unit = {},
 ) {
     if (accounts.isEmpty()) {
         Column(
@@ -477,7 +478,7 @@ fun AccountListInfomaniak(
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                     elevation = CardDefaults.cardElevation(1.dp),
                     modifier = Modifier
@@ -511,7 +512,7 @@ fun AccountListInfomaniak(
                                 contentDescription = null,
                                 modifier = Modifier
                                     .align(Alignment.CenterHorizontally)
-                                    .size(48.dp)
+                                    .size(48.dp),
                             )
 
                             Text(
@@ -520,7 +521,7 @@ fun AccountListInfomaniak(
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(top = 4.dp)
-                                    .fillMaxWidth()
+                                    .fillMaxWidth(),
                             )
                         }
                     }
@@ -528,6 +529,7 @@ fun AccountListInfomaniak(
         }
     }
 }
+//endregion kSync
 
 @Composable
 @Preview
