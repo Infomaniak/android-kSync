@@ -16,7 +16,7 @@ class TasksActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            TasksScreen(
+            TasksScreenInfomaniak( // kSync
                 onNavUp = ::onSupportNavigateUp
             )
         }

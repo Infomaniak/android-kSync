@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import at.bitfire.davdroid.settings.SettingsManager
 import at.bitfire.davdroid.sync.TasksAppManager
 import at.bitfire.davdroid.ui.TasksCard
+import at.bitfire.davdroid.ui.TasksCardInfomaniak
 import at.bitfire.davdroid.ui.TasksModel
 import javax.inject.Inject
 
@@ -25,7 +26,7 @@ class TasksIntroPage @Inject constructor(
 
     @Composable
     override fun ComposePage() {
-        TasksCard()
+        TasksCardInfomaniak() // kSync
     }
 
 }

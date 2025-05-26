@@ -9,7 +9,7 @@ import at.bitfire.davdroid.ui.intro.IntroPageFactory
 import at.bitfire.davdroid.ui.intro.OpenSourcePage
 import at.bitfire.davdroid.ui.intro.PermissionsIntroPage
 import at.bitfire.davdroid.ui.intro.TasksIntroPage
-import at.bitfire.davdroid.ui.intro.WelcomePage
+import at.bitfire.davdroid.ui.intro.WelcomePageInfomaniak
 import javax.inject.Inject
 
 class OseIntroPageFactory @Inject constructor(
@@ -20,11 +20,11 @@ class OseIntroPageFactory @Inject constructor(
 ): IntroPageFactory {
 
     override val introPages = arrayOf(
-        WelcomePage(),
+        WelcomePageInfomaniak(), // kSync
         tasksIntroPage,
         permissionsIntroPage,
         batteryOptimizationsPage,
-        openSourcePage
+        // openSourcePage // kSync
     )
 
 }
