@@ -13,10 +13,12 @@ import android.provider.Settings
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -76,6 +78,7 @@ import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.ui.account.AccountProgress
 import at.bitfire.davdroid.ui.composable.ActionCard
+import at.bitfire.davdroid.ui.composable.KSyncTitle
 import at.bitfire.davdroid.ui.composable.ProgressBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -244,21 +247,14 @@ fun AccountsScreen(
                     onRefresh = { isRefreshing = true; onSyncAll() },
                     modifier = Modifier.padding(padding)
                 ) {
+                    /* Useless for kSync
                     Box(
                         Modifier
                             .fillMaxSize()
                             .verticalScroll(rememberScrollState())
                     ) {
-                        // background image
-                        Image(
-                            painterResource(R.drawable.accounts_background),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .matchParentSize()
-                                .align(Alignment.Center)
-                        )
-
-                        Column {
+                    */
+                        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) { // kSync
                             val notificationsPermissionState =
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
                                     rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
@@ -307,7 +303,7 @@ fun AccountsScreen(
                             )
 
                             // account list
-                            AccountList(
+                            AccountListInfomaniak( // kSync
                                 accounts = accounts,
                                 onClickAccount = { account ->
                                     onShowAccount(account)
@@ -316,8 +312,10 @@ fun AccountsScreen(
                                     .fillMaxSize()
                                     .padding(8.dp)
                             )
+
+                            Spacer(Modifier.weight(1.0f)) // kSync
                         }
-                    }
+                    // } // kSync
                 }
             }
         }
@@ -441,6 +439,99 @@ fun AccountList(
                 }
     }
 }
+
+//region kSync
+@Composable
+fun AccountListInfomaniak(
+    accounts: List<AccountsModel.AccountInfo>,
+    modifier: Modifier = Modifier,
+    onClickAccount: (Account) -> Unit = {},
+) {
+    if (accounts.isEmpty()) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            modifier = modifier.fillMaxSize(),
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_launcher_round),
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(80.dp),
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            KSyncTitle(modifier = Modifier.fillMaxWidth())
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Text(
+                text = stringResource(R.string.infomaniak_account_welcome_add_first_account),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            Spacer(modifier = Modifier.height(100.dp))
+        }
+    } else {
+        Column(modifier) {
+            for ((account, progress) in accounts)
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
+                    elevation = CardDefaults.cardElevation(1.dp),
+                    modifier = Modifier
+                        .clickable { onClickAccount(account) }
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp)
+                ) {
+                    Column {
+                        val progressAlpha = progress.rememberAlpha()
+                        when (progress) {
+                            AccountProgress.Active ->
+                                ProgressBar(
+                                    modifier = Modifier
+                                        .alpha(progressAlpha)
+                                        .fillMaxWidth()
+                                )
+
+                            AccountProgress.Pending,
+                            AccountProgress.Idle ->
+                                ProgressBar(
+                                    progress = { 1f },
+                                    modifier = Modifier
+                                        .alpha(progressAlpha)
+                                        .fillMaxWidth()
+                                )
+                        }
+
+                        Column(Modifier.padding(vertical = 12.dp)) {
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .size(48.dp),
+                            )
+
+                            Text(
+                                text = account.name,
+                                style = MaterialTheme.typography.titleLarge,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+                                    .fillMaxWidth(),
+                            )
+                        }
+                    }
+                }
+        }
+    }
+}
+//endregion kSync
 
 @Composable
 @Preview
