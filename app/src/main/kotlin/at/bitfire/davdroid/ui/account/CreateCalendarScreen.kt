@@ -97,7 +97,7 @@ fun CreateCalendarScreen(
         onSetSupportVEVENT = model::setSupportVEVENT,
         supportVTODO = uiState.supportVTODO,
         onSetSupportVTODO = model::setSupportVTODO,
-        supportVJOURNAL = uiState.supportVJOURNAL,
+        supportVJOURNAL = false, // kSync
         onSetSupportVJOURNAL = model::setSupportVJOURNAL,
         homeSets = model.calendarHomeSets.collectAsStateWithLifecycle(emptyList()).value,
         selectedHomeSet = uiState.homeSet,
@@ -305,11 +305,13 @@ fun CreateCalendarScreen(
                         value = supportVTODO,
                         onValueChange = onSetSupportVTODO
                     )
+                    /* Useless for kSync
                     CheckBoxRow(
                         label = stringResource(R.string.create_calendar_type_vjournal),
                         value = supportVJOURNAL,
                         onValueChange = onSetSupportVJOURNAL
                     )
+                    */
 
                     HomeSetSelection(
                         homeSet = selectedHomeSet,
@@ -318,11 +320,13 @@ fun CreateCalendarScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
+                    /* Useless for kSync
                     Text(
                         stringResource(R.string.create_calendar_maybe_not_supported),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
+                    */
 
                     Button(
                         onClick = onCreate,

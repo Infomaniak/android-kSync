@@ -174,11 +174,13 @@ fun CreateAddressBookScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
+                    /* Useless for kSync
                     Text(
                         stringResource(R.string.create_addressbook_maybe_not_supported),
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
+                    */
 
                     Button(
                         onClick = onCreate,
