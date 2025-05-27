@@ -128,6 +128,7 @@ class SyncNotificationManager @AssistedInject constructor(
                 AccountSettingsActivity.EXTRA_ACCOUNT,
                 account
             )
+            contentIntent.putExtra(AccountSettingsActivity.EXTRA_WRONG_CREDENTIALS, true) // kSync
         } else {
             contentIntent = buildDebugInfoIntent(authority, e, local, remote)
             if (local != null)

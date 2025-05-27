@@ -180,6 +180,7 @@ class RefreshCollectionsWorker @AssistedInject constructor(
             // notify that we need to re-authenticate in the account settings
             val settingsIntent = Intent(applicationContext, AccountSettingsActivity::class.java)
                 .putExtra(AccountSettingsActivity.EXTRA_ACCOUNT, account)
+                .putExtra(AccountSettingsActivity.EXTRA_WRONG_CREDENTIALS, true) // kSync
             notifyRefreshError(
                 applicationContext.getString(R.string.sync_error_authentication_failed),
                 settingsIntent

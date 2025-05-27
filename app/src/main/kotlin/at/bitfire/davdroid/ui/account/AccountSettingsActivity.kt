@@ -17,11 +17,13 @@ class AccountSettingsActivity: AppCompatActivity() {
 
     companion object {
         const val EXTRA_ACCOUNT = "account"
+        const val EXTRA_WRONG_CREDENTIALS = "wrong_credentials" // kSync
     }
 
     private val account by lazy {
         intent.getParcelableExtra<Account>(EXTRA_ACCOUNT) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
     }
+    private val isWrongCredentials by lazy { intent.getBooleanExtra(EXTRA_WRONG_CREDENTIALS, false) } // kSync
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +39,7 @@ class AccountSettingsActivity: AppCompatActivity() {
                     startActivity(intent)
                 },
                 onNavUp = ::onSupportNavigateUp,
+                isWrongCredentials = isWrongCredentials, // kSync
             )
         }
     }
