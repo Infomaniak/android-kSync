@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.h6
+import at.bitfire.davdroid.kSyncConstants.BATTERY_OPTIMIZATIONS_GUIDE
 import at.bitfire.davdroid.ui.AppTheme
 
 @Composable
@@ -83,7 +85,7 @@ fun BatteryOptimizationsPageContentInfomaniak(
     onChangeDontShowAutostart: (Boolean) -> Unit = {},
     manufacturerWarning: Boolean
 ) {
-    LocalUriHandler.current
+    val uriHandler = LocalUriHandler.current
 
     Column(
         verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -172,6 +174,11 @@ fun BatteryOptimizationsPageContentInfomaniak(
                             style = MaterialTheme.typography.bodyLarge,
                             modifier = Modifier.padding(top = 12.dp)
                         )
+                        OutlinedButton(
+                            onClick = { uriHandler.openUri(BATTERY_OPTIMIZATIONS_GUIDE)},
+                        ) {
+                            Text(stringResource(R.string.infomaniak_fragment_battery_autostart_button))
+                        }
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
