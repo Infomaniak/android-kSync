@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LoginToolbarTheme" parent="Theme.AppCompat">
+        <item name="colorCloseIcon">@color/infomaniakText</item>
+        <item name="android:textColorPrimary">@color/infomaniakText</item>
+        <item name="android:textColorSecondary">@color/infomaniakText</item>
+    </style>
+
+    <style name="WebViewTheme" parent="BaseWebViewTheme" />
+</resources>
