@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -92,11 +93,17 @@ fun TasksCardInfomaniak(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    val currentProvider by model.currentProvider.collectAsStateWithLifecycle(null)
+
     val wantToSynchronise = model.wantToSynchronise.collectAsStateWithLifecycle(false)
     val jtxInstalled = model.jtxInstalled
 
     TasksCardInfomaniak(
-        wantToSynchronise = wantToSynchronise.value,
+        wantToSynchronise = wantToSynchronise.value || jtxInstalled,
+        onProviderSelected = { provider ->
+            if (currentProvider != provider)
+                model.selectProvider(provider)
+        },
         onWantToSynchroniseToggled = { toggled -> model.setWantToSynchronise(toggled) },
         jtxInstalled = jtxInstalled,
         installApp = { packageName ->
@@ -121,6 +128,7 @@ fun TasksCardInfomaniak(
     wantToSynchronise: Boolean,
     onWantToSynchroniseToggled: (Boolean) -> Unit = {},
     jtxInstalled: Boolean,
+    onProviderSelected: (TaskProvider.ProviderName) -> Unit = {},
     installApp: (String) -> Unit = {},
 ) {
     val paddingModifier = Modifier.padding(16.dp)
@@ -164,7 +172,10 @@ fun TasksCardInfomaniak(
 
                 Spacer(modifier = Modifier.weight(1.0f))
 
-                Switch(checked = wantToSynchronise, onCheckedChange = onWantToSynchroniseToggled)
+                Switch(checked = wantToSynchronise, onCheckedChange = { isChecked ->
+                    if (isChecked) onProviderSelected(TaskProvider.ProviderName.JtxBoard)
+                    onWantToSynchroniseToggled(isChecked)
+                })
             }
         }
 
