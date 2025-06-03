@@ -162,7 +162,9 @@
             android:parentActivityName=".ui.webdav.WebdavMountsActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name="com.infomaniak.lib.login.WebViewLoginActivity" />
+        <activity
+            android:name="com.infomaniak.lib.login.WebViewLoginActivity"
+            android:theme="@style/WebViewTheme"/>
 
         <!-- account type "DAVx⁵" -->
         <service

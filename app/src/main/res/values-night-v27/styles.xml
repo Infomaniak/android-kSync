@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="WebViewTheme" parent="BaseWebViewTheme">
+        <item name="android:statusBarColor">#333333</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">#292929</item>
+    </style>
+</resources>
