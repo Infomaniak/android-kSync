@@ -254,67 +254,96 @@ fun AccountsScreen(
                             .verticalScroll(rememberScrollState())
                     ) {
                     */
-                        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) { // kSync
-                            val notificationsPermissionState =
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
-                                    rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
-                                else
-                                    null
-
-                            // Warnings show as action cards
-                            val context = LocalContext.current
-                            SyncWarnings(
-                                notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
-                                onManagePermissions = onManagePermissions,
-                                internetWarning = internetUnavailable,
-                                onManageConnections = {
-                                    val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
-                                    if (intent.resolveActivity(context.packageManager) != null)
-                                        context.startActivity(intent)
-                                },
-                                batterySaverActive = batterySaverActive,
-                                onManageBatterySaver = {
-                                    val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
-                                    if (intent.resolveActivity(context.packageManager) != null)
-                                        context.startActivity(intent)
-                                },
-                                dataSaverActive = dataSaverActive,
-                                onManageDataSaver = {
-                                    val intent = Intent(
-                                        /* action = */ Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
-                                        /* uri = */ Uri.parse("package:${BuildConfig.APPLICATION_ID}")
-                                    )
-                                    if (intent.resolveActivity(context.packageManager) != null)
-                                        context.startActivity(intent)
-                                },
-                                lowStorageWarning = storageLow,
-                                onManageStorage = {
-                                    val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
-                                    if (intent.resolveActivity(context.packageManager) != null)
-                                        context.startActivity(intent)
-                                },
-                                calendarStorageDisabled = calendarStorageDisabled,
-                                contactsStorageDisabled = contactsStorageDisabled,
-                                onManageApps = {
-                                    val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
-                                    if (intent.resolveActivity(context.packageManager) != null)
-                                        context.startActivity(intent)
-                                },
-                            )
-
-                            // account list
-                            AccountListInfomaniak( // kSync
-                                accounts = accounts,
-                                onClickAccount = { account ->
-                                    onShowAccount(account)
-                                },
+                    //region kSync
+                    if (accounts.isEmpty()) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxSize(),
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_launcher_round),
+                                contentDescription = null,
                                 modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(8.dp)
+                                    .fillMaxWidth()
+                                    .size(80.dp),
                             )
 
-                            Spacer(Modifier.weight(1.0f)) // kSync
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            KSyncTitle(modifier = Modifier.fillMaxWidth())
+
+                            Spacer(modifier = Modifier.height(32.dp))
+
+                            Text(
+                                text = stringResource(R.string.infomaniak_account_welcome_add_first_account),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+
+                            Spacer(modifier = Modifier.height(50.dp))
                         }
+                    }
+                    //endregion
+
+                    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) { // kSync
+                        val notificationsPermissionState =
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !LocalInspectionMode.current)
+                                rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
+                            else
+                                null
+
+                        // Warnings show as action cards
+                        val context = LocalContext.current
+                        SyncWarnings(
+                            notificationsWarning = notificationsPermissionState?.status?.isGranted == false,
+                            onManagePermissions = onManagePermissions,
+                            internetWarning = internetUnavailable,
+                            onManageConnections = {
+                                val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
+                                if (intent.resolveActivity(context.packageManager) != null)
+                                    context.startActivity(intent)
+                            },
+                            batterySaverActive = batterySaverActive,
+                            onManageBatterySaver = {
+                                val intent = Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS)
+                                if (intent.resolveActivity(context.packageManager) != null)
+                                    context.startActivity(intent)
+                            },
+                            dataSaverActive = dataSaverActive,
+                            onManageDataSaver = {
+                                val intent = Intent(
+                                    /* action = */ Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS,
+                                    /* uri = */ Uri.parse("package:${BuildConfig.APPLICATION_ID}")
+                                )
+                                if (intent.resolveActivity(context.packageManager) != null)
+                                    context.startActivity(intent)
+                            },
+                            lowStorageWarning = storageLow,
+                            onManageStorage = {
+                                val intent = Intent(Settings.ACTION_INTERNAL_STORAGE_SETTINGS)
+                                if (intent.resolveActivity(context.packageManager) != null)
+                                    context.startActivity(intent)
+                            },
+                            calendarStorageDisabled = calendarStorageDisabled,
+                            contactsStorageDisabled = contactsStorageDisabled,
+                            onManageApps = {
+                                val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
+                                if (intent.resolveActivity(context.packageManager) != null)
+                                    context.startActivity(intent)
+                            },
+                        )
+
+                        // account list
+                        AccountListInfomaniak( // kSync
+                            accounts = accounts,
+                            onClickAccount = { account ->
+                                onShowAccount(account)
+                            },
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(8.dp)
+                        )
+                    }
                     // } // kSync
                 }
             }
@@ -447,88 +476,59 @@ fun AccountListInfomaniak(
     modifier: Modifier = Modifier,
     onClickAccount: (Account) -> Unit = {},
 ) {
-    if (accounts.isEmpty()) {
-        Column(
-            verticalArrangement = Arrangement.Center,
-            modifier = modifier.fillMaxSize(),
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_launcher_round),
-                contentDescription = null,
+    Column(modifier) {
+        for ((account, progress) in accounts)
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                elevation = CardDefaults.cardElevation(1.dp),
                 modifier = Modifier
+                    .clickable { onClickAccount(account) }
                     .fillMaxWidth()
-                    .size(80.dp),
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            KSyncTitle(modifier = Modifier.fillMaxWidth())
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            Text(
-                text = stringResource(R.string.infomaniak_account_welcome_add_first_account),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-            )
-
-            Spacer(modifier = Modifier.height(100.dp))
-        }
-    } else {
-        Column(modifier) {
-            for ((account, progress) in accounts)
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                    elevation = CardDefaults.cardElevation(1.dp),
-                    modifier = Modifier
-                        .clickable { onClickAccount(account) }
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp)
-                ) {
-                    Column {
-                        val progressAlpha = progress.rememberAlpha()
-                        when (progress) {
-                            AccountProgress.Active ->
-                                ProgressBar(
-                                    modifier = Modifier
-                                        .alpha(progressAlpha)
-                                        .fillMaxWidth()
-                                )
-
-                            AccountProgress.Pending,
-                            AccountProgress.Idle ->
-                                ProgressBar(
-                                    progress = { 1f },
-                                    modifier = Modifier
-                                        .alpha(progressAlpha)
-                                        .fillMaxWidth()
-                                )
-                        }
-
-                        Column(Modifier.padding(vertical = 12.dp)) {
-                            Icon(
-                                imageVector = Icons.Default.AccountCircle,
-                                contentDescription = null,
+                    .padding(bottom = 8.dp)
+            ) {
+                Column {
+                    val progressAlpha = progress.rememberAlpha()
+                    when (progress) {
+                        AccountProgress.Active ->
+                            ProgressBar(
                                 modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .size(48.dp),
+                                    .alpha(progressAlpha)
+                                    .fillMaxWidth()
                             )
 
-                            Text(
-                                text = account.name,
-                                style = MaterialTheme.typography.titleLarge,
-                                textAlign = TextAlign.Center,
+                        AccountProgress.Pending,
+                        AccountProgress.Idle ->
+                            ProgressBar(
+                                progress = { 1f },
                                 modifier = Modifier
-                                    .padding(top = 4.dp)
-                                    .fillMaxWidth(),
+                                    .alpha(progressAlpha)
+                                    .fillMaxWidth()
                             )
-                        }
+                    }
+
+                    Column(Modifier.padding(vertical = 12.dp)) {
+                        Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .size(48.dp),
+                        )
+
+                        Text(
+                            text = account.name,
+                            style = MaterialTheme.typography.titleLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(top = 4.dp)
+                                .fillMaxWidth(),
+                        )
                     }
                 }
-        }
+            }
     }
 }
 //endregion kSync
