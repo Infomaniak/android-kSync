@@ -94,7 +94,7 @@ open class OseAccountsDrawerHandler @Inject constructor(): AccountsDrawerHandler
         */
         MenuEntry(
             icon = Icons.Default.Info,
-            title = stringResource(R.string.navigation_drawer_manual),
+            title = stringResource(R.string.infomaniak_navigation_drawer_manual), // kSync
             onClick = {
                 uriHandler.openUri(MANUAL_URL.toString())
             }

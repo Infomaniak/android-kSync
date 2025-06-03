@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="infomaniak_login_initialization">Inizializzazione …</string>
-    <string name="infomaniak_login_retrieving_account_information">Recupero delle informazioni del conto …</string>
-    <string name="infomaniak_login_generating_an_application_password">Generazione di una password dell\'applicazione …</string>
-    <string name="infomaniak_login_finalising">Finalizzazione …</string>
-
     <string name="infomaniak_account_welcome_add_first_account">Premi su + per aggiungere un account WorkSpace.</string>
 
     <string name="infomaniak_navigation_drawer_manual">Manuale (Originale)</string>
@@ -23,8 +18,6 @@
     <string name="infomaniak_fragment_tasks_title">Vuoi sincronizzare le tue attività sul tuo dispositivo?</string>
     <string name="infomaniak_fragment_tasks_text">Voglio sincronizzare le mie attività</string>
     <string name="infomaniak_fragment_tasks_explanation">Per sincronizzare le tue attività, devi installare la seguente applicazione</string>
-    <string name="infomaniak_fragment_permissions_autoreset_heading">Rimuovi le autorizzazioni se l’app non viene utilizzata</string>
-    <string name="infomaniak_fragment_permissions_autoreset_info">Se questa opzione è attivata, le autorizzazioni verranno rimosse dopo un determinato periodo di tempo e la sincronizzazione non verrà più effettuata.</string>
     <string name="infomaniak_fragment_battery_heading">Consenti il funzionamento dell’applicazione in background</string>
     <string name="infomaniak_fragment_battery_autostart_text">È possibile che il tuo dispositivo blocchi la sincronizzazione in background nonostante l’attivazione dell’opzione di cui sopra. Segui questa guida per modificare le impostazioni di sincronizzazione in background. In caso contrario, è possibile che tu debba sincronizzare manualmente i tuoi dati dall’applicazione.</string>
     <string name="infomaniak_fragment_battery_autostart_button">Consulta la guida (in inglese)</string>
