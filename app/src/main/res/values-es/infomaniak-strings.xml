@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="infomaniak_login_initialization">Inicialización …</string>
-    <string name="infomaniak_login_retrieving_account_information">Recuperando información de la cuenta …</string>
-    <string name="infomaniak_login_generating_an_application_password">Generando una contraseña de aplicación …</string>
-    <string name="infomaniak_login_finalising">Finalización …</string>
-
     <string name="infomaniak_account_welcome_add_first_account">Pulsa + para agregar una cuenta de WorkSpace.</string>
 
     <string name="infomaniak_navigation_drawer_manual">Manual (Original)</string>
@@ -23,8 +18,6 @@
     <string name="infomaniak_fragment_tasks_title">¿Deseas sincronizar tus tareas en el dispositivo?</string>
     <string name="infomaniak_fragment_tasks_text">Deseo sincronizar mis tareas</string>é
     <string name="infomaniak_fragment_tasks_explanation">Para sincronizar tus tareas, debes instalar la siguiente aplicación</string>
-    <string name="infomaniak_fragment_permissions_autoreset_heading">Quitar permisos si la aplicación no se utiliza</string>
-    <string name="infomaniak_fragment_permissions_autoreset_info">Si está activada esta opción, se eliminarán las autorizaciones tras un tiempo y la sincronización ya no funcionará.</string>
     <string name="infomaniak_fragment_battery_heading">Autorizar el funcionamiento en segundo plano de la aplicación</string>
     <string name="infomaniak_fragment_battery_autostart_text">Probablemente, tu dispositivo está bloqueando la sincronización en segundo plano, a pesar de tener la opción anterior activada. Sigue esta guía para modificar tus parámetros de sincronización en segundo plano. Si no, podrías tener que sincronizar manualmente tus datos desde la aplicación.</string>
     <string name="infomaniak_fragment_battery_autostart_button">Consultar la guía (inglés)</string>

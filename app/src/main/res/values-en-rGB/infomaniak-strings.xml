@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="infomaniak_login_initialization">Initialization …</string>
-    <string name="infomaniak_login_retrieving_account_information">Retrieving account information…</string>
-    <string name="infomaniak_login_generating_an_application_password">Generating an application password…</string>
-    <string name="infomaniak_login_finalising">Finalising…</string>
-
     <string name="infomaniak_account_welcome_add_first_account">Click on + to add a WorkSpace account.</string>
 
     <string name="infomaniak_navigation_drawer_manual">Manual (Original)</string>
@@ -23,8 +18,6 @@
     <string name="infomaniak_fragment_tasks_title">Do you want to synchronise your tasks on your device?</string>
     <string name="infomaniak_fragment_tasks_text">I want to synchronise my tasks</string>
     <string name="infomaniak_fragment_tasks_explanation">To synchronise your tasks, you need to install the following application</string>
-    <string name="infomaniak_fragment_permissions_autoreset_heading">Remove permissions if app isn’t used</string>
-    <string name="infomaniak_fragment_permissions_autoreset_info">If this option is enabled, permissions will be deleted after a while and synchronisation will no longer work.</string>
     <string name="infomaniak_fragment_battery_heading">Allow the application to run in the background</string>
     <string name="infomaniak_fragment_battery_autostart_text">Your device is probably blocking synchronisation in the background despite the above option being enabled. Please follow this guide to change your synchronisation in the background settings. Otherwise, you may need to manually synchronise your data from the application.</string>
     <string name="infomaniak_fragment_battery_autostart_button">View the guide</string>
