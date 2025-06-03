@@ -11,4 +11,5 @@ object kSyncConstants {
     const val PROFILE_API_URL = "$API_ENDPOINT/profile"
 
     const val BATTERY_OPTIMIZATIONS_GUIDE = "https://dontkillmyapp.com/"
+    const val INFOMANIAK_SUPPORT_EMAIL_ADDRESS = "support@infomaniak.com"
 }
