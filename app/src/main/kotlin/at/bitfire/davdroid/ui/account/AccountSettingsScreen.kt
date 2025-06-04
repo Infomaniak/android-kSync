@@ -72,6 +72,7 @@ fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     account: Account,
     onNavWifiPermissionsScreen: () -> Unit,
+    isWrongCredentials: Boolean, // kSync
 ) {
     val model = hiltViewModel { factory: AccountSettingsModel.Factory ->
         factory.create(account)
@@ -83,6 +84,8 @@ fun AccountSettingsScreen(
         AccountSettingsScreen(
             accountName = account.name,
             onNavUp = onNavUp,
+
+            isWrongCredentials = isWrongCredentials, // kSync
 
             // Sync settings
             canAccessWifiSsid = canAccessWifiSsid,
@@ -130,6 +133,8 @@ fun AccountSettingsScreen(
 fun AccountSettingsScreen(
     onNavUp: () -> Unit,
     accountName: String,
+
+    isWrongCredentials: Boolean, // kSync
 
     // Sync settings
     canAccessWifiSsid: Boolean,
@@ -231,6 +236,8 @@ fun AccountSettingsScreen(
                 onUpdateCredentials = onUpdateCredentials,
                 isCredentialsUpdateAllowed = isCredentialsUpdateAllowed,
 
+                isWrongCredentials = isWrongCredentials, // kSync
+
                 // CalDav Settings
                 timeRangePastDays = timeRangePastDays,
                 onUpdateTimeRangePastDays = onUpdateTimeRangePastDays,
@@ -277,6 +284,8 @@ fun AccountSettings_FromModel(
     onUpdateCredentials: (Credentials) -> Unit = {},
     isCredentialsUpdateAllowed: Boolean,
 
+    isWrongCredentials: Boolean, // kSync
+
     // CalDav Settings
     timeRangePastDays: Int?,
     onUpdateTimeRangePastDays: (Int?) -> Unit = {},
@@ -312,8 +321,7 @@ fun AccountSettings_FromModel(
             onUpdateIgnoreVpns = onUpdateIgnoreVpns
         )
 
-        /* Useless for kSync
-        credentials?.let {
+        if (credentials != null && isWrongCredentials) { // kSync
             AuthenticationSettings(
                 snackbarHostState = snackbarHostState,
                 credentials = credentials,
@@ -321,7 +329,6 @@ fun AccountSettings_FromModel(
                 onUpdateCredentials = onUpdateCredentials
             )
         }
-        */
 
         CalDavSettings(
             timeRangePastDays = timeRangePastDays,
@@ -516,6 +523,7 @@ fun AuthenticationSettings(
             }
 
             if (credentials.username != null || credentials.password != null) {
+                /* Useless for kSync
                 var showUsernameDialog by remember { mutableStateOf(false) }
                 Setting(
                     icon = Icons.Default.AccountCircle,
@@ -535,6 +543,7 @@ fun AuthenticationSettings(
                         },
                         onDismiss = { showUsernameDialog = false }
                     )
+                */
 
                 var showPasswordDialog by remember { mutableStateOf(false) }
                 Setting(
@@ -559,6 +568,7 @@ fun AuthenticationSettings(
                     )
             }
 
+            /* Useless for kSync
             // client certificate
             Setting(
                 icon = null,
@@ -584,6 +594,7 @@ fun AuthenticationSettings(
                     }, null, null, null, -1, credentials.certificateAlias)
                 }
             )
+            */
     }
 }
 
@@ -723,6 +734,8 @@ fun AccountSettingsScreen_Preview() {
         AccountSettingsScreen(
             accountName = "Account Name Here",
             onNavUp = {},
+
+            isWrongCredentials = true, // kSync
 
             // Sync settings
             canAccessWifiSsid = true,
