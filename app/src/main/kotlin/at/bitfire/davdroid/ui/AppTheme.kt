@@ -52,9 +52,7 @@ fun AppTheme(
             else
                 M3ColorScheme.darkScheme,
         ) {
-            Box(Modifier.windowInsetsPadding(windowInsets)) {
-                content()
-            }
+            content()
         }
     }
     
