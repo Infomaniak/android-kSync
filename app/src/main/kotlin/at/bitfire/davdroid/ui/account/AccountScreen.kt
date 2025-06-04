@@ -610,12 +610,15 @@ fun AccountScreen_ServiceTab(
                     .fillMaxWidth()
             )
             AccountProgress.Pending,
-            AccountProgress.Idle -> ProgressBar(
+            AccountProgress.Idle -> {} // kSync
+            /** Useless for kSync
+            ProgressBar(
                 progress = { 1f },
                 modifier = Modifier
                     .alpha(progressAlpha)
                     .fillMaxWidth()
             )
+            */
         }
 
         // permissions warning

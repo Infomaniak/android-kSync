@@ -500,13 +500,15 @@ fun AccountListInfomaniak(
                             )
 
                         AccountProgress.Pending,
-                        AccountProgress.Idle ->
-                            ProgressBar(
-                                progress = { 1f },
-                                modifier = Modifier
-                                    .alpha(progressAlpha)
-                                    .fillMaxWidth()
-                            )
+                        AccountProgress.Idle -> {} // kSync
+                        /** Useless for kSync
+                        ProgressBar(
+                            progress = { 1f },
+                            modifier = Modifier
+                                .alpha(progressAlpha)
+                                .fillMaxWidth()
+                        )
+                        */
                     }
 
                     Column(Modifier.padding(vertical = 12.dp)) {
