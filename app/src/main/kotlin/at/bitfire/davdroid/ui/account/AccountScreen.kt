@@ -610,7 +610,7 @@ fun AccountScreen_ServiceTab(
                     .fillMaxWidth()
             )
             AccountProgress.Pending,
-            AccountProgress.Idle -> {} // kSync
+            AccountProgress.Idle -> Unit // kSync
             /** Useless for kSync
             ProgressBar(
                 progress = { 1f },
