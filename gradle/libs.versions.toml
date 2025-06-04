@@ -34,7 +34,7 @@ kotlin = "2.1.20"
 kotlinx-coroutines = "1.10.2"
 # see https://github.com/google/ksp/releases for version numbers
 ksp = "2.1.20-2.0.0"
-login-infomaniak = "3.1.2" # kSync
+login-infomaniak = "3.1.5" # kSync
 mikepenz-aboutLibraries = "11.6.3"
 nsk90-kstatemachine = "0.33.0"
 mockk = "1.14.0"
@@ -95,7 +95,7 @@ hilt-android-testing = { module = "com.google.dagger:hilt-android-testing", vers
 junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
-login-infomaniak = { module = "com.github.Infomaniak:android-login", version.ref = "login-infomaniak" } # kSync
+login-infomaniak = { module = "com.github.infomaniak:android-login", version.ref = "login-infomaniak" } # kSync
 mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }

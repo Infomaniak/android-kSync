@@ -1,18 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="BaseWebViewTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="android:statusBarColor">#FFFFFF</item>
-        <item name="android:windowLightStatusBar">true</item>
-        <item name="colorCloseIcon">@color/infomaniakText</item>
-        <item name="themeLoginToolbar">@style/LoginToolbarTheme</item>
-    </style>
-
-    <style name="LoginToolbarTheme" parent="Theme.AppCompat">
+    <style name="WebViewTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorCloseIcon">@color/infomaniakText</item>
         <item name="android:textColorPrimary">@color/infomaniakText</item>
-        <item name="android:textColorSecondary">@color/infomaniakText</item>
     </style>
-
-    <style name="WebViewTheme" parent="BaseWebViewTheme" />
 </resources>

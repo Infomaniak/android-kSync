@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="LoginToolbarTheme" parent="Theme.AppCompat">
-        <item name="colorCloseIcon">#FFFFFF</item>
-        <item name="android:textColorPrimary">#FFFFFF</item>
-        <item name="android:textColorSecondary">#FFFFFF</item>
+    <style name="WebViewTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorCloseIcon">#dedede</item>
+        <item name="android:textColorPrimary">#dedede</item>
     </style>
-
-    <style name="WebViewTheme" parent="BaseWebViewTheme" />
 </resources>
