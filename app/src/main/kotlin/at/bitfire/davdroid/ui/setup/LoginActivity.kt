@@ -29,6 +29,8 @@ import com.infomaniak.lib.login.ApiToken
 import com.infomaniak.lib.login.InfomaniakLogin
 import com.infomaniak.lib.login.InfomaniakLogin.TokenResult.Success
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -58,7 +60,9 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
         setContent {
             //region kSync
             val loginInfoState = produceState<LoginInfo?>(initialValue = null) {
-                value = loginInfoFromIntentInfomaniak(intent, getInfomaniakLogin())
+                withContext(Dispatchers.Default) {
+                    value = loginInfoFromIntentInfomaniak(intent, getInfomaniakLogin())
+                }
             }
             val loginInfo = loginInfoState.value
             //endregion
