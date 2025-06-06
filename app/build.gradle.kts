@@ -57,7 +57,7 @@ android {
     productFlavors {
         create("ose") {
             dimension = "distribution"
-            versionNameSuffix = "-ose"
+            // versionNameSuffix = "-ose" // kSync
         }
     }
 
@@ -83,7 +83,7 @@ android {
 
             isShrinkResources = true
 
-            signingConfig = signingConfigs.findByName("bitfire")
+            // signingConfig = signingConfigs.findByName("bitfire") // kSync
         }
     }
 
