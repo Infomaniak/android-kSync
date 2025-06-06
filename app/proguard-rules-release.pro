@@ -12,6 +12,8 @@
 -keep class at.bitfire.** { *; }        # all DAVx5 code is required
 -keep class org.xmlpull.** { *; }
 
+-keep class com.infomaniak.** { *; }       # all Infomaniak code is required
+
 # Additional rules which are now required since missing classes can't be ignored in R8 anymore.
 # [https://developer.android.com/build/releases/past-releases/agp-7-0-0-release-notes#r8-missing-class-warning]
 -dontwarn org.xmlpull.**
