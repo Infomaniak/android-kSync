@@ -1,6 +1,8 @@
 package at.bitfire.davdroid
 
-object kSyncConstants {
+object KSyncConstants {
+    const val INFOMANIAK_HOMEPAGE = "https://infomaniak.com"
+
     const val SYNC_INFOMANIAK = "https://sync.infomaniak.com"
 
     private const val API_ENDPOINT = "https://api.infomaniak.com/1"

@@ -15,7 +15,7 @@ import androidx.core.content.FileProvider
 import androidx.core.content.IntentCompat
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
-import at.bitfire.davdroid.kSyncConstants.INFOMANIAK_SUPPORT_EMAIL_ADDRESS
+import at.bitfire.davdroid.KSyncConstants.INFOMANIAK_SUPPORT_EMAIL_ADDRESS
 import com.google.common.base.Ascii
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.HttpUrl

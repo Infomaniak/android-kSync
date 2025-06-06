@@ -14,9 +14,9 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import at.bitfire.davdroid.db.Credentials
-import at.bitfire.davdroid.kSyncConstants.PASSWORD_API_URL
-import at.bitfire.davdroid.kSyncConstants.PROFILE_API_URL
-import at.bitfire.davdroid.kSyncConstants.SYNC_INFOMANIAK
+import at.bitfire.davdroid.KSyncConstants.PASSWORD_API_URL
+import at.bitfire.davdroid.KSyncConstants.PROFILE_API_URL
+import at.bitfire.davdroid.KSyncConstants.SYNC_INFOMANIAK
 import at.bitfire.davdroid.model.InfomaniakPassword
 import at.bitfire.davdroid.model.InfomaniakUser
 import at.bitfire.davdroid.ui.AppTheme

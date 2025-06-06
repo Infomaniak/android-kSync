@@ -43,7 +43,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import at.bitfire.davdroid.BuildConfig
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.h6
-import at.bitfire.davdroid.kSyncConstants.BATTERY_OPTIMIZATIONS_GUIDE
+import at.bitfire.davdroid.KSyncConstants.BATTERY_OPTIMIZATIONS_GUIDE
 import at.bitfire.davdroid.ui.AppTheme
 
 @Composable
