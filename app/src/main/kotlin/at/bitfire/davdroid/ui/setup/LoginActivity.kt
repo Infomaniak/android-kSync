@@ -56,20 +56,22 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
         val (initialLoginType, skipLoginTypePage) = loginTypesProvider.intentToInitialLoginType(intent)
 
         setContent {
+            //region kSync
             val loginInfoState = produceState<LoginInfo?>(initialValue = null) {
-                value = loginInfoFromIntent(intent, getInfomaniakLogin())
+                value = loginInfoFromIntentInfomaniak(intent, getInfomaniakLogin())
             }
             val loginInfo = loginInfoState.value
+            //endregion
 
-            if (loginInfo == null) {
-                AppTheme {
-                    ProgressBar(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp))
-                }
-            } else {
-                LoginScreen(
+            if (loginInfo == null) { // kSync
+                AppTheme { // kSync
+                    ProgressBar(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) // kSync
+                } // kSync
+            } else { // kSync
+                LoginScreen( // kSync
                     initialLoginType = initialLoginType,
                     skipLoginTypePage = skipLoginTypePage,
-                    initialLoginInfo = loginInfo,
+                    initialLoginInfo = loginInfo, // kSync
                     onNavUp = { onSupportNavigateUp() },
                     onFinish = { newAccount ->
                         finish()
@@ -109,7 +111,77 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
          */
         const val EXTRA_LOGIN_FLOW = "loginFlow"
 
+        /**
+         * Extracts login information from given intent, validates it and returns it in [LoginInfo].
+         *
+         * @param intent Contains base url, username and password.
+         * @return Extracted login info. Contains null values if given info is invalid.
+         */
+        fun loginInfoFromIntent(intent: Intent): LoginInfo {
+            var givenUri: String? = null
+            var givenUsername: String? = null
+            var givenPassword: String? = null
 
+            // extract URI or email and optionally username/password from Intent data
+            val logger = Logger.getGlobal()
+            intent.data?.normalizeScheme()?.let { uri ->
+                val realScheme = when (uri.scheme) {
+                    // replace caldav[s]:// and carddav[s]:// with http[s]://
+                    "caldav", "carddav" -> "http"
+                    "caldavs", "carddavs", "davx5" -> "https"
+
+                    // keep these
+                    "http", "https", "mailto" -> uri.scheme
+
+                    // unknown scheme
+                    else -> null
+                }
+
+                when (realScheme) {
+                    "http", "https" -> {
+                        // extract user info
+                        uri.userInfo?.split(':')?.let { userInfo ->
+                            givenUsername = userInfo.getOrNull(0)
+                            givenPassword = userInfo.getOrNull(1)
+                        }
+
+                        // use real scheme, drop user info and fragment
+                        givenUri = try {
+                            URI(realScheme, null, uri.host, uri.port, uri.path, uri.query, null).toString()
+                        } catch (_: URISyntaxException) {
+                            logger.warning("Couldn't construct URI from login Intent data: $uri")
+                            null
+                        }
+                    }
+
+                    "mailto" ->
+                        givenUsername = uri.schemeSpecificPart
+                }
+            }
+
+            if (givenUri == null)
+                givenUri = intent.getStringExtra(EXTRA_URL)
+
+            // always prefer username/password from the extras
+            if (intent.hasExtra(EXTRA_USERNAME))
+                givenUsername = intent.getStringExtra(EXTRA_USERNAME)
+            if (intent.hasExtra(EXTRA_PASSWORD))
+                givenPassword = intent.getStringExtra(EXTRA_PASSWORD)
+
+            return LoginInfo(
+                baseUri = try {
+                    URI(givenUri)
+                } catch (_: Exception) {
+                    null
+                },
+                credentials = Credentials(
+                    username = givenUsername,
+                    password = givenPassword
+                )
+            )
+        }
+
+        //region kSync
         /**
          * Extracts login information from given intent, validates it and returns it in [LoginInfo].
          *
@@ -117,7 +189,7 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
          * @param infomaniakLogin Contains all the necessary information and functions to connect to Infomaniak servers.
          * @return Extracted login info. Contains null values if given info is invalid.
          */
-        suspend fun loginInfoFromIntent(intent: Intent, infomaniakLogin: InfomaniakLogin): LoginInfo {
+        suspend fun loginInfoFromIntentInfomaniak(intent: Intent, infomaniakLogin: InfomaniakLogin): LoginInfo {
             var givenUri: String? = null
             var givenUsername: String? = null
             var givenPassword: String? = null
@@ -243,5 +315,6 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
                 null
             }
         }
+        //endregion
     }
 }
