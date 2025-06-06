@@ -501,7 +501,7 @@ fun AccountListInfomaniak(
 
                         AccountProgress.Pending,
                         AccountProgress.Idle -> Unit // kSync
-                        /** Useless for kSync
+                        /* Useless for kSync
                         ProgressBar(
                             progress = { 1f },
                             modifier = Modifier

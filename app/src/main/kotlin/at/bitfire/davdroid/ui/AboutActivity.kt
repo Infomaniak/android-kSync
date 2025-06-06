@@ -50,10 +50,10 @@ import androidx.core.text.HtmlCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import at.bitfire.davdroid.BuildConfig
-import at.bitfire.davdroid.Constants
 import at.bitfire.davdroid.Constants.withStatParams
 import at.bitfire.davdroid.R
 import at.bitfire.davdroid.di.IoDispatcher
+import at.bitfire.davdroid.KSyncConstants
 import at.bitfire.davdroid.ui.UiUtils.toAnnotatedString
 import at.bitfire.davdroid.ui.composable.PixelBoxes
 import com.mikepenz.aboutlibraries.ui.compose.LibraryDefaults
@@ -113,10 +113,12 @@ class AboutActivity: AppCompatActivity() {
                             },
                             actions = {
                                 IconButton(onClick = {
-                                    uriHandler.openUri(Constants.HOMEPAGE_URL
+                                    uriHandler.openUri(KSyncConstants.INFOMANIAK_HOMEPAGE) // kSync
+                                        /* Useless for kSync
                                         .buildUpon()
                                         .withStatParams("AboutActivity")
                                         .build().toString())
+                                        */
                                 }) {
                                     Icon(
                                         Icons.Default.Home,
