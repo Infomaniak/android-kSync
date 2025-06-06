@@ -24,7 +24,7 @@ android {
 
         setProperty("archivesBaseName", "kSync-$versionName")
 
-        minSdk = 27        // Android 8.1
+        minSdk = 24        // Android 7.0
         targetSdk = 35     // Android 15
 
         buildConfigField("String", "CLIENT_ID", "\"CE011334-F75A-4263-9F9F-45FC5A142F59\"") // kSync
