@@ -279,6 +279,13 @@
             </intent-filter>
         </service>
 
+        <!-- Provider to share kSync accounts -->
+        <provider
+            android:name=".sync.provider.InfomaniakAccountProvider"
+            android:authorities="@string/infomaniak_account_authority"
+            android:exported="true"
+            tools:ignore="ExportedContentProvider" />
+
         <!-- Widgets -->
         <receiver android:name=".ui.widget.LabeledSyncButtonWidgetReceiver"
             android:label="@string/widget_labeled_sync_label"
