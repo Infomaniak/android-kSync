@@ -61,7 +61,14 @@ class LoginActivity @Inject constructor() : AppCompatActivity() {
             //region kSync
             val loginInfoState = produceState<LoginInfo?>(initialValue = null) {
                 withContext(Dispatchers.Default) {
-                    value = loginInfoFromIntentInfomaniak(intent, getInfomaniakLogin())
+                    value = if (intent.extras?.getString("code") != null) {
+                        loginInfoFromIntentInfomaniak(intent, getInfomaniakLogin())
+                    } else {
+                        LoginInfo(
+                            baseUri = URI(SYNC_INFOMANIAK),
+                            credentials = Credentials(username = intent.extras?.getString("infomaniakLogin"), password = intent.extras?.getString("infomaniakPassword")),
+                        )
+                    }
                 }
             }
             val loginInfo = loginInfoState.value
