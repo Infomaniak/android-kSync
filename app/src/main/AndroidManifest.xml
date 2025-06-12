@@ -26,10 +26,10 @@
     <!-- getting the WiFi name (for "sync in Wifi only") requires
       - coarse location (Android 8.1)
       - fine location (Android 10) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"/> kSync -->
+    <!-- <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION"/> kSync -->
     <!-- required since Android 10 to get the WiFi name while in background (= while syncing) -->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <!-- <uses-permission-sdk-23 android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/> kSync -->
 
     <!-- ical4android declares task access permissions -->
 
