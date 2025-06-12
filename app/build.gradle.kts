@@ -19,7 +19,7 @@ android {
     defaultConfig {
         applicationId = "com.infomaniak.sync"
 
-        versionCode = 404110005
+        versionCode = 404110006
         versionName = "4.4.11"
 
         setProperty("archivesBaseName", "kSync-$versionName")
