@@ -1,0 +1,54 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.ui.account
+
+import android.accounts.Account
+import android.content.Intent
+import android.os.Bundle
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.TaskStackBuilder
+import androidx.core.content.IntentCompat
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class AccountSettingsActivity: AppCompatActivity() {
+
+    companion object {
+        const val EXTRA_ACCOUNT = "account"
+        const val EXTRA_WRONG_CREDENTIALS = "wrong_credentials" // kSync
+    }
+
+    private val account by lazy {
+        IntentCompat.getParcelableExtra(intent, EXTRA_ACCOUNT, Account::class.java) ?: throw IllegalArgumentException("EXTRA_ACCOUNT must be set")
+    }
+    private val isWrongCredentials by lazy { intent.getBooleanExtra(EXTRA_WRONG_CREDENTIALS, false) } // kSync
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        title = account.name
+
+        setContent {
+            AccountSettingsScreen(
+                account = account,
+                onNavWifiPermissionsScreen = {
+                    val intent = Intent(this, WifiPermissionsActivity::class.java)
+                    intent.putExtra(WifiPermissionsActivity.EXTRA_ACCOUNT, account)
+                    startActivity(intent)
+                },
+                onNavUp = ::onSupportNavigateUp,
+                isWrongCredentials = isWrongCredentials, // kSync
+            )
+        }
+    }
+
+    override fun supportShouldUpRecreateTask(targetIntent: Intent) = true
+
+    override fun onPrepareSupportNavigateUpTaskStack(builder: TaskStackBuilder) {
+        builder.editIntentAt(builder.intentCount - 1)?.putExtra(AccountActivity.EXTRA_ACCOUNT, account)
+    }
+
+}

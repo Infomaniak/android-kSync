@@ -1,52 +1,54 @@
 # Comments apply to next line
 
 [versions]
-android-agp = "8.10.0"
+android-agp = "9.0.1"
 android-desugaring = "2.1.5"
-androidx-activityCompose = "1.10.1"
-androidx-appcompat = "1.7.0"
+androidx-activityCompose = "1.12.4"
+androidx-appcompat = "1.7.1"
 androidx-arch = "2.2.0"
-androidx-browser = "1.8.0"
-androidx-core = "1.16.0"
-androidx-hilt = "1.2.0"
-androidx-lifecycle = "2.9.0"
-androidx-paging = "3.3.6"
+androidx-browser = "1.9.0"
+androidx-core = "1.17.0"
+androidx-hilt = "1.3.0"
+androidx-lifecycle = "2.10.0"
+androidx-paging = "3.4.1"
 androidx-preference = "1.2.1"
-androidx-security = "1.1.0-alpha07"
-androidx-test-core = "1.6.1"
-androidx-test-runner = "1.6.2"
-androidx-test-rules = "1.6.1"
-androidx-test-junit = "1.2.1"
-androidx-work = "2.10.1"
-bitfire-cert4android = "b67ba86d31"
-bitfire-dav4jvm = "ec6264d427"
-bitfire-ical4android = "240f756bab"
-bitfire-vcard4android = "59eb998f29"
+androidx-security = "1.1.0"
+androidx-test-core = "1.7.0"
+androidx-test-runner = "1.7.0"
+androidx-test-rules = "1.7.0"
+androidx-test-junit = "1.3.0"
+androidx-work = "2.11.1"
+bitfire-cert4android = "035dd99f7f"
+bitfire-dav4jvm = "77c5069f53"
+bitfire-synctools = "e9ff9948e3"
 compose-accompanist = "0.37.3"
-compose-bom = "2025.05.01"
-dnsjava = "3.6.2"
+compose-bom = "2026.02.01"
+conscrypt = "2.5.3"
+dnsjava = "3.6.4"
 gson = "2.13.0" # kSync
 glance = "1.1.1"
-guava = "33.4.8-android"
-hilt = "2.56.2"
+guava = "33.5.0-android"
+hilt = "2.59.2"
 # keep in sync with ksp version
-kotlin = "2.1.20"
+kotlin = "2.3.10"
 kotlinx-coroutines = "1.10.2"
-# see https://github.com/google/ksp/releases for version numbers
-ksp = "2.1.20-2.0.0"
+ksp = "2.3.6"
+ktor = "3.4.0"
+mikepenz-aboutLibraries = "13.2.1"
+mockk = "1.14.9"
+okhttp = "5.3.2"
 login-infomaniak = "3.1.8" # kSync
-mikepenz-aboutLibraries = "12.1.2"
-nsk90-kstatemachine = "0.33.0"
-mockk = "1.14.2"
-okhttp = "4.12.0"
 openid-appauth = "0.11.1"
-room = "2.7.1"
-unifiedpush = "3.0.9"
+robolectric = "4.16.1"
+room = "2.8.4"
+unifiedpush = "3.3.1"
 unifiedpush-fcm = "3.0.0"
 
-# Other libraries, especially ical4android/ical4j, require Apache Commons. Some recent versions of Apache
+# Other libraries, especially ical4j, require Apache Commons. Some recent versions of Apache
 # Commons require a newer Java version than our minSdk provides. So we require these strict versions here:
+#noinspection NewerVersionAvailable
 commons-codec = { strictly = "1.17.1" }
+#noinspection NewerVersionAvailable
 commons-lang = { strictly = "3.15.0" }
 
 [libraries]
@@ -55,7 +57,15 @@ androidx-activityCompose = { module = "androidx.activity:activity-compose", vers
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "androidx-arch" }
 androidx-browser = { module = "androidx.browser:browser", version.ref = "androidx-browser" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material3-adaptive = { group = "androidx.compose.material3.adaptive", name = "adaptive" }
+androidx-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
+androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
+androidx-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-core = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
+androidx-glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
+androidx-glance-material3 = { module = "androidx.glance:glance-material3", version.ref = "glance" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-hilt" }
 androidx-hilt-work = { module = "androidx.hilt:hilt-work", version.ref = "androidx-hilt" }
@@ -65,6 +75,11 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-paging = { module = "androidx.paging:paging-runtime-ktx", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-preference = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
+androidx-room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+androidx-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
 androidx-security = { module = "androidx.security:security-crypto", version.ref = "androidx-security" }
 androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "androidx-test-core" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx-test-runner" }
@@ -74,20 +89,13 @@ androidx-work-base = { module = "androidx.work:work-runtime-ktx", version.ref = 
 androidx-work-testing = { module = "androidx.work:work-testing", version.ref = "androidx-work" }
 bitfire-cert4android = { module = "com.github.bitfireat:cert4android", version.ref = "bitfire-cert4android" }
 bitfire-dav4jvm = { module = "com.github.bitfireat:dav4jvm", version.ref = "bitfire-dav4jvm" }
-bitfire-ical4android = { module = "com.github.bitfireat:ical4android", version.ref = "bitfire-ical4android" }
-bitfire-vcard4android = { module = "com.github.bitfireat:vcard4android", version.ref = "bitfire-vcard4android" }
+bitfire-synctools = { module = "com.github.bitfireAT:synctools", version.ref = "bitfire-synctools" }
 commons-codec = { module = "commons-codec:commons-codec", version.ref = "commons-codec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 compose-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "compose-accompanist" }
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
-compose-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
+conscrypt = { module = "org.conscrypt:conscrypt-android", version.ref = "conscrypt" }
 dnsjava = { module = "dnsjava:dnsjava", version.ref = "dnsjava" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" } # kSync
-glance-base = { module = "androidx.glance:glance-appwidget", version.ref = "glance" }
-glance-material = { module = "androidx.glance:glance-material", version.ref = "glance" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 hilt-android-base = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
@@ -96,28 +104,28 @@ junit = { module = "junit:junit", version = "4.13.2" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+mikepenz-aboutLibraries-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 login-infomaniak = { module = "com.github.infomaniak:android-login", version.ref = "login-infomaniak" } # kSync
-mikepenz-aboutLibraries = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "mikepenz-aboutLibraries" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
-nsk90-kstatemachine = { module = "io.github.nsk90:kstatemachine-jvm", version.ref = "nsk90-kstatemachine" }
 okhttp-base = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttp-brotli = { module = "com.squareup.okhttp3:okhttp-brotli", version.ref = "okhttp" }
 okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 okhttp-mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 openid-appauth = { module = "net.openid:appauth", version.ref = "openid-appauth" }
-room-base = { module = "androidx.room:room-ktx", version.ref = "room" }
-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
-room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
-room-testing = { module = "androidx.room:room-testing", version.ref = "room" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 unifiedpush = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 unifiedpush-fcm = { module = "org.unifiedpush.android:embedded-fcm-distributor", version.ref = "unifiedpush-fcm" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "android-agp" }
+android-library = { id = "com.android.library", version.ref = "android-agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-mikepenz-aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "mikepenz-aboutLibraries" }
+mikepenz-aboutLibraries-android = { id = "com.mikepenz.aboutlibraries.plugin.android", version.ref = "mikepenz-aboutLibraries" }
