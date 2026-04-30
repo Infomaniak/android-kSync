@@ -9,3 +9,24 @@ updates:
       interval: "weekly"
     commit-message:
       prefix: "[CI] "
+    labels:
+      - "github_actions"
+      - "dependencies"
+    groups:
+      ci-actions:
+        patterns: ["*"]
+        
+  - package-ecosystem: "gradle"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:             # don't create "java" label (default for gradle ecosystem)
+      - "dependencies"
+    groups:
+      app-dependencies:
+        patterns: ["*"]
+    ignore:
+      # dependencies without semantic versioning
+      - dependency-name: "com.github.bitfireat:cert4android"
+      - dependency-name: "com.github.bitfireat:dav4jvm"
+      - dependency-name: "com.github.bitfireat:synctools"

@@ -1,0 +1,227 @@
+/*
+ * Copyright © All Contributors. See LICENSE and AUTHORS in the root directory for details.
+ */
+
+package at.bitfire.davdroid.resource
+
+import android.content.ContentUris
+import android.content.ContentValues
+import android.content.Context
+import android.net.Uri
+import android.os.RemoteException
+import android.provider.ContactsContract
+import android.provider.ContactsContract.CommonDataKinds.GroupMembership
+import android.provider.ContactsContract.RawContacts
+import android.provider.ContactsContract.RawContacts.Data
+import android.provider.ContactsContract.RawContacts.getContactLookupUri
+import androidx.core.content.contentValuesOf
+import at.bitfire.davdroid.resource.contactrow.CachedGroupMembershipHandler
+import at.bitfire.davdroid.resource.contactrow.GroupMembershipBuilder
+import at.bitfire.davdroid.resource.contactrow.GroupMembershipHandler
+import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesBuilder
+import at.bitfire.davdroid.resource.contactrow.UnknownPropertiesHandler
+import at.bitfire.synctools.storage.BatchOperation
+import at.bitfire.synctools.storage.ContactsBatchOperation
+import at.bitfire.vcard4android.AndroidAddressBook
+import at.bitfire.vcard4android.AndroidContact
+import at.bitfire.vcard4android.AndroidContactFactory
+import at.bitfire.vcard4android.CachedGroupMembership
+import at.bitfire.vcard4android.Contact
+import com.google.common.base.MoreObjects
+import java.io.FileNotFoundException
+import java.util.Optional
+import kotlin.jvm.optionals.getOrNull
+
+class LocalContact: AndroidContact, LocalAddress {
+
+    companion object {
+        const val COLUMN_FLAGS = RawContacts.SYNC4
+        const val COLUMN_HASHCODE = RawContacts.SYNC3
+    }
+
+    override val addressBook: LocalAddressBook
+        get() = super.addressBook as LocalAddressBook
+
+    internal val cachedGroupMemberships = HashSet<Long>()
+    internal val groupMemberships = HashSet<Long>()
+
+    override val scheduleTag: String?
+        get() = null
+
+    override var flags: Int = 0
+
+
+    constructor(addressBook: LocalAddressBook, values: ContentValues): super(addressBook, values) {
+        flags = values.getAsInteger(COLUMN_FLAGS) ?: 0
+    }
+
+    constructor(addressBook: LocalAddressBook, contact: Contact, fileName: String?, eTag: String?, _flags: Int): super(addressBook, contact, fileName, eTag) {
+        flags = _flags
+    }
+
+    init {
+        processor.registerHandler(CachedGroupMembershipHandler(this))
+        processor.registerHandler(GroupMembershipHandler(this))
+        processor.registerHandler(UnknownPropertiesHandler)
+        processor.registerBuilderFactory(GroupMembershipBuilder.Factory(addressBook))
+        processor.registerBuilderFactory(UnknownPropertiesBuilder.Factory)
+    }
+
+
+    /**
+     * Clears cached [contact] so that the next read of [contact] will query the content provider again.
+     */
+    fun clearCachedContact() {
+        _contact = null
+    }
+
+    override fun clearDirty(fileName: Optional<String>, eTag: String?, scheduleTag: String?) {
+        if (scheduleTag != null)
+            throw IllegalArgumentException("Contacts must not have a Schedule-Tag")
+
+        val values = ContentValues(4)
+        if (fileName.isPresent)
+            values.put(COLUMN_FILENAME, fileName.get())
+        values.put(COLUMN_ETAG, eTag)
+        values.put(RawContacts.DIRTY, 0)
+
+        // Android 7 workaround
+        addressBook.dirtyVerifier.getOrNull()?.setHashCodeColumn(this, values)
+
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+
+        if (fileName.isPresent)
+            this.fileName = fileName.get()
+        this.eTag = eTag
+    }
+
+    fun resetDirty() {
+        val values = contentValuesOf(RawContacts.DIRTY to 0)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
+    override fun update(data: Contact, fileName: String?, eTag: String?, scheduleTag: String?, flags: Int) {
+        this.fileName = fileName
+        this.eTag = eTag
+        this.flags = flags
+
+        // processes this.{fileName, eTag, flags} and resets DIRTY flag
+        update(data)
+    }
+
+    override fun updateFlags(flags: Int) {
+        val values = contentValuesOf(COLUMN_FLAGS to flags)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+
+        this.flags = flags
+    }
+
+    override fun updateSequence(sequence: Int) = throw NotImplementedError()
+
+    override fun updateUid(uid: String) {
+        val values = contentValuesOf(COLUMN_UID to uid)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
+    override fun deleteLocal() {
+        delete()
+    }
+
+    override fun resetDeleted() {
+        val values = contentValuesOf(ContactsContract.Groups.DELETED to 0)
+        addressBook.provider!!.update(rawContactSyncURI(), values, null, null)
+    }
+
+    override fun getDebugSummary() =
+        MoreObjects.toStringHelper(this)
+            .add("id", id)
+            .add("fileName", fileName)
+            .add("eTag", eTag)
+            .add("flags", flags)
+            /*.add("contact",
+                try {
+                    // too dangerous, may contain unknown properties and cause another OOM
+                    Ascii.truncate(getContact().toString(), 1000, "…")
+                } catch (e: Exception) {
+                    e
+                }
+            )*/
+            .toString()
+
+    override fun getViewUri(context: Context): Uri? =
+        id?.let { idNotNull ->
+            getContactLookupUri(
+                context.contentResolver,
+                ContentUris.withAppendedId(RawContacts.CONTENT_URI, idNotNull)
+            )
+        }
+
+
+    fun addToGroup(batch: ContactsBatchOperation, groupID: Long) {
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(GroupMembership.MIMETYPE, GroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(GroupMembership.RAW_CONTACT_ID, id)
+            .withValue(GroupMembership.GROUP_ROW_ID, groupID)
+        groupMemberships += groupID
+
+        batch += BatchOperation.CpoBuilder
+            .newInsert(dataSyncURI())
+            .withValue(CachedGroupMembership.MIMETYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            .withValue(CachedGroupMembership.RAW_CONTACT_ID, id)
+            .withValue(CachedGroupMembership.GROUP_ID, groupID)
+        cachedGroupMemberships += groupID
+    }
+
+    fun removeGroupMemberships(batch: BatchOperation) {
+        batch += BatchOperation.CpoBuilder
+            .newDelete(dataSyncURI())
+            .withSelection(
+                "${Data.RAW_CONTACT_ID}=? AND ${Data.MIMETYPE} IN (?,?)",
+                arrayOf(id.toString(), GroupMembership.CONTENT_ITEM_TYPE, CachedGroupMembership.CONTENT_ITEM_TYPE)
+            )
+        groupMemberships.clear()
+        cachedGroupMemberships.clear()
+    }
+
+    /**
+     * Returns the IDs of all groups the contact was member of (cached memberships).
+     * Cached memberships are kept in sync with memberships by DAVx5 and are used to determine
+     * whether a membership has been deleted/added when a raw contact is dirty.
+     * @return set of {@link GroupMembership#GROUP_ROW_ID} (may be empty)
+     * @throws FileNotFoundException if the current contact can't be found
+     * @throws RemoteException on contacts provider errors
+     */
+    fun getCachedGroupMemberships(): Set<Long> {
+        getContact()
+        return cachedGroupMemberships
+    }
+
+    /**
+     * Returns the IDs of all groups the contact is member of.
+     * @return set of {@link GroupMembership#GROUP_ROW_ID}s (may be empty)
+     * @throws FileNotFoundException if the current contact can't be found
+     * @throws RemoteException on contacts provider errors
+     */
+    fun getGroupMemberships(): Set<Long> {
+        getContact()
+        return groupMemberships
+    }
+
+
+    // data rows
+
+    override fun buildContact(builder: BatchOperation.CpoBuilder, update: Boolean) {
+        builder.withValue(COLUMN_FLAGS, flags)
+        super.buildContact(builder, update)
+    }
+
+
+    // factory
+
+    object Factory: AndroidContactFactory<LocalContact> {
+        override fun fromProvider(addressBook: AndroidAddressBook<LocalContact, *>, values: ContentValues) =
+                LocalContact(addressBook as LocalAddressBook, values)
+    }
+
+}
