@@ -22,7 +22,7 @@ android {
         versionCode = 405100003
         versionName = "4.5.10"
 
-        base.archivesName = "davx5-$versionCode-$versionName"
+        base.archivesName = "ksync-$versionCode-$versionName"
 
         // currently no instrumentation tests for app-ose, so no testInstrumentationRunner
     }
